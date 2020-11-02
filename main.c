@@ -28,24 +28,25 @@ void inizializzazione(int *piano, int RIGHE, int COLONNE) {
 void stampa(int *piano, int RIGA, int COLONNA) { /*RIGA/COLONNA=numero righe/colonne*/
     int r=0, c;
     for (r=0; r < RIGA; r++) { /*r=inidce riga, c=indice colonna*/
-        /*printf("%d", r); (r*COLONNA+c) TODO (DA FORMATTARE INDICI RIGA) */
+        printf("%d|", r); (r*COLONNA+c);
         for (c=0; c < COLONNA; c++) {
             int casella = piano[r * COLONNA + c];
             if (casella==PLAYER1) {
-                printf(" X ");
+                printf(" o ");
             }
             else if (casella==PLAYER2){
-                printf(" O ");
+                printf(" x ");
             }
             else {printf("   ");
             }
         }
         printf("\n");
     }
-    /*printf(" ");
+
+    printf("  ");
     for (c=0; c < COLONNA; c++)
-        printf("%d ", c);
-    printf("\n");*/
+        printf(" %d ", c);
+    printf("\n");
 }
 
 int main() {
