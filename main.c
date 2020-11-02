@@ -23,10 +23,8 @@ void inizializzazione(int *piano, int RIGHE, int COLONNE) {
     }
 }
 
-
-
 void stampa(int *piano, int RIGA, int COLONNA) { /*RIGA/COLONNA=numero righe/colonne*/
-    int r=0, c;
+    int r,c;
     for (r=0; r < RIGA; r++) { /*r=inidce riga, c=indice colonna*/
         printf("%d|", r); /*(r*COLONNA+c);*/
         for (c=0; c < COLONNA; c++) {
@@ -36,8 +34,7 @@ void stampa(int *piano, int RIGA, int COLONNA) { /*RIGA/COLONNA=numero righe/col
             }
             else if (casella==PLAYER2){
                 printf(" x ");
-            }
-            else {printf("   ");
+            } else {printf("   ");
             }
         }
         printf("\n");
@@ -49,9 +46,53 @@ void stampa(int *piano, int RIGA, int COLONNA) { /*RIGA/COLONNA=numero righe/col
     printf("\n");
 }
 
+int seleziona_pedina (int* piano, int COLONNE, int x, int y, int turno){ /*controllo se pedina corrisponde al giocatore giusto*/
+    if(piano[y*COLONNE+x]==turno){
+        return 1;
+    } else {
+        printf("scelta sbagliata\n");
+        return 0;
+    }
+}
+
+int seleziona_mossa(int* piano, int COLONNE, int x, int y, int* turno, int move_x, int move_y){
+    if(*turno==PLAYER1){
+        if((move_y == y+1) && ((move_x == x+1) || (move_x == x-1))){/*verifica se destinazione è valida per il giocatore non promosso*/
+         piano[move_y*COLONNE+move_x] = *turno; /*assegnamento alla casella del player*/
+         piano[y*COLONNE+x] = VUOTO; /*svuota casella old*/
+            *turno = PLAYER2;
+            return 1;
+        }
+    } else{
+        if((move_y == y-1) && ((move_x == x+1)||(move_x == x-1))){
+            piano[move_y*COLONNE+move_x] = *turno;
+            piano[y*COLONNE+x]= VUOTO;
+            *turno = PLAYER1;
+            return 1;
+        }
+    return 0;
+    }
+}
+
+
 int main() {
     int piano[7][7];
+    int x,y,move_x,move_y;
+    int turno=PLAYER1;
     inizializzazione(&(piano[0][0]), 7, 7);
     stampa(&(piano[0][0]), 7, 7);
+    while(1){
+        printf("\nTURNO GIOCATORE %d \n",turno);
+        printf("\nseleziona le coordinate della pedina x , y\n");
+        scanf("%d %d",&x,&y); /*inserimento pedina da controllare*/
+        if(seleziona_pedina(piano,7,x,y,turno)){
+            printf("seleziona le coordinate in cui muovere la pedina x , y\n");
+            scanf("%d %d",&move_x,&move_y); /*inserimento coordinate destinazione pedina*/
+           if (seleziona_mossa(piano,7,x,y,&turno,move_x,move_y)){ /*se la mossa è valida stampa piano*/
+               stampa(piano,7,7);
+           }
+        }
+    }
+
     return 0;
 }
