@@ -46,13 +46,13 @@ void stampa(int *piano, int RIGA, int COLONNA) { /*RIGA/COLONNA=numero righe/col
     printf("\n");
 }
 
-void cambio_turno(int* turno){
+/*void cambio_turno(int* turno){
     if(*turno == PLAYER1){
         *turno = PLAYER2;
     }else{
         *turno = PLAYER1;
     }
-}
+}*/
 
 int seleziona_pedina (int* piano, int COLONNE, int x, int y, int turno){ /*controllo se pedina corrisponde al giocatore giusto*/
     if(piano[y*COLONNE+x]==turno){
@@ -82,20 +82,26 @@ int seleziona_mossa(int* piano, int COLONNE, int x, int y, int* turno, int move_
     }
 }
 
-void mangiata(int* piano, int COLONNE, int x, int y, int turno){
+void mangiata(int* piano, int COLONNE, int y, int x, int turno, int dest_y, int dest_x){ /*controllo se destinazione è valida*/
     int move_x, move_y;
     printf("Devi mangiare l'avversario con la pedina nelle coordinate x:%d y:%d\n", x, y);
     printf("Inserisci le coordinate in cui fare la mangiata\n");
     scanf("%d %d", &move_x, &move_y);
-    if(piano[move_y* COLONNE + move_x] == VUOTO){
+    if(piano[move_y* COLONNE + move_x] == VUOTO && move_y==dest_y && move_x==dest_x){
         piano[y*COLONNE + x] = VUOTO;
         piano[move_y*COLONNE + move_x] = turno;
+        if(turno == PLAYER1){
+            turno = PLAYER2;
+        }else if (turno == PLAYER2) {
+            turno = PLAYER1;
+        }
+        stampa(piano,7,7);
         /*torrefazione*/
     }
-    cambio_turno(&turno);
+    /*cambio_turno(&turno);*/
 }
 
-int controllo_mangiata(int* piano, int RIGHE, int COLONNE, int turno){
+void controllo_mangiata(int* piano, int RIGHE, int COLONNE, int turno){
     int i, j;
     for(i = 0; i < COLONNE; i++){
         for(j = 0; j < RIGHE; j++){
@@ -108,7 +114,7 @@ int controllo_mangiata(int* piano, int RIGHE, int COLONNE, int turno){
                             /*TODO far scegliere a giocatore quale mangiata effettuare passando più coordinate ad un array
                              * oppure ritorna torna scelta SI o NO con ciclo while*/
                             /*passo i e j come coordinate per mangiata obbligatoria*/
-                            mangiata(piano, COLONNE, i, j, turno);
+                            mangiata(piano, COLONNE, i, j, turno, i+2, j-2);
 
                         }
                     } else if (piano[(i + 1) * COLONNE + (j + 1)] != turno && piano[(i + 1) * COLONNE + (j + 1)] != VUOTO) {
@@ -116,7 +122,7 @@ int controllo_mangiata(int* piano, int RIGHE, int COLONNE, int turno){
                         if (piano[(i + 2) * COLONNE + (j + 2)] == VUOTO) {
                             /*TODO far scegliere a giocatore quale manigata effettuare*/
                             /*passo i e j come coordinate per mangiata obbligatoria*/
-                            mangiata(piano, COLONNE, i, j, turno);
+                            mangiata(piano, COLONNE, i, j, turno, i+2, j+2);
                         }
                     }
                 }
@@ -125,10 +131,10 @@ int controllo_mangiata(int* piano, int RIGHE, int COLONNE, int turno){
                     if (piano[(i - 1) * COLONNE + (j - 1)] != turno &&
                         piano[(i - 1) * COLONNE + (j - 1)] != VUOTO) {
                         /*controllo diagonale sinistra che sia player avversario e non vuoto*/
-                        if (piano[(i + 2) * COLONNE + (j - 2)] == VUOTO) {
+                        if (piano[(i - 2) * COLONNE + (j - 2)] == VUOTO) {
                             /*TODO far scegliere a giocatore quale manigata effettuare, con più di una*/
                             /*passo i e j come coordinate per mangiata obbligatoria*/
-                            mangiata(piano, COLONNE, i, j, turno);
+                            mangiata(piano, COLONNE, i, j, turno, i-2, j-2);
 
                         }
                     } else if (piano[(i - 1) * COLONNE + (j + 1)] != turno && piano[(i + 1) * COLONNE + (j + 1)] != VUOTO) {
@@ -136,7 +142,7 @@ int controllo_mangiata(int* piano, int RIGHE, int COLONNE, int turno){
                         if (piano[(i - 2) * COLONNE + (j + 2)] == VUOTO) {
                             /*TODO far scegliere a giocatore quale manigata effettuare*/
                             /*passo i e j come coordinate per mangiata obbligatoria*/
-                            mangiata(piano, COLONNE, i, j, turno);
+                            mangiata(piano, COLONNE, i, j, turno, i-2, j+2);
                         }
                     }
                 }
@@ -144,7 +150,6 @@ int controllo_mangiata(int* piano, int RIGHE, int COLONNE, int turno){
 
         }
     }
-    return 1;
 }
 
 int main() {
@@ -163,9 +168,7 @@ int main() {
             scanf("%d %d",&move_x,&move_y); /*inserimento coordinate destinazione pedina*/
            if (seleziona_mossa(piano,7,x,y,&turno,move_x,move_y)){ /*se la mossa è valida stampa piano*/
                stampa(piano,7,7);
-               if(controllo_mangiata(piano,7,7,turno)){
-                   stampa(piano, 7, 7);
-               }
+               controllo_mangiata(piano,7,7,turno);
            }
         }
     }
