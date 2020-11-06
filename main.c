@@ -108,7 +108,7 @@ void controllo_mangiata(int* piano, int RIGHE, int COLONNE, int* turno){
         for(j = 0; j < COLONNE; j++){
             if(piano[i*COLONNE + j] == *turno) {
                 if (*turno == PLAYER1 /*|| PLAYER2 == promoted*/) {
-                    if (piano[(i + 1) * COLONNE + (j - 1)] != *turno &&
+                    if (i<5 && j>1 && piano[(i + 1) * COLONNE + (j - 1)] != *turno &&     /*ho inserito degli and per evitare il controllo a sx se sei vicino al bordo sx e viceversa a dx*/
                         piano[(i + 1) * COLONNE + (j - 1)] != VUOTO) {
                         /*controllo diagonale sinistra che sia player avversario e non vuoto*/
                         if (piano[(i + 2) * COLONNE + (j - 2)] == VUOTO) {
@@ -118,7 +118,7 @@ void controllo_mangiata(int* piano, int RIGHE, int COLONNE, int* turno){
                             mangiata(piano, COLONNE, i, j, turno, i+2, j-2);
 
                         }
-                    } else if (piano[(i + 1) * COLONNE + (j + 1)] != *turno &&
+                    } else if (i<5 && j<5 && piano[(i + 1) * COLONNE + (j + 1)] != *turno &&
                         piano[(i + 1) * COLONNE + (j + 1)] != VUOTO) {
                         /*controllo diagonale destra che sia player avversario e non vuoto*/
                         if (piano[(i + 2) * COLONNE + (j + 2)] == VUOTO) {
@@ -129,16 +129,15 @@ void controllo_mangiata(int* piano, int RIGHE, int COLONNE, int* turno){
                     }
                 }
                 if(*turno == PLAYER2 /*|| PLAYER1 == promoted*/){
-
-                    if (piano[(i - 1) * COLONNE + (j - 1)] != *turno &&
+                    if (i>1 && j>1 && piano[(i - 1) * COLONNE + (j - 1)] != *turno &&
                         piano[(i - 1) * COLONNE + (j - 1)] != VUOTO) {
                         /*controllo diagonale sinistra che sia player avversario e non vuoto*/
                         if (piano[(i - 2) * COLONNE + (j - 2)] == VUOTO) {
                             /*TODO far scegliere a giocatore quale manigata effettuare, con più di una*/
                             /*passo i e j come coordinate per mangiata obbligatoria*/
-                            mangiata(piano, COLONNE, i, j, turno, i - 2, j - 2);
+                           mangiata(piano, COLONNE, i, j, turno, i - 2, j - 2);
                         }
-                    } else if (piano[(i - 1) * COLONNE + (j + 1)] != *turno &&
+                    } if (i>1 && j<5 && piano[(i - 1) * COLONNE + (j + 1)] != *turno &&
                         piano[(i - 1) * COLONNE + (j + 1)] != VUOTO) {
                         /*controllo diagonale destra che sia player avversario e non vuoto*/
                         if (piano[(i - 2) * COLONNE + (j + 2)] == VUOTO) {
@@ -174,7 +173,7 @@ int main() {
                     controllo_mangiata(piano,7,7,&turno);
                 }
             }
-        } else continue;
+        }
     }
     return 0;
 }
