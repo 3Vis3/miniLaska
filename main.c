@@ -104,53 +104,89 @@ void mangiata(int* piano, int COLONNE, int y, int x, int* turno, int dest_y, int
 
 void controllo_mangiata(int* piano, int RIGHE, int COLONNE, int* turno){
     int i, j;
-    for(i = 0; i < RIGHE; i++){
-        for(j = 0; j < COLONNE; j++){
-            if(piano[i*COLONNE + j] == *turno) {
-                if (*turno == PLAYER1 /*|| PLAYER2 == promoted*/) {
-                    if (i<5 && j>1 && piano[(i + 1) * COLONNE + (j - 1)] != *turno &&     /*ho inserito degli and per evitare il controllo a sx se sei vicino al bordo sx e viceversa a dx*/
-                        piano[(i + 1) * COLONNE + (j - 1)] != VUOTO) {
-                        /*controllo diagonale sinistra che sia player avversario e non vuoto*/
-                        if (piano[(i + 2) * COLONNE + (j - 2)] == VUOTO) {
-                            /*TODO far scegliere a giocatore quale mangiata effettuare passando più coordinate ad un array
-                             * oppure ritorna torna scelta SI o NO con ciclo while*/
-                            /*passo i e j come coordinate per mangiata obbligatoria*/
-                            mangiata(piano, COLONNE, i, j, turno, i+2, j-2);
-
-                        }
-                    } else if (i<5 && j<5 && piano[(i + 1) * COLONNE + (j + 1)] != *turno &&
-                        piano[(i + 1) * COLONNE + (j + 1)] != VUOTO) {
-                        /*controllo diagonale destra che sia player avversario e non vuoto*/
-                        if (piano[(i + 2) * COLONNE + (j + 2)] == VUOTO) {
-                            /*TODO far scegliere a giocatore quale manigata effettuare*/
-                            /*passo i e j come coordinate per mangiata obbligatoria*/
-                            mangiata(piano, COLONNE, i, j, turno, i+2, j+2);
+    char selection[1];
+    char no[1]= "n";
+    char si[1]= "s";
+    int count=0;
+        for (i = 0; i < RIGHE; i++) {
+            for (j = 0; j < COLONNE; j++) {
+                if (piano[i * COLONNE + j] == *turno) {
+                    if (*turno == PLAYER1 /*|| PLAYER2 == promoted*/) {
+                        if (i < 5 && j > 1 && piano[(i + 1) * COLONNE + (j - 1)] != *turno &&
+                            /*ho inserito degli and per evitare il controllo a sx se sei vicino al bordo sx e viceversa a dx*/
+                            piano[(i + 1) * COLONNE + (j - 1)] != VUOTO) {
+                            /*controllo diagonale sinistra che sia player avversario e non vuoto*/
+                            if (piano[(i + 2) * COLONNE + (j - 2)] == VUOTO) {
+                                /*TODO far scegliere a giocatore quale mangiata effettuare passando più coordinate ad un array
+                                 * oppure ritorna torna scelta SI o NO con ciclo while*/
+                                /*passo i e j come coordinate per mangiata obbligatoria*/
+                                count++;
+                                printf("TURNO GIOCATORE %d\n", *turno);
+                                printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
+                                scanf(" %c", &selection[0]);
+                                if (selection[0]==si[0]) {
+                                    mangiata(piano, COLONNE, i, j, turno, i + 2, j - 2);
+                                } else if (selection[0]==no[0]) {
+                                }
+                            }
+                        } else if (i < 5 && j < 5 && piano[(i + 1) * COLONNE + (j + 1)] != *turno &&
+                                   piano[(i + 1) * COLONNE + (j + 1)] != VUOTO) {
+                            /*controllo diagonale destra che sia player avversario e non vuoto*/
+                            if (piano[(i + 2) * COLONNE + (j + 2)] == VUOTO) {
+                                /*TODO far scegliere a giocatore quale manigata effettuare*/
+                                /*passo i e j come coordinate per mangiata obbligatoria*/
+                                count++;
+                                printf("TURNO GIOCATORE %d\n", *turno);
+                                printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
+                                scanf(" %c", &selection[0]);
+                                if (selection[0]==si[0]) {
+                                mangiata(piano, COLONNE, i, j, turno, i + 2, j + 2);
+                            } else if (selection[0]==no[0]) {
+                                }
+                            }
                         }
                     }
-                }
-                if(*turno == PLAYER2 /*|| PLAYER1 == promoted*/){
-                    if (i>1 && j>1 && piano[(i - 1) * COLONNE + (j - 1)] != *turno &&
-                        piano[(i - 1) * COLONNE + (j - 1)] != VUOTO) {
-                        /*controllo diagonale sinistra che sia player avversario e non vuoto*/
-                        if (piano[(i - 2) * COLONNE + (j - 2)] == VUOTO) {
-                            /*TODO far scegliere a giocatore quale manigata effettuare, con più di una*/
-                            /*passo i e j come coordinate per mangiata obbligatoria*/
-                           mangiata(piano, COLONNE, i, j, turno, i - 2, j - 2);
+                    if (*turno == PLAYER2 /*|| PLAYER1 == promoted*/) {
+                        if (i > 1 && j > 1 && piano[(i - 1) * COLONNE + (j - 1)] != *turno &&
+                            piano[(i - 1) * COLONNE + (j - 1)] != VUOTO) {
+                            /*controllo diagonale sinistra che sia player avversario e non vuoto*/
+                            if (piano[(i - 2) * COLONNE + (j - 2)] == VUOTO) {
+                                /*TODO far scegliere a giocatore quale manigata effettuare, con più di una*/
+                                /*passo i e j come coordinate per mangiata obbligatoria*/
+                                count++;
+                                printf("TURNO GIOCATORE %d\n", *turno);
+                                printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
+                                scanf(" %c", &selection[0]);
+                                if (selection[0]==si[0]) {
+                                mangiata(piano, COLONNE, i, j, turno, i - 2, j - 2);
+                            } else if (selection[0]==no[0]) {
+                                    }
+                            }
                         }
-                    } if (i>1 && j<5 && piano[(i - 1) * COLONNE + (j + 1)] != *turno &&
-                        piano[(i - 1) * COLONNE + (j + 1)] != VUOTO) {
-                        /*controllo diagonale destra che sia player avversario e non vuoto*/
-                        if (piano[(i - 2) * COLONNE + (j + 2)] == VUOTO) {
-                            /*TODO far scegliere a giocatore quale manigata effettuare*/
-                            /*passo i e j come coordinate per mangiata obbligatoria*/
-                            mangiata(piano, COLONNE, i, j, turno, i - 2, j + 2);
+                        if (i > 1 && j < 5 && piano[(i - 1) * COLONNE + (j + 1)] != *turno &&
+                            piano[(i - 1) * COLONNE + (j + 1)] != VUOTO) {
+                            /*controllo diagonale destra che sia player avversario e non vuoto*/
+                            if (piano[(i - 2) * COLONNE + (j + 2)] == VUOTO) {
+                                /*TODO far scegliere a giocatore quale manigata effettuare*/
+                                /*passo i e j come coordinate per mangiata obbligatoria*/
+                                count++;
+                                printf("TURNO GIOCATORE %d\n", *turno);
+                                printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
+                                scanf(" %c", &selection[0]);
+                                if (selection[0]==si[0]) {
+                                mangiata(piano, COLONNE, i, j, turno, i - 2, j + 2);
+                            } else if (selection[0]==no[0]) {
+                                    }
+                            }
                         }
                     }
                 }
             }
+        } if (count!=0) {
+        controllo_mangiata(piano, RIGHE, COLONNE, turno);
+        } else {
 
         }
-    }
 }
 
 int main() {
