@@ -81,7 +81,7 @@ int seleziona_mossa(int* piano, int COLONNE, int x, int y, int* turno, int move_
     return 0;
     }
 }
-
+/*TODO, array per passare più destinazioni di possibili mangiate con stessa pedina*/
 void mangiata(int* piano, int COLONNE, int y, int x, int* turno, int dest_y, int dest_x){ /*controllo se destinazione è valida*/
     int move_x, move_y;
     printf("TURNO GIOCATORE %d\n", *turno);
@@ -99,15 +99,19 @@ void mangiata(int* piano, int COLONNE, int y, int x, int* turno, int dest_y, int
         stampa(piano,7,7);
         /*torrefazione*/
     }
+    else {
+        printf("Hai sbagliato selezione\n");
+        mangiata(piano, COLONNE, y, x, turno, dest_y, dest_x);
+    }
     /*cambio_turno(&turno);*/
 }
 
 void controllo_mangiata(int* piano, int RIGHE, int COLONNE, int* turno){
     int i, j;
-    char selection[1];
-    char no[1]= "n";
-    char si[1]= "s";
-    int count=0;
+    char selection; /*variabili char che da scanf riceve s oppure n e fa il confronto tra selezione e i caratteri n o s*/
+    char no= 'n'; /*TODO SISTEMARE LOOP INFINITO SE INSERISCI SN*/
+    char si= 's';
+    int count=0; /*conta le pedine obbligate a mangiare*/
         for (i = 0; i < RIGHE; i++) {
             for (j = 0; j < COLONNE; j++) {
                 if (piano[i * COLONNE + j] == *turno) {
@@ -117,16 +121,15 @@ void controllo_mangiata(int* piano, int RIGHE, int COLONNE, int* turno){
                             piano[(i + 1) * COLONNE + (j - 1)] != VUOTO) {
                             /*controllo diagonale sinistra che sia player avversario e non vuoto*/
                             if (piano[(i + 2) * COLONNE + (j - 2)] == VUOTO) {
-                                /*TODO far scegliere a giocatore quale mangiata effettuare passando più coordinate ad un array
-                                 * oppure ritorna torna scelta SI o NO con ciclo while*/
+                                /*TODO funzione che controlla se esce dall'array del piano*/
                                 /*passo i e j come coordinate per mangiata obbligatoria*/
-                                count++;
+                                count++; /*incrementa il conteggio se rilevata una pedina obbligata*/
                                 printf("TURNO GIOCATORE %d\n", *turno);
                                 printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
-                                scanf(" %c", &selection[0]);
-                                if (selection[0]==si[0]) {
+                                scanf(" %c", &selection); /*chiede se vuoi mangiare con quella pedina*/
+                                if (selection==si) { /*se dici si chiama mangiata*/
                                     mangiata(piano, COLONNE, i, j, turno, i + 2, j - 2);
-                                } else if (selection[0]==no[0]) {
+                                } else if (selection==no) { /*se dici no prosegue*/
                                 }
                             }
                         } else if (i < 5 && j < 5 && piano[(i + 1) * COLONNE + (j + 1)] != *turno &&
@@ -138,10 +141,10 @@ void controllo_mangiata(int* piano, int RIGHE, int COLONNE, int* turno){
                                 count++;
                                 printf("TURNO GIOCATORE %d\n", *turno);
                                 printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
-                                scanf(" %c", &selection[0]);
-                                if (selection[0]==si[0]) {
+                                scanf(" %c", &selection);
+                                if (selection==si) {
                                 mangiata(piano, COLONNE, i, j, turno, i + 2, j + 2);
-                            } else if (selection[0]==no[0]) {
+                            } else if (selection==no) {
                                 }
                             }
                         }
@@ -156,10 +159,10 @@ void controllo_mangiata(int* piano, int RIGHE, int COLONNE, int* turno){
                                 count++;
                                 printf("TURNO GIOCATORE %d\n", *turno);
                                 printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
-                                scanf(" %c", &selection[0]);
-                                if (selection[0]==si[0]) {
+                                scanf(" %c", &selection);
+                                if (selection==si) {
                                 mangiata(piano, COLONNE, i, j, turno, i - 2, j - 2);
-                            } else if (selection[0]==no[0]) {
+                            } else if (selection==no) {
                                     }
                             }
                         }
@@ -172,19 +175,18 @@ void controllo_mangiata(int* piano, int RIGHE, int COLONNE, int* turno){
                                 count++;
                                 printf("TURNO GIOCATORE %d\n", *turno);
                                 printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
-                                scanf(" %c", &selection[0]);
-                                if (selection[0]==si[0]) {
+                                scanf(" %c", &selection);
+                                if (selection==si) {
                                 mangiata(piano, COLONNE, i, j, turno, i - 2, j + 2);
-                            } else if (selection[0]==no[0]) {
-                                    }
+                                }
                             }
                         }
                     }
                 }
             }
-        } if (count!=0) {
+        } if (count!=0) { /*se il conteggio delle obbligate è diverso da zero riparte il controllo*/
         controllo_mangiata(piano, RIGHE, COLONNE, turno);
-        } else {
+        } else { /*se il conteggio è uguale a zero ritorna al main*/
 
         }
 }
@@ -197,12 +199,12 @@ int main() {
     stampa(&(piano[0][0]), 7, 7);
     while(1){
         printf("\nTURNO GIOCATORE %d \n",turno);
-        printf("\nseleziona le coordinate della pedina x , y\n");
+        printf("\nseleziona le coordinate della pedina x , y: \n");
         scanf("%d %d",&x,&y); /*inserimento pedina da controllare*/ /*TODO, RICHIEDERE SELEZIONE SE INSERISCI non numeri*/
         if (x>=0 && x<=6 && y>=0 && y<=6) {
             if(seleziona_pedina(piano,7,x,y,&turno)){
                 printf("\nHai selezionato le coordinate x=%d y=%d\n", x, y);
-                printf("seleziona le coordinate in cui muovere la pedina x , y\n");
+                printf("seleziona le coordinate in cui muovere la pedina x , y: \n");
                 scanf("%d %d",&move_x,&move_y); /*inserimento coordinate destinazione pedina*/
                 if (seleziona_mossa(piano,7,x,y,&turno,move_x,move_y)){ /*se la mossa è valida stampa piano*/
                     stampa(piano,7,7);
