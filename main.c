@@ -75,8 +75,16 @@ void cambio_turno(int* turno){
     }
 }
 
+/*void check_promotion(tower_t *chessboard) {
+    if (chessboard[0*COLONNE+j == PLAYER2) {
+        chessboard.[r*COLONNE+j].composition[0]=4;
+    } else if (chessboard[6*COLONNE+j == PLAYER1) {
+        chessboard[r*COLONNE+j].composition[0]=3;
+    }
+} */
+
 bool control_range(coordinate x, coordinate y){
-    if(x <= LIMITleft || x >= LIMITright || y <= LIMITup || y >= LIMITdown) {
+    if(x < LIMITleft || x > LIMITright || y < LIMITup || y > LIMITdown) {
         printf("COORDINATE FUORI RANGE\n");
         return 0;
     }else
@@ -165,17 +173,25 @@ bool seleziona_pedina(tower_t *chessboard, coordinate x, coordinate y, int turno
     }
 }/*restituisce 1 se la pedina è in una posizione in cui può essere scelta altimenti restituisce 0*/
 
+void update_composition(tower_t *chessboard, coordinate y, coordinate x, coordinate move_y, coordinate move_x) {
+    chessboard[move_y*COLONNE+move_x].composition[0] = chessboard[y*COLONNE+x].composition[0];
+    chessboard[move_y*COLONNE+move_x].composition[1] = chessboard[y*COLONNE+x].composition[1];
+    chessboard[move_y*COLONNE+move_x].composition[2] = chessboard[y*COLONNE+x].composition[2];
+}
+
 int seleziona_mossa(tower_t *chessboard, coordinate x, coordinate y, int turno, coordinate move_x, coordinate move_y){
     if(turno==PLAYER1){
         if((move_y == y+1) && ((move_x == x+1) || (move_x == x-1)) && chessboard[move_y * COLONNE + move_x].player == VUOTO && control_range(move_x, move_y)){ /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
          chessboard[move_y*COLONNE+move_x].player = turno; /*assegnamento alla casella del player*/
          chessboard[y*COLONNE+x].player = VUOTO; /*svuota casella old*/
-            return 1;
+         update_composition(chessboard, y, x, move_y, move_x);
+         return 1;
         }
     } else if(turno==PLAYER2){
         if((move_y == y-1) && ((move_x == x+1)||(move_x == x-1)) && chessboard[move_y * COLONNE + move_x].player == VUOTO && control_range(move_x, move_y)){ /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
             chessboard[move_y*COLONNE+move_x].player = turno;
             chessboard[y*COLONNE+x].player = VUOTO;
+            update_composition(chessboard, y, x, move_y, move_x);
             return 1;
         }
         /*TODO fare per promossi*/
@@ -184,26 +200,79 @@ int seleziona_mossa(tower_t *chessboard, coordinate x, coordinate y, int turno, 
     return 0;
 }
 /*TODO, array per passare più destinazioni di possibili mangiate con stessa pedina*/
-void mangiata(tower_t *chessboard, coordinate y, coordinate x, int* turno, coordinate dest_y, coordinate dest_x){ /*controllo se destinazione è valida*/
+void mangiata(tower_t *chessboard, coordinate y, coordinate x, int* turno, coordinate dest_y, coordinate dest_x, coordinate enemy_y, coordinate enemy_x){ /*controllo se destinazione è valida*/
+    int check=0;
     int move_x, move_y;
+    int i=0;
     printf("TURNO GIOCATORE %d\n", *turno);
     printf("Devi mangiare l'avversario con la pedina nelle coordinate x:%d y:%d\n", x, y);
     printf("Inserisci le coordinate in cui fare la mangiata\n");
     scanf("%d %d", &move_x, &move_y);
-    if(chessboard[move_y * COLONNE + move_x].player == VUOTO && move_y==dest_y && move_x==dest_x){
-        chessboard[y*COLONNE + x].player = VUOTO;
-        chessboard[move_y*COLONNE + move_x].player = *turno;
-        if(*turno == PLAYER1){
+    if(chessboard[move_y * COLONNE + move_x].player == VUOTO && move_y==dest_y && move_x==dest_x) { /*se hai digitato bene allora...*/
+        if (chessboard[y * COLONNE + x].composition[1] == 0) {
+            /*tre if per il controllo pedine intermedie dell'attaccante ed eventuale sostituzione se vuote con pedine del nemico*/
+            chessboard[move_y*COLONNE+move_x].composition[0]=chessboard[y * COLONNE + x].composition[0];
+            chessboard[move_y * COLONNE + move_x].composition[1] = chessboard[enemy_y * COLONNE +enemy_x].composition[0];
+            /*sostituisce al secondo o terzo elemento dell'attaccante la testa del nemico*/
+        } else if (chessboard[y * COLONNE + x].composition[2] == 0) {
+                /*controlla se il secondo o terzo elemento dell'attaccante è vuoto*/
+                chessboard[move_y*COLONNE+move_x].composition[0]=chessboard[y * COLONNE + x].composition[0];
+                chessboard[move_y*COLONNE+move_x].composition[1]=chessboard[y * COLONNE + x].composition[1];
+                chessboard[move_y * COLONNE + move_x].composition[2] = chessboard[enemy_y * COLONNE +enemy_x].composition[0];
+        }
+        if (chessboard[y * COLONNE + x].composition[2] != 0) {
+            chessboard[move_y*COLONNE+move_x].composition[0]=chessboard[y * COLONNE + x].composition[0];
+            chessboard[move_y*COLONNE+move_x].composition[1]=chessboard[y * COLONNE + x].composition[1];
+            chessboard[move_y*COLONNE+move_x].composition[2]=chessboard[y * COLONNE + x].composition[2];
+        }
+        /*assegnamento player a torre di destinazione*/
+        chessboard[move_y * COLONNE + move_x].player = *turno;
+
+        /* sostituzione vecchia posizione dell'attaccante con parametri player=VUOTO e composizione 000*/
+        chessboard[y * COLONNE + x].player = VUOTO; /*AGGIORNAMENTO POSIZIONE PRIMA DELLA MANGIATA DELL'ATTACCANTE*/
+        chessboard[y * COLONNE + x].composition[0] = 0;
+        chessboard[y * COLONNE + x].composition[1] = 0;
+        chessboard[y * COLONNE + x].composition[2] = 0;
+
+        /*sostituzione ultima pedina mangiata con ZERO e scalamento delle superiori */
+        chessboard[enemy_y * COLONNE + enemy_x].composition[0] = chessboard[enemy_y * COLONNE +enemy_x].composition[1]; /*scala di una posizione gli elementi del mangiato*/
+        chessboard[enemy_y * COLONNE + enemy_x].composition[1] = chessboard[enemy_y * COLONNE +enemy_x].composition[2];
+        chessboard[enemy_y * COLONNE + enemy_x].composition[2] = 0;
+
+        /*assegnamento nuovo player a pedina mangiata basandosi sulla testa*/
+        if (chessboard[enemy_y * COLONNE + enemy_x].composition[0] == 0) {
+            chessboard[enemy_y * COLONNE + enemy_x].player = VUOTO;
+        } else if (chessboard[enemy_y * COLONNE + enemy_x].composition[0] == 1 ||
+                   chessboard[enemy_y * COLONNE + enemy_x].composition[0] == 3) {
+            chessboard[enemy_y * COLONNE + enemy_x].player = PLAYER1;
+        } else if (chessboard[enemy_y * COLONNE + enemy_x].composition[0] == 2 ||
+                   chessboard[enemy_y * COLONNE + enemy_x].composition[0] == 4) {
+            chessboard[enemy_y * COLONNE + enemy_x].player = PLAYER2;
+        }
+        if (*turno == PLAYER1) {
             *turno = PLAYER2;
-        }else if (*turno == PLAYER2) {
+        } else if (*turno == PLAYER2) {
             *turno = PLAYER1;
         }
+
+        printf("\nl'attaccante ora vale %d %d %d", chessboard[move_y * COLONNE + move_x].composition[0],
+                   chessboard[move_y * COLONNE + move_x].composition[1],
+                   chessboard[move_y * COLONNE + move_x].composition[2]);
+            printf("\nil mangiato ora vale %d, %d, %d", chessboard[enemy_y * COLONNE + enemy_x].composition[0],
+                   chessboard[enemy_y * COLONNE + enemy_x].composition[1],
+                   chessboard[enemy_y * COLONNE + enemy_x].composition[2]);
+            printf("\n la vecchia posizione ora vale %d %d %d\n", chessboard[y * COLONNE + x].composition[0],
+                   chessboard[y * COLONNE + x].composition[1], chessboard[y * COLONNE + x].composition[2]);
+            printf("i player ora sono attaccante %d, attaccato %d, vecchia posizione %d\n",
+                   chessboard[move_y * COLONNE + move_x].player, chessboard[enemy_y * COLONNE + enemy_x].player,
+                   chessboard[y * COLONNE + x].player);
+
+            /*torrefazione*/
         stampa(chessboard);
-        /*torrefazione*/
     }
     else {
         printf("Hai sbagliato selezione\n");
-        mangiata(chessboard, y, x, turno, dest_y, dest_x);
+        mangiata(chessboard, y, x, turno, dest_y, dest_x, enemy_y, enemy_x); /*se sbagli a digitare coordinate devi ripetere la funzione mangiata*/
     }
     /*cambio_turno(&turno);*/
 }
@@ -218,7 +287,7 @@ void controllo_mangiata(tower_t *chessboard, int *turno){
             for (j = 0; j < COLONNE; j++) {
                 if (chessboard[i * COLONNE + j].player == *turno) {
                     if (*turno == PLAYER1 /*|| PLAYER2 == promoted*/) {
-                        if (i < 5 && j > 1 && chessboard[(i + 1) * COLONNE + (j - 1)].player != *turno && chessboard[(i + 1) * COLONNE + (j - 1)].player != VUOTO) {
+                        if (i < 5 && j > 1 && chessboard[(i + 1) * COLONNE + (j - 1)].player == PLAYER2) {
                             /*ho inserito degli and per evitare il controllo a sx se sei vicino al bordo sx e viceversa a dx*/
                             /*controllo diagonale sinistra chessboard sia player avversario e non vuoto*/
                             if (chessboard[(i + 2) * COLONNE + (j - 2)].player == VUOTO) {
@@ -229,12 +298,11 @@ void controllo_mangiata(tower_t *chessboard, int *turno){
                                 printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
                                 scanf(" %c", &selection); /*chiede se vuoi mangiare con quella pedina*/
                                 if (selection==si) { /*se dici si chiama mangiata*/
-                                    mangiata(chessboard, i, j, turno, i + 2, j - 2);
+                                    mangiata(chessboard, i, j, turno, i + 2, j - 2, i + 1, j -1);
                                 } else if (selection==no) { /*se dici no prosegue*/
                                 }
                             }
-                        } else if (i < 5 && j < 5 && chessboard[(i + 1) * COLONNE + (j + 1)].player != *turno &&
-                                   chessboard[(i + 1) * COLONNE + (j + 1)].player != VUOTO) {
+                        } else if (i < 5 && j < 5 && chessboard[(i + 1) * COLONNE + (j + 1)].player == PLAYER2) {
                             /*controllo diagonale destra chessboard sia player avversario e non vuoto*/
                             if (chessboard[(i + 2) * COLONNE + (j + 2)].player == VUOTO) {
                                 /*TODO far scegliere a giocatore quale manigata effettuare*/
@@ -244,15 +312,14 @@ void controllo_mangiata(tower_t *chessboard, int *turno){
                                 printf("vuoi mangiare con x=%d y=%d? \n", j, i);
                                 scanf(" %c", &selection);
                                 if (selection==si) {
-                                mangiata(chessboard, i, j, turno, i + 2, j + 2);
+                                mangiata(chessboard, i, j, turno, i + 2, j + 2, i + 1, j + 1);
                             } else if (selection==no) {
                                 }
                             }
                         }
                     }
                     if (*turno == PLAYER2 /*|| PLAYER1 == promoted*/) {
-                        if (i > 1 && j > 1 && chessboard[(i - 1) * COLONNE + (j - 1)].player != *turno &&
-                            chessboard[(i - 1) * COLONNE + (j - 1)].player != VUOTO) {
+                        if (i > 1 && j > 1 && chessboard[(i - 1) * COLONNE + (j - 1)].player == PLAYER1) {
                             /*controllo diagonale sinistra chessboard sia player avversario e non vuoto*/
                             if (chessboard[(i - 2) * COLONNE + (j - 2)].player == VUOTO) {
                                 /*TODO far scegliere a giocatore quale manigata effettuare, con più di una*/
@@ -262,13 +329,12 @@ void controllo_mangiata(tower_t *chessboard, int *turno){
                                 printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
                                 scanf(" %c", &selection);
                                 if (selection==si) {
-                                mangiata(chessboard, i, j, turno, i - 2, j - 2);
+                                mangiata(chessboard, i, j, turno, i - 2, j - 2, i - 1, j - 1);
                             } else if (selection==no) {
                                     }
                             }
                         }
-                        if (i > 1 && j < 5 && chessboard[(i - 1) * COLONNE + (j + 1)].player != *turno &&
-                            chessboard[(i - 1) * COLONNE + (j + 1)].player != VUOTO) {
+                        if (i > 1 && j < 5 && chessboard[(i - 1) * COLONNE + (j + 1)].player == PLAYER1) {
                             /*controllo diagonale destra chessboard sia player avversario e non vuoto*/
                             if (chessboard[(i - 2) * COLONNE + (j + 2)].player == VUOTO) {
                                 /*TODO far scegliere a giocatore quale manigata effettuare*/
@@ -278,7 +344,7 @@ void controllo_mangiata(tower_t *chessboard, int *turno){
                                 printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
                                 scanf(" %c", &selection);
                                 if (selection==si) {
-                                mangiata(chessboard, i, j, turno, i - 2, j + 2);
+                                mangiata(chessboard, i, j, turno, i - 2, j + 2, i - 1, j+1);
                                 }
                             }
                         }
@@ -288,7 +354,7 @@ void controllo_mangiata(tower_t *chessboard, int *turno){
         } if (count!=0) { /*se il conteggio delle obbligate è diverso da zero riparte il controllo*/
         controllo_mangiata(chessboard, turno);
         } else { /*se il conteggio è uguale a zero ritorna al main*/
-
+        return;
         }
 }
 
