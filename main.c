@@ -313,8 +313,8 @@ void controllo_mangiata(tower_t *chessboard, int *turno){
         for (i = 0; i < RIGHE; i++) {
             for (j = 0; j < COLONNE; j++) {
                 if (chessboard[i * COLONNE + j].player == *turno) {
-                    if (*turno == PLAYER1 /*|| PLAYER2 == promoted*/) {
-                        if (i < 5 && j > 1 && chessboard[(i + 1) * COLONNE + (j - 1)].player == PLAYER2) {
+                    if ((*turno == PLAYER1) || (*turno == PLAYER2 && chessboard[i * COLONNE + j].composition[0]==PLAYER2_PRO)) {
+                        if (i < 5 && j > 1 && ((*turno==PLAYER1 && chessboard[(i + 1) * COLONNE + (j - 1)].player == PLAYER2) || (*turno==PLAYER2 && chessboard[(i + 1) * COLONNE + (j - 1)].player == PLAYER1))) {
                             /*ho inserito degli and per evitare il controllo a sx se sei vicino al bordo sx e viceversa a dx*/
                             /*controllo diagonale sinistra chessboard sia player avversario e non vuoto*/
                             if (chessboard[(i + 2) * COLONNE + (j - 2)].player == VUOTO) {
@@ -329,7 +329,7 @@ void controllo_mangiata(tower_t *chessboard, int *turno){
                                 } else if (selection==no) { /*se dici no prosegue*/
                                 }
                             }
-                        } else if (i < 5 && j < 5 && chessboard[(i + 1) * COLONNE + (j + 1)].player == PLAYER2) {
+                        } else if (i < 5 && j < 5 && ((*turno == PLAYER1 && chessboard[(i + 1) * COLONNE + (j + 1)].player == PLAYER2) || (*turno==PLAYER2 && chessboard[(i + 1) * COLONNE + (j - 1)].player == PLAYER1))) {
                             /*controllo diagonale destra chessboard sia player avversario e non vuoto*/
                             if (chessboard[(i + 2) * COLONNE + (j + 2)].player == VUOTO) {
                                 /*TODO far scegliere a giocatore quale manigata effettuare*/
@@ -345,8 +345,8 @@ void controllo_mangiata(tower_t *chessboard, int *turno){
                             }
                         }
                     }
-                    if (*turno == PLAYER2 /*|| PLAYER1 == promoted*/) {
-                        if (i > 1 && j > 1 && chessboard[(i - 1) * COLONNE + (j - 1)].player == PLAYER1) {
+                    if ((*turno == PLAYER2) || (*turno == PLAYER1 && chessboard[i * COLONNE + j].composition[0]==PLAYER1_PRO)) {
+                        if (i > 1 && j > 1 && ((*turno==PLAYER1 && chessboard[(i + 1) * COLONNE + (j - 1)].player == PLAYER2) || (*turno==PLAYER2 && chessboard[(i + 1) * COLONNE + (j - 1)].player == PLAYER1))) {
                             /*controllo diagonale sinistra chessboard sia player avversario e non vuoto*/
                             if (chessboard[(i - 2) * COLONNE + (j - 2)].player == VUOTO) {
                                 /*TODO far scegliere a giocatore quale manigata effettuare, con più di una*/
@@ -361,7 +361,7 @@ void controllo_mangiata(tower_t *chessboard, int *turno){
                                     }
                             }
                         }
-                        if (i > 1 && j < 5 && chessboard[(i - 1) * COLONNE + (j + 1)].player == PLAYER1) {
+                        if (i > 1 && j < 5 && ((*turno==PLAYER1 && chessboard[(i + 1) * COLONNE + (j - 1)].player == PLAYER2) || (*turno==PLAYER2 && chessboard[(i + 1) * COLONNE + (j - 1)].player == PLAYER1))) {
                             /*controllo diagonale destra chessboard sia player avversario e non vuoto*/
                             if (chessboard[(i - 2) * COLONNE + (j + 2)].player == VUOTO) {
                                 /*TODO far scegliere a giocatore quale manigata effettuare*/
@@ -385,13 +385,26 @@ void controllo_mangiata(tower_t *chessboard, int *turno){
         }
 }
 
+bool vittoria(tower_t *chessboard, int turno) {
+    int i, j;
+    for (i = 0; i < RIGHE; i++ ) {
+        for (j = 0; j < COLONNE; j++) {
+            if (chessboard[i * COLONNE + j].player == turno) {
+                if (!diagonal_check(chessboard, i, j, turno))
+                    return 0;
+            }
+        }
+    }
+    return 1;
+}
+
 int main() {
     tower_t chessboard[RIGHE][COLONNE];
     coordinate x,y,move_x,move_y;
     int turno=PLAYER1;
     initialization_chessboard(&(chessboard[0][0]));
     stampa(&(chessboard[0][0]));
-    while(1){
+    while(vittoria(&(chessboard[0][0]), turno)){
         printf("\nTURNO GIOCATORE %d \n",turno);
         printf("seleziona le coordinate della pedina x , y: \n");
         scanf("%d %d", &x, &y); /*inserimento pedina da controllare*/ /*TODO, RICHIEDERE SELEZIONE SE INSERISCI non numeri*/
