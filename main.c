@@ -39,6 +39,9 @@ void checkerboard_init(tower_t *checkerboard){ /*funzione che inizializza la sca
                 checkerboard[r * COLONNE + c].composition[2] = VOID;
             } else {
                 checkerboard[r * COLONNE + c].player = VOID;
+                checkerboard[r * COLONNE + c].composition[0] = VOID;
+                checkerboard[r * COLONNE + c].composition[1] = VOID;
+                checkerboard[r * COLONNE + c].composition[2] = VOID;
             }
         }
     }
@@ -293,76 +296,136 @@ void piece_capture(tower_t *checkerboard, coordinate y, coordinate x, int *turn,
     }
 }
 
-void capture_check(tower_t *checkerboard, int *turn) {
+int capture_check(tower_t *checkerboard, int *turno){
     int i, j;
-    char selection; /*variabili char chessboard da scanf riceve s oppure n e fa il confronto tra selezione e i caratteri n o s*/
-    int count = 0; /*conta le pedine obbligate a mangiare*/
+    char selection; /*variabili char checkerboard da scanf riceve s oppure n e fa il confronto tra selezione e i caratteri n o s*/
+    char no= 'n'; /*TODO SISTEMARE LOOP INFINITO SE INSERISCI SN*/
+    char si= 's';
+    int count=0; /*conta le pedine obbligate a mangiare*/
     for (i = 0; i < RIGHE; i++) {
         for (j = 0; j < COLONNE; j++) {
-            if (checkerboard[i * COLONNE + j].player == *turn) {
-                if ((*turn == PLAYER_1) ||
-                    (*turn == PLAYER_2 && checkerboard[i * COLONNE + j].composition[0] == PLAYER_2_PRO)) {
-                    if (i < 5 && j > 1 &&
-                        ((*turn == PLAYER_1 && checkerboard[(i + 1) * COLONNE + (j - 1)].player == PLAYER_2) ||
-                         (*turn == PLAYER_2 && checkerboard[(i + 1) * COLONNE + (j - 1)].player == PLAYER_1))) {
+            if (checkerboard[i * COLONNE + j].player == *turno) {
+                if (*turno == PLAYER_1 /*|| PLAYER2 == promoted*/) {
+                    if (i < 5 && j > 1 && checkerboard[(i + 1) * COLONNE + (j - 1)].player == PLAYER_2) {
                         /*ho inserito degli and per evitare il controllo a sx se sei vicino al bordo sx e viceversa a dx*/
-                        /*controllo diagonale sinistra per player 1 o player 2 pro*/
+                        /*controllo diagonale sinistra checkerboard sia player avversario e non vuoto*/
                         if (checkerboard[(i + 2) * COLONNE + (j - 2)].player == VOID) {
+                            /*TODO funzione checkerboard controlla se esce dall'array del checkerboard*/
                             /*passo i e j come coordinate per mangiata obbligatoria*/
                             count++; /*incrementa il conteggio se rilevata una pedina obbligata*/
-                            printf("TURNO GIOCATORE %d\n", *turn);
+                            printf("TURNO GIOCATORE %d\n", *turno);
                             printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
-                            scanf_s(" %c", &selection); /*chiede se vuoi mangiare con quella pedina*/
-                            if (selection == 's') { /*se dici si chiama mangiata*/
-                                piece_capture(checkerboard, i, j, turn, i + 2, j - 2, i + 1, j - 1);
+                            scanf(" %c", &selection); /*chiede se vuoi mangiare con quella pedina*/
+                            if (selection==si) { /*se dici si chiama mangiata*/
+                                piece_capture(checkerboard, i, j, turno, i + 2, j - 2, i + 1, j - 1);
+                            } else if (selection==no) { /*se dici no prosegue*/
                             }
-                        }/*controllo diagonale destra per player 1 o player 2 pro*/
-                    } else if (i < 5 && j < 5 &&
-                               ((*turn == PLAYER_1 && checkerboard[(i + 1) * COLONNE + (j + 1)].player == PLAYER_2) ||
-                                (*turn == PLAYER_2 && checkerboard[(i + 1) * COLONNE + (j + 1)].player == PLAYER_1))) {
+                        }
+                    } else if (i < 5 && j < 5 && checkerboard[(i + 1) * COLONNE + (j + 1)].player == PLAYER_2) {
+                        /*controllo diagonale destra checkerboard sia player avversario e non vuoto*/
                         if (checkerboard[(i + 2) * COLONNE + (j + 2)].player == VOID) {
                             /*TODO far scegliere a giocatore quale manigata effettuare*/
                             /*passo i e j come coordinate per mangiata obbligatoria*/
                             count++;
-                            printf("TURNO GIOCATORE %d\n", *turn);
+                            printf("TURNO GIOCATORE %d\n", *turno);
                             printf("vuoi mangiare con x=%d y=%d? \n", j, i);
-                            scanf_s(" %c", &selection);
-                            if (selection == 's') {
-                                piece_capture(checkerboard, i, j, turn, i + 2, j + 2, i + 1, j + 1);
+                            scanf(" %c", &selection);
+                            if (selection==si) {
+                                piece_capture(checkerboard, i, j, turno, i + 2, j + 2, i + 1, j + 1);
+                            } else if (selection==no) {
                             }
                         }
                     }
-                } /*controllo diagonali player 2 o player 1 pro*/
-                if ((*turn == PLAYER_2) ||
-                    (*turn == PLAYER_1 && checkerboard[i * COLONNE + j].composition[0] == PLAYER_1_PRO)) {
-                    if (i > 1 && j > 1 &&
-                        ((*turn == PLAYER_2 && checkerboard[(i - 1) * COLONNE + (j - 1)].player == PLAYER_1) ||
-                         (*turn == PLAYER_1 && checkerboard[(i - 1) * COLONNE + (j - 1)].player == PLAYER_2))) {
-                        /*controllo diagonale sinistra per player 2 o player 1 pro*/
-                        if (checkerboard[(i - 2) * COLONNE + (j - 2)].player == VOID) {
-                            /*TODO far scegliere a giocatore quale manigata effettuare, con più di una*/
-                            /*passo i e j come coordinate per mangiata obbligatoria*/
-                            count++;
-                            printf("TURNO GIOCATORE %d\n", *turn);
-                            printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
-                            scanf_s(" %c", &selection);
-                            if (selection == 's') {
-                                piece_capture(checkerboard, i, j, turn, i - 2, j - 2, i - 1, j - 1);
+                    if (checkerboard[i * COLONNE +j].composition[0] == PLAYER_1_PRO) {
+                        if (i > 1 && j > 1 && checkerboard[(i - 1) * COLONNE + (j - 1)].player == PLAYER_2) {
+                            /*controllo diagonale sinistra checkerboard sia player avversario e non vuoto*/
+                            if (checkerboard[(i - 2) * COLONNE + (j - 2)].player == VOID) {
+                                /*TODO far scegliere a giocatore quale manigata effettuare, con più di una*/
+                                /*passo i e j come coordinate per mangiata obbligatoria*/
+                                count++;
+                                printf("TURNO GIOCATORE %d\n", *turno);
+                                printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
+                                scanf(" %c", &selection);
+                                if (selection==si) {
+                                    piece_capture(checkerboard, i, j, turno, i - 2, j - 2, i - 1, j - 1);
+                                } else if (selection==no) {
+                                }
                             }
-                        }/*controllo diagonale destra per player 2 o player 1 pro*/
-                        if (i > 1 && j < 5 &&
-                            ((*turn == PLAYER_2 && checkerboard[(i - 1) * COLONNE + (j + 1)].player == PLAYER_1) ||
-                             (*turn == PLAYER_1 && checkerboard[(i - 1) * COLONNE + (j + 1)].player == PLAYER_2))) {
-                            /*controllo diagonale destra chessboard sia player avversario e non vuoto*/
+                        }
+                        if (i > 1 && j < 5 && checkerboard[(i - 1) * COLONNE + (j + 1)].player == PLAYER_2) {
+                            /*controllo diagonale destra checkerboard sia player avversario e non vuoto*/
                             if (checkerboard[(i - 2) * COLONNE + (j + 2)].player == VOID) {
                                 /*TODO far scegliere a giocatore quale manigata effettuare*/
                                 /*passo i e j come coordinate per mangiata obbligatoria*/
                                 count++;
-                                printf("TURNO GIOCATORE %d\n", *turn);
+                                printf("TURNO GIOCATORE %d\n", *turno);
                                 printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
-                                scanf_s(" %c", &selection);
-                                if (selection == 's') {
-                                    piece_capture(checkerboard, i, j, turn, i - 2, j + 2, i - 1, j + 1);
+                                scanf(" %c", &selection);
+                                if (selection==si) {
+                                    piece_capture(checkerboard, i, j, turno, i - 2, j + 2, i - 1, j + 1);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (*turno == PLAYER_2 /*|| PLAYER1 == promoted*/) {
+                    if (i > 1 && j > 1 && checkerboard[(i - 1) * COLONNE + (j - 1)].player == PLAYER_1) {
+                        /*controllo diagonale sinistra checkerboard sia player avversario e non vuoto*/
+                        if (checkerboard[(i - 2) * COLONNE + (j - 2)].player == VOID) {
+                            /*TODO far scegliere a giocatore quale manigata effettuare, con più di una*/
+                            /*passo i e j come coordinate per mangiata obbligatoria*/
+                            count++;
+                            printf("TURNO GIOCATORE %d\n", *turno);
+                            printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
+                            scanf(" %c", &selection);
+                            if (selection==si) {
+                                piece_capture(checkerboard, i, j, turno, i - 2, j - 2, i - 1, j - 1);
+                            } else if (selection==no) {
+                            }
+                        }
+                    }
+                    if (i > 1 && j < 5 && checkerboard[(i - 1) * COLONNE + (j + 1)].player == PLAYER_1) {
+                        /*controllo diagonale destra checkerboard sia player avversario e non vuoto*/
+                        if (checkerboard[(i - 2) * COLONNE + (j + 2)].player == VOID) {
+                            /*TODO far scegliere a giocatore quale manigata effettuare*/
+                            /*passo i e j come coordinate per mangiata obbligatoria*/
+                            count++;
+                            printf("TURNO GIOCATORE %d\n", *turno);
+                            printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
+                            scanf(" %c", &selection);
+                            if (selection==si) {
+                                piece_capture(checkerboard, i, j, turno, i - 2, j + 2, i - 1, j + 1);
+                            }
+                        }
+                    }
+                    if (checkerboard[i * COLONNE +j].composition[0] == PLAYER_2_PRO) {
+                        if (i < 5 && j > 1 && checkerboard[(i + 1) * COLONNE + (j - 1)].player == PLAYER_1) {
+                            /*ho inserito degli and per evitare il controllo a sx se sei vicino al bordo sx e viceversa a dx*/
+                            /*controllo diagonale sinistra checkerboard sia player avversario e non vuoto*/
+                            if (checkerboard[(i + 2) * COLONNE + (j - 2)].player == VOID) {
+                                /*TODO funzione checkerboard controlla se esce dall'array del checkerboard*/
+                                /*passo i e j come coordinate per mangiata obbligatoria*/
+                                count++; /*incrementa il conteggio se rilevata una pedina obbligata*/
+                                printf("TURNO GIOCATORE %d\n", *turno);
+                                printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
+                                scanf(" %c", &selection); /*chiede se vuoi mangiare con quella pedina*/
+                                if (selection==si) { /*se dici si chiama mangiata*/
+                                    piece_capture(checkerboard, i, j, turno, i + 2, j - 2, i + 1, j - 1);
+                                } else if (selection==no) { /*se dici no prosegue*/
+                                }
+                            }
+                        } else if (i < 5 && j < 5 && checkerboard[(i + 1) * COLONNE + (j + 1)].player == PLAYER_1) {
+                            /*controllo diagonale destra checkerboard sia player avversario e non vuoto*/
+                            if (checkerboard[(i + 2) * COLONNE + (j + 2)].player == VOID) {
+                                /*TODO far scegliere a giocatore quale manigata effettuare*/
+                                /*passo i e j come coordinate per mangiata obbligatoria*/
+                                count++;
+                                printf("TURNO GIOCATORE %d\n", *turno);
+                                printf("vuoi mangiare con x=%d y=%d? \n", j, i);
+                                scanf(" %c", &selection);
+                                if (selection==si) {
+                                    piece_capture(checkerboard, i, j, turno, i + 2, j + 2, i + 1, j + 1);
+                                } else if (selection==no) {
                                 }
                             }
                         }
@@ -370,26 +433,25 @@ void capture_check(tower_t *checkerboard, int *turn) {
                 }
             }
         }
-        if (count != 0) { /*se non ha ancora mangiato riparte*/
-            capture_check(checkerboard, turn);
-        } else { /*se il conteggio è uguale a zero ritorna al main*/
-            return;
-        }
+    } if (count!=0) { /*se il conteggio delle obbligate è diverso da zero riparte il controllo*/
+        capture_check(checkerboard, turno);
+    } else { /*se il conteggio è uguale a zero ritorna al main*/
+        return 0;
     }
 }
 
-bool vittoria(tower_t *checkerboard, int turn) {
+bool vittoria(tower_t *checkerboard, int *turn) {
     int i, j;
     for (i = 0; i < RIGHE; i++) {
         for (j = 0; j < COLONNE; j++) {
-            if (checkerboard[i * COLONNE + j].player == turn) {
-                if (!diagonal_check(checkerboard, i, j, turn)) {
-                    return 0;
+            if (checkerboard[i * COLONNE + j].player == *turn) {
+                if (diagonal_check(checkerboard, i, j, *turn) && !capture_check(checkerboard, turn)) {
+                    return 1;
                 }
             }
         }
     }
-    return 1;
+    return 0;
 }
 
 int main() {
@@ -398,14 +460,15 @@ int main() {
     int turn = PLAYER_1;
     checkerboard_init (&(checkerboard[0][0]));
     checkerboard_print (&(checkerboard[0][0]));
-    while (vittoria(&(checkerboard[0][0]), turn)){
+    setvbuf(stdout, NULL, _IONBF, 0); /* permette di debuggare con scanf */
+    while (vittoria(&(checkerboard[0][0]), &turn)){
         printf("\nTURNO GIOCATORE %d \n",turn);
         printf("Seleziona le coordinate della pedina x , y: \n");
-        scanf_s("%d %d", &x, &y); /*inserimento pedina da controllare*/ /*TODO, RICHIEDERE SELEZIONE SE INSERISCI non numeri*/
+        scanf("%d %d", &x, &y); /*inserimento pedina da controllare*/ /*TODO, RICHIEDERE SELEZIONE SE INSERISCI non numeri*/
             if (piece_selection(&(checkerboard[0][0]), x, y, turn)){
                 printf("Hai selezionato le coordinate x=%d y=%d\n", x, y);
                 printf("seleziona le coordinate in cui muovere la pedina x , y: \n");
-                scanf_s("%d %d", &move_x, &move_y); /*inserimento coordinate destinazione pedina*/
+                scanf("%d %d", &move_x, &move_y); /*inserimento coordinate destinazione pedina*/
                 if (move_selection(&(checkerboard[0][0]), x, y, turn, move_x, move_y)){ /*se la mossa è valida stampa chessboard*/
                     promotion_check(&(checkerboard[0][0]));
                     checkerboard_print(&(checkerboard[0][0]));
@@ -414,6 +477,7 @@ int main() {
                 }
             }
     }
-
+    turn_update(&turn);
+    printf("WIN Player %d", turn);
     return 0;
 }
