@@ -105,82 +105,77 @@ bool control_range(coordinate x, coordinate y){
         return 1;
 }/*controlla che x e y siano dentro la scacchiera se sono all'interno restituisce 1 altrimenti restituisce 0*/
 
-bool diagonal_check (tower_t *checkerboard, coordinate x, coordinate y, int turn){
+/*bool diagonal_check (tower_t *checkerboard, coordinate x, coordinate y, int turn){
     if(turn == PLAYER_1){
-        if(x == LIMIT_LEFT && checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID){ /*se il giocatore selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*/
+        if(x == LIMIT_LEFT && checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID){ *//*se il giocatore selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*//*
             return 0;
-        }else if(x == LIMIT_RIGHT && checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID){/*se il giocatore selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*/
+        }else if(x == LIMIT_RIGHT && checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID){*//*se il giocatore selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*//*
             return 0;
-        }else if(x>LIMIT_LEFT && x<LIMIT_RIGHT && (checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID || checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID)){/*se il giocatore selezionato non si trova alle estremità controlla tutte le diagonali disponibili*/
+        }else if(x>LIMIT_LEFT && x<LIMIT_RIGHT && (checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID || checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID)){*//*se il giocatore selezionato non si trova alle estremità controlla tutte le diagonali disponibili*//*
             return 0;
         }else
             return 1;
     }else if(turn == PLAYER_2){
-        if(x == LIMIT_LEFT && checkerboard[(y - 1) * COLONNE + (x + 1)].player == VOID){ /*se il giocatore selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*/
+        if(x == LIMIT_LEFT && checkerboard[(y - 1) * COLONNE + (x + 1)].player == VOID){ *//*se il giocatore selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*//*
             return 0;
-        }else if(x == LIMIT_RIGHT && checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID){/*se il giocatore selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*/
+        }else if(x == LIMIT_RIGHT && checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID){*//*se il giocatore selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*//*
             return 0;
-        }else if(x>LIMIT_LEFT && x<LIMIT_RIGHT && (checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID || checkerboard[(y - 1) * COLONNE + (x + 1)].player == VOID)){/*se il giocatore selezionato non si trova alle estremità controlla tutte le diagonali disponibili*/
+        }else if(x>LIMIT_LEFT && x<LIMIT_RIGHT && (checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID || checkerboard[(y - 1) * COLONNE + (x + 1)].player == VOID)){*//*se il giocatore selezionato non si trova alle estremità controlla tutte le diagonali disponibili*//*
             return 0;
         }else
             return 1;
     }else if(turn == PLAYER_1_PRO){
-        if(x == LIMIT_LEFT && y == LIMIT_UP && checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID){ /*se il giocatore1 PRO selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*/
+        if(x == LIMIT_LEFT && y == LIMIT_UP && checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID){ *//*se il giocatore1 PRO selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*//*
             return 0;
-        }else if(x == LIMIT_RIGHT && y == LIMIT_UP && checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID){/*se il giocatore1 PRO selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*/
+        }else if(x == LIMIT_RIGHT && y == LIMIT_UP && checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID){*//*se il giocatore1 PRO selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*//*
             return 0;
-        }else if(x == LIMIT_LEFT && y == LIMIT_DOWN && checkerboard[(y - 1) * COLONNE + (x + 1)].player == VOID){/*se il giocatore1 PRO selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*/
+        }else if(x == LIMIT_LEFT && y == LIMIT_DOWN && checkerboard[(y - 1) * COLONNE + (x + 1)].player == VOID){*//*se il giocatore1 PRO selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*//*
             return 0;
-        }else if(x == LIMIT_RIGHT && y == LIMIT_DOWN && checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID){/*se il giocatore1 PRO selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*/
+        }else if(x == LIMIT_RIGHT && y == LIMIT_DOWN && checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID){*//*se il giocatore1 PRO selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*//*
             return 0;
-        }else if(x < LIMIT_RIGHT && x>LIMIT_LEFT && y == LIMIT_UP && (checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID) || (checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID)){/*se il giocatore1 PRO selezionato si trova sulla prima riga della scacchiera controlla solo due diagonali*/
+        }else if(x < LIMIT_RIGHT && x>LIMIT_LEFT && y == LIMIT_UP && (checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID) || (checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID)){*//*se il giocatore1 PRO selezionato si trova sulla prima riga della scacchiera controlla solo due diagonali*//*
             return 0;
-        }else if(x < LIMIT_RIGHT && x>LIMIT_LEFT && y == LIMIT_DOWN && (checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID) || (checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID)){/*se il giocatore1 PRO selezionato si trova sulla prima riga della scacchiera controlla solo due diagonali*/
+        }else if(x < LIMIT_RIGHT && x>LIMIT_LEFT && y == LIMIT_DOWN && (checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID) || (checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID)){*//*se il giocatore1 PRO selezionato si trova sulla prima riga della scacchiera controlla solo due diagonali*//*
             return 0;
-        }else if(x == LIMIT_LEFT && y<LIMIT_DOWN && y>LIMIT_UP && (checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID) || (checkerboard[(y - 1) * COLONNE + (x + 1)].player == VOID)){/*se il giocatore1 PRO selezionato si trova sulla prima colonna della scacchiera controlla solo due diagonali*/
+        }else if(x == LIMIT_LEFT && y<LIMIT_DOWN && y>LIMIT_UP && (checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID) || (checkerboard[(y - 1) * COLONNE + (x + 1)].player == VOID)){*//*se il giocatore1 PRO selezionato si trova sulla prima colonna della scacchiera controlla solo due diagonali*//*
             return 0;
-        }else if(x == LIMIT_RIGHT && y<LIMIT_DOWN && y>LIMIT_UP && (checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID) || (checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID)){/*se il giocatore1 PRO selezionato si trova sull'ultima colonna della scacchiera controlla solo due diagonali*/
+        }else if(x == LIMIT_RIGHT && y<LIMIT_DOWN && y>LIMIT_UP && (checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID) || (checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID)){*//*se il giocatore1 PRO selezionato si trova sull'ultima colonna della scacchiera controlla solo due diagonali*//*
             return 0;
-        }else if(x>LIMIT_LEFT && x<LIMIT_RIGHT  && y>LIMIT_UP && y<LIMIT_DOWN && (checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID || checkerboard[(y - 1) * COLONNE + (x + 1)].player == VOID || checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID || checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID)){/*se il giocatore1 PRO selezionato si trova dove tutte diagonali sono disponibili controlla tutte le diagonali disponibili*/
+        }else if(x>LIMIT_LEFT && x<LIMIT_RIGHT  && y>LIMIT_UP && y<LIMIT_DOWN && (checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID || checkerboard[(y - 1) * COLONNE + (x + 1)].player == VOID || checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID || checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID)){*//*se il giocatore1 PRO selezionato si trova dove tutte diagonali sono disponibili controlla tutte le diagonali disponibili*//*
             return 0;
         }else
             return 1;
     }
     else{
-        if(x == LIMIT_LEFT && y == LIMIT_UP && checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID){ /*se il giocatore2 PRO selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*/
+        if(x == LIMIT_LEFT && y == LIMIT_UP && checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID){ *//*se il giocatore2 PRO selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*//*
             return 0;
-        }else if(x == LIMIT_RIGHT && y == LIMIT_UP && checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID){/*se il giocatore2 PRO selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*/
+        }else if(x == LIMIT_RIGHT && y == LIMIT_UP && checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID){*//*se il giocatore2 PRO selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*//*
             return 0;
-        }else if(x == LIMIT_LEFT && y == LIMIT_DOWN && checkerboard[(y - 1) * COLONNE + (x + 1)].player == VOID){/*se il giocatore2 PRO selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*/
+        }else if(x == LIMIT_LEFT && y == LIMIT_DOWN && checkerboard[(y - 1) * COLONNE + (x + 1)].player == VOID){*//*se il giocatore2 PRO selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*//*
             return 0;
-        }else if(x == LIMIT_RIGHT && y == LIMIT_DOWN && checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID){/*se il giocatore2 PRO selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*/
+        }else if(x == LIMIT_RIGHT && y == LIMIT_DOWN && checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID){*//*se il giocatore2 PRO selezionato si trova sul limite della scacchiera fa solo il controllo di una diagonale in quanto l'altra si trova fuori dalla matrice*//*
             return 0;
-        }else if(x < LIMIT_RIGHT && x>LIMIT_LEFT && y == LIMIT_UP && (checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID) || (checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID)){/*se il giocatore2 PRO selezionato si trova sulla prima riga della scacchiera controlla solo due diagonali*/
+        }else if(x < LIMIT_RIGHT && x>LIMIT_LEFT && y == LIMIT_UP && (checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID) || (checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID)){*//*se il giocatore2 PRO selezionato si trova sulla prima riga della scacchiera controlla solo due diagonali*//*
             return 0;
-        }else if(x < LIMIT_RIGHT && x>LIMIT_LEFT && y == LIMIT_DOWN && (checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID) || (checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID)){/*se il giocatore2 PRO selezionato si trova sulla prima riga della scacchiera controlla solo due diagonali*/
+        }else if(x < LIMIT_RIGHT && x>LIMIT_LEFT && y == LIMIT_DOWN && (checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID) || (checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID)){*//*se il giocatore2 PRO selezionato si trova sulla prima riga della scacchiera controlla solo due diagonali*//*
             return 0;
-        }else if(x == LIMIT_LEFT && y<LIMIT_DOWN && y>LIMIT_UP && (checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID) || (checkerboard[(y - 1) * COLONNE + (x + 1)].player == VOID)){/*se il giocatore1 PRO selezionato si trova sulla prima colonna della scacchiera controlla solo due diagonali*/
+        }else if(x == LIMIT_LEFT && y<LIMIT_DOWN && y>LIMIT_UP && (checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID) || (checkerboard[(y - 1) * COLONNE + (x + 1)].player == VOID)){*//*se il giocatore1 PRO selezionato si trova sulla prima colonna della scacchiera controlla solo due diagonali*//*
             return 0;
-        }else if(x == LIMIT_RIGHT && y<LIMIT_DOWN && y>LIMIT_UP && (checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID) || (checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID)){/*se il giocatore1 PRO selezionato si trova sull'ultima colonna della scacchiera controlla solo due diagonali*/
+        }else if(x == LIMIT_RIGHT && y<LIMIT_DOWN && y>LIMIT_UP && (checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID) || (checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID)){*//*se il giocatore1 PRO selezionato si trova sull'ultima colonna della scacchiera controlla solo due diagonali*//*
             return 0;
-        }else if(x>LIMIT_LEFT && x<LIMIT_RIGHT  && y>LIMIT_UP && y<LIMIT_DOWN && (checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID || checkerboard[(y - 1) * COLONNE + (x + 1)].player == VOID || checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID || checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID)){/*se il giocatore2 PRO selezionato si trova dove tutte diagonali sono disponibili controlla tutte le diagonali disponibili*/
+        }else if(x>LIMIT_LEFT && x<LIMIT_RIGHT  && y>LIMIT_UP && y<LIMIT_DOWN && (checkerboard[(y - 1) * COLONNE + (x - 1)].player == VOID || checkerboard[(y - 1) * COLONNE + (x + 1)].player == VOID || checkerboard[(y + 1) * COLONNE + (x + 1)].player == VOID || checkerboard[(y + 1) * COLONNE + (x - 1)].player == VOID)){*//*se il giocatore2 PRO selezionato si trova dove tutte diagonali sono disponibili controlla tutte le diagonali disponibili*//*
             return 0;
         }else
             return 1;
     }
 
-}/*verifica le 2 diagonali nel caso di giocatore non promosso altrimenti controlla le 4 diagonali per il giocatore promosso,
+}*//*verifica le 2 diagonali nel caso di giocatore non promosso altrimenti controlla le 4 diagonali per il giocatore promosso,
  * restituisce 0 se almeno una digaonale è libera, altrimenti restituisce 1*/
 
 bool piece_selection (tower_t *checkerboard, coordinate x, coordinate y, int turn){ /*controllo se pedina corrisponde al giocatore giusto*/
     if (control_range(x, y) && checkerboard[y * COLONNE + x].player == turn){ /*chiama la funzione control range chessboard controlla se i range sono corretti*/
-        if(!diagonal_check(checkerboard, x, y, turn))/*chiama la funzione per controllare le diagonali, se almeno una diagonale è libera allora può continuare*/
+        /*if(!diagonal_check(checkerboard, x, y, turn))*//*chiama la funzione per controllare le diagonali, se almeno una diagonale è libera allora può continuare*/
             return 1;
-        else{
-            printf("LA PEDINA IN COORDINATE x = %d   y = %d NON PUO MUOVERSI\n", x, y);
-            printf("SCELTA SBAGLIATA\n");
-            return 0;
-        }
     } else {
         printf("SCELTA SBAGLIATA\n");
         return 0;
@@ -194,7 +189,7 @@ void composition_update(tower_t *checkerboard, coordinate y, coordinate x, coord
 }
 
 bool move_selection(tower_t *checkerboard, coordinate x, coordinate y, int turno, coordinate move_x, coordinate move_y){
-    if(turno == PLAYER_1){
+    if(turno == PLAYER_1 && checkerboard[move_y * COLONNE + move_x].player==VOID){
         if (checkerboard[y * COLONNE+ x].composition[0] == PLAYER_1_PRO) { /*se il player è promosso ha liberta di movimento in ogni direzione*/
             if ((move_y == (y + 1) || move_y == (y - 1)) && (move_x == (x + 1) || move_x == (x - 1)) && checkerboard[move_y * COLONNE + move_x].player == VOID && control_range(move_x, move_y)) {
                 checkerboard[move_y * COLONNE + move_x].player = turno; /*assegnamento alla casella del player*/
@@ -210,7 +205,7 @@ bool move_selection(tower_t *checkerboard, coordinate x, coordinate y, int turno
             return 1;
         }
     }
-    else if (turno == PLAYER_2){
+    else if (turno == PLAYER_2 && checkerboard[move_y * COLONNE + move_x].player==VOID){
         if (checkerboard[y * COLONNE+ x].composition[0] == PLAYER_2_PRO) {
             if ((move_y == (y + 1) || (move_y == y - 1)) && (move_x == (x + 1) || move_x == (x - 1)) && checkerboard[move_y * COLONNE + move_x].player == VOID && control_range(move_x, move_y)) {
                 checkerboard[move_y * COLONNE + move_x].player = turno; /*assegnamento alla casella del player*/
@@ -232,31 +227,29 @@ bool move_selection(tower_t *checkerboard, coordinate x, coordinate y, int turno
 /*TODO, array per passare più destinazioni di possibili mangiate con stessa pedina*/
 void piece_capture(tower_t *checkerboard, coordinate y, coordinate x, int *turn, coordinate dest_y, coordinate dest_x, coordinate enemy_y, coordinate enemy_x){ /*controllo se destinazione è valida*/
     int check = 0;
-    int move_x, move_y;
     int i = 0;
-    printf("TURNO GIOCATORE %d\n", *turn);
-    printf("Devi mangiare l'avversario con la pedina nelle coordinate x:%d y:%d\n", x, y);
-    printf("Inserisci le coordinate in cui fare la mangiata\n");
-    scanf("%d %d", &move_x, &move_y);
-    if(checkerboard[move_y * COLONNE + move_x].player == VOID && move_y == dest_y && move_x == dest_x) { /*se hai digitato bene allora...*/
-        if (checkerboard[y * COLONNE + x].composition[1] == VOID) { /*controllo se non c'è una seconda pedina nella torre*/
+        if (checkerboard[y * COLONNE + x].composition[1] == 0) { /*controllo se non c'è una seconda pedina nella torre*/
             /*tre if per il controllo pedine intermedie dell'attaccante ed eventuale sostituzione se vuote con pedine del nemico*/
-            checkerboard[move_y * COLONNE + move_x].composition[0] = checkerboard[y * COLONNE + x].composition[0];
-            checkerboard[move_y * COLONNE + move_x].composition[1] = checkerboard[enemy_y * COLONNE + enemy_x].composition[0];
+            printf("sono nell'else della pedina di UNO");
+            checkerboard[dest_y * COLONNE + dest_x].composition[0] = checkerboard[y * COLONNE + x].composition[0];
+            checkerboard[dest_y * COLONNE + dest_x].composition[1] = checkerboard[enemy_y * COLONNE + enemy_x].composition[0];
+            checkerboard[dest_y * COLONNE + dest_x].composition[2] = checkerboard[y * COLONNE + x].composition[2];
             /*sostituisce al secondo o terzo elemento dell'attaccante la testa del nemico*/
         } else if (checkerboard[y * COLONNE + x].composition[2] == 0) { /*controllo se non c'è una terza pedina nella torre*/
-                checkerboard[move_y * COLONNE+move_x].composition[0] = checkerboard[y * COLONNE + x].composition[0];
-                checkerboard[move_y * COLONNE+move_x].composition[1] = checkerboard[y * COLONNE + x].composition[1];
-                checkerboard[move_y * COLONNE + move_x].composition[2] = checkerboard[enemy_y * COLONNE + enemy_x].composition[0];
+            printf("sono nell'else della torre di DUE");
+                checkerboard[dest_y * COLONNE+dest_x].composition[0] = checkerboard[y * COLONNE + x].composition[0];
+                checkerboard[dest_y * COLONNE+dest_x].composition[1] = checkerboard[y * COLONNE + x].composition[1];
+                checkerboard[dest_y * COLONNE + dest_x].composition[2] = checkerboard[enemy_y * COLONNE + enemy_x].composition[0];
         }
-        if (checkerboard[y * COLONNE + x].composition[2] != VOID) { /*controllo se torre attaccante aveva più di una pedina, se si sostituisco tutte le vecchie composizioni in quelle nuove*/
-            checkerboard[move_y * COLONNE + move_x].composition[0] = checkerboard[y * COLONNE + x].composition[0];
-            checkerboard[move_y * COLONNE + move_x].composition[1] = checkerboard[y * COLONNE + x].composition[1];
-            checkerboard[move_y * COLONNE + move_x].composition[2] = checkerboard[y * COLONNE + x].composition[2];
+        else if (checkerboard[y * COLONNE + x].composition[2] != 0) { /*controllo se torre attaccante aveva più di una pedina, se si sostituisco tutte le vecchie composizioni in quelle nuove*/
+            printf("sono nell'else della torre di TRE");
+            checkerboard[dest_y * COLONNE + dest_x].composition[0] = checkerboard[y * COLONNE + x].composition[0];
+            checkerboard[dest_y * COLONNE + dest_x].composition[1] = checkerboard[y * COLONNE + x].composition[1];
+            checkerboard[dest_y * COLONNE + dest_x].composition[2] = checkerboard[y * COLONNE + x].composition[2];
         }
 
         /*assegnamento player a torre di destinazione*/
-        checkerboard[move_y * COLONNE + move_x].player = *turn;
+        checkerboard[dest_y * COLONNE + dest_x].player = *turn;
 
         /* sostituzione vecchia posizione dell'attaccante con parametri player=VUOTO e composizione 000*/
         checkerboard[y * COLONNE + x].player = VOID; /*AGGIORNAMENTO POSIZIONE PRIMA DELLA MANGIATA DELL'ATTACCANTE*/
@@ -270,30 +263,25 @@ void piece_capture(tower_t *checkerboard, coordinate y, coordinate x, int *turn,
         checkerboard[enemy_y * COLONNE + enemy_x].composition[2] = 0;
 
         /*assegnamento nuovo player a pedina mangiata basandosi sulla testa*/
-        if (checkerboard[enemy_y * COLONNE + enemy_x].composition[0] == VOID) { /*controllo testa pedina attaccata*/
+        if (checkerboard[enemy_y * COLONNE + enemy_x].composition[0] == 0) { /*controllo testa pedina attaccata*/
             checkerboard[enemy_y * COLONNE + enemy_x].player = VOID;
-        } else if (checkerboard[enemy_y * COLONNE + enemy_x].composition[0] == PLAYER_1 || checkerboard[enemy_y * COLONNE + enemy_x].composition[0] == PLAYER_1_PRO) { /*controllo se testa è player 1 o player 2 e aggiorna player*/
+        } else if (checkerboard[enemy_y * COLONNE + enemy_x].composition[0] == 1 || checkerboard[enemy_y * COLONNE + enemy_x].composition[0] == 3) { /*controllo se testa è player 1 o player 2 e aggiorna player*/
             checkerboard[enemy_y * COLONNE + enemy_x].player = PLAYER_1;
-        } else if (checkerboard[enemy_y * COLONNE + enemy_x].composition[0] == PLAYER_2 || checkerboard[enemy_y * COLONNE + enemy_x].composition[0] == PLAYER_2_PRO) {
+        } else if (checkerboard[enemy_y * COLONNE + enemy_x].composition[0] == 2 || checkerboard[enemy_y * COLONNE + enemy_x].composition[0] == 4) {
             checkerboard[enemy_y * COLONNE + enemy_x].player = PLAYER_2;
         }
 
         turn_update(turn);
         /*stampe di verifiche composizione player*/
-        printf("\nl'attaccante ora vale %d %d %d", checkerboard[move_y * COLONNE + move_x].composition[0], checkerboard[move_y * COLONNE + move_x].composition[1], checkerboard[move_y * COLONNE + move_x].composition[2]);
+        printf("\nl'attaccante ora vale %d %d %d", checkerboard[dest_y * COLONNE + dest_x].composition[0], checkerboard[dest_y * COLONNE + dest_x].composition[1], checkerboard[dest_y * COLONNE + dest_x].composition[2]);
         printf("\nil mangiato ora vale %d, %d, %d", checkerboard[enemy_y * COLONNE + enemy_x].composition[0], checkerboard[enemy_y * COLONNE + enemy_x].composition[1], checkerboard[enemy_y * COLONNE + enemy_x].composition[2]);
         printf("\n la vecchia posizione ora vale %d %d %d\n", checkerboard[y * COLONNE + x].composition[0], checkerboard[y * COLONNE + x].composition[1], checkerboard[y * COLONNE + x].composition[2]);
-        printf("i player ora sono attaccante %d, attaccato %d, vecchia posizione %d\n", checkerboard[move_y * COLONNE + move_x].player, checkerboard[enemy_y * COLONNE + enemy_x].player, checkerboard[y * COLONNE + x].player);
+        printf("i player ora sono attaccante %d, attaccato %d, vecchia posizione %d\n", checkerboard[dest_y * COLONNE + dest_x].player, checkerboard[enemy_y * COLONNE + enemy_x].player, checkerboard[y * COLONNE + x].player);
 
         /*torrefazione*/
         promotion_check(checkerboard);
         checkerboard_print(checkerboard);
-
-    } /*se c'è già una torre nella destinazione*/
-    else {
-        printf("Hai sbagliato selezione\n");
-        piece_capture(checkerboard, y, x, turn, dest_y, dest_x, enemy_y, enemy_x); /*se sbagli a digitare coordinate devi ripetere la funzione mangiata*/
-    }
+        /*se c'è già una torre nella destinazione*/
 }
 
 int capture_check(tower_t *checkerboard, int *turno){
@@ -314,21 +302,21 @@ int capture_check(tower_t *checkerboard, int *turno){
                             /*passo i e j come coordinate per mangiata obbligatoria*/
                             count++; /*incrementa il conteggio se rilevata una pedina obbligata*/
                             printf("TURNO GIOCATORE %d\n", *turno);
-                            printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
+                            printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", j, i, j - 1, i + 1);
                             scanf(" %c", &selection); /*chiede se vuoi mangiare con quella pedina*/
                             if (selection==si) { /*se dici si chiama mangiata*/
                                 piece_capture(checkerboard, i, j, turno, i + 2, j - 2, i + 1, j - 1);
                             } else if (selection==no) { /*se dici no prosegue*/
                             }
                         }
-                    } else if (i < 5 && j < 5 && checkerboard[(i + 1) * COLONNE + (j + 1)].player == PLAYER_2) {
+                    } if (i < 5 && j < 5 && checkerboard[(i + 1) * COLONNE + (j + 1)].player == PLAYER_2) {
                         /*controllo diagonale destra checkerboard sia player avversario e non vuoto*/
                         if (checkerboard[(i + 2) * COLONNE + (j + 2)].player == VOID) {
                             /*TODO far scegliere a giocatore quale manigata effettuare*/
                             /*passo i e j come coordinate per mangiata obbligatoria*/
                             count++;
                             printf("TURNO GIOCATORE %d\n", *turno);
-                            printf("vuoi mangiare con x=%d y=%d? \n", j, i);
+                            printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", j, i, j + 1, i + 1);
                             scanf(" %c", &selection);
                             if (selection==si) {
                                 piece_capture(checkerboard, i, j, turno, i + 2, j + 2, i + 1, j + 1);
@@ -344,7 +332,7 @@ int capture_check(tower_t *checkerboard, int *turno){
                                 /*passo i e j come coordinate per mangiata obbligatoria*/
                                 count++;
                                 printf("TURNO GIOCATORE %d\n", *turno);
-                                printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
+                                printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", j, i, j - 1, i - 1);
                                 scanf(" %c", &selection);
                                 if (selection==si) {
                                     piece_capture(checkerboard, i, j, turno, i - 2, j - 2, i - 1, j - 1);
@@ -359,7 +347,7 @@ int capture_check(tower_t *checkerboard, int *turno){
                                 /*passo i e j come coordinate per mangiata obbligatoria*/
                                 count++;
                                 printf("TURNO GIOCATORE %d\n", *turno);
-                                printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
+                                printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", j, i, j + 1, i - 1);
                                 scanf(" %c", &selection);
                                 if (selection==si) {
                                     piece_capture(checkerboard, i, j, turno, i - 2, j + 2, i - 1, j + 1);
@@ -376,7 +364,7 @@ int capture_check(tower_t *checkerboard, int *turno){
                             /*passo i e j come coordinate per mangiata obbligatoria*/
                             count++;
                             printf("TURNO GIOCATORE %d\n", *turno);
-                            printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
+                            printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", j, i, j - 1, i - 1);
                             scanf(" %c", &selection);
                             if (selection==si) {
                                 piece_capture(checkerboard, i, j, turno, i - 2, j - 2, i - 1, j - 1);
@@ -391,7 +379,7 @@ int capture_check(tower_t *checkerboard, int *turno){
                             /*passo i e j come coordinate per mangiata obbligatoria*/
                             count++;
                             printf("TURNO GIOCATORE %d\n", *turno);
-                            printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
+                            printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", j, i, j + 1, i - 1);
                             scanf(" %c", &selection);
                             if (selection==si) {
                                 piece_capture(checkerboard, i, j, turno, i - 2, j + 2, i - 1, j + 1);
@@ -407,21 +395,21 @@ int capture_check(tower_t *checkerboard, int *turno){
                                 /*passo i e j come coordinate per mangiata obbligatoria*/
                                 count++; /*incrementa il conteggio se rilevata una pedina obbligata*/
                                 printf("TURNO GIOCATORE %d\n", *turno);
-                                printf("vuoi mangiare con x=%d y=%d? s/n\n", j, i);
+                                printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", j, i, j - 1, i + 1);
                                 scanf(" %c", &selection); /*chiede se vuoi mangiare con quella pedina*/
                                 if (selection==si) { /*se dici si chiama mangiata*/
                                     piece_capture(checkerboard, i, j, turno, i + 2, j - 2, i + 1, j - 1);
                                 } else if (selection==no) { /*se dici no prosegue*/
                                 }
                             }
-                        } else if (i < 5 && j < 5 && checkerboard[(i + 1) * COLONNE + (j + 1)].player == PLAYER_1) {
+                        } if (i < 5 && j < 5 && checkerboard[(i + 1) * COLONNE + (j + 1)].player == PLAYER_1) {
                             /*controllo diagonale destra checkerboard sia player avversario e non vuoto*/
                             if (checkerboard[(i + 2) * COLONNE + (j + 2)].player == VOID) {
                                 /*TODO far scegliere a giocatore quale manigata effettuare*/
                                 /*passo i e j come coordinate per mangiata obbligatoria*/
                                 count++;
                                 printf("TURNO GIOCATORE %d\n", *turno);
-                                printf("vuoi mangiare con x=%d y=%d? \n", j, i);
+                                printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", j, i, j + 1, i + 1);
                                 scanf(" %c", &selection);
                                 if (selection==si) {
                                     piece_capture(checkerboard, i, j, turno, i + 2, j + 2, i + 1, j + 1);
@@ -440,7 +428,7 @@ int capture_check(tower_t *checkerboard, int *turno){
     }
 }
 
-bool vittoria(tower_t *checkerboard, int *turn) {
+/* bool vittoria(tower_t *checkerboard, int *turn) {
     int i, j;
     for (i = 0; i < RIGHE; i++) {
         for (j = 0; j < COLONNE; j++) {
@@ -452,7 +440,7 @@ bool vittoria(tower_t *checkerboard, int *turn) {
         }
     }
     return 0;
-}
+} */
 
 int main() {
     tower_t checkerboard[RIGHE][COLONNE];
@@ -460,8 +448,9 @@ int main() {
     int turn = PLAYER_1;
     checkerboard_init (&(checkerboard[0][0]));
     checkerboard_print (&(checkerboard[0][0]));
-    setvbuf(stdout, NULL, _IONBF, 0); /* permette di debuggare con scanf */
-    while (vittoria(&(checkerboard[0][0]), &turn)){
+    /*setvbuf(stdout, NULL, _IONBF, 0);*/ /* permette di debuggare con scanf */
+    while (1/*vittoria(&(checkerboard[0][0]), &turn)*/){
+        /*capture_check(&checkerboard[0][0], &turn);*/
         printf("\nTURNO GIOCATORE %d \n",turn);
         printf("Seleziona le coordinate della pedina x , y: \n");
         scanf("%d %d", &x, &y); /*inserimento pedina da controllare*/ /*TODO, RICHIEDERE SELEZIONE SE INSERISCI non numeri*/
