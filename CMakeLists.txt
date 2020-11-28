@@ -3,4 +3,4 @@ project(MiniLaska C)
 
 set(CMAKE_C_STANDARD 90)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
-add_executable(MiniLaska main.c)
+add_executable(MiniLaska main.c minilaska.h minilaska.c)
