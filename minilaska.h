@@ -4,7 +4,7 @@
 #ifndef MINILASKA_MINILASKA_H
 #define MINILASKA_MINILASKA_H
 
-#endif //MINILASKA_MINILASKA_H
+
 
 
 #include <stdio.h>
@@ -49,3 +49,5 @@ bool win(tower_t *checkerboard, const int *turn);
 void piece_capture(tower_t *checkerboard, coordinate_t r, coordinate_t c, const int *turn, coordinate_t move_r, coordinate_t move_c, coordinate_t enemy_r, coordinate_t enemy_c);
 
 int capture_check(tower_t *checkerboard, int *turn);
+
+#endif //MINILASKA_MINILASKA_H

@@ -5,7 +5,6 @@
 
 #include <stdio.h>
 #include <stdbool.h>
-#include <ctype.h>
 #define ROWS (7)
 #define COLUMNS (7)
 #define LIMIT_RIGHT (6)
@@ -37,6 +36,7 @@ const player_t PLAYER_1 = 1;
 const player_t PLAYER_2 = 2;
 const player_t PLAYER_1_PRO = 3;
 const player_t PLAYER_2_PRO = 4;
+const size_t COMPOSITION_SIZE = 3;
 
 /*ogni casella è formata da una struttura tower_t, composta da player (un intero) e da un array di tre elementi (composition),
 il primo elemento corrisponde alla testa (la quale determinerà il campo player), il secondo alla parte centrale e il terzo alla coda.
@@ -120,7 +120,7 @@ void promotion_check(tower_t *checkerboard) { /*dopo ogni mossa controlla se a f
 
 bool control_range(const coordinate_t x, const coordinate_t y){ /*controlla che le coordinate x e y siano dentro la scacchiera (comprese tra 0 e 6), se sono all'interno restituisce 1,
  *                                                              altrimenti restituisce 0*/
-    if (x > LIMIT_LEFT && x < LIMIT_RIGHT && y > LIMIT_UP && y < LIMIT_DOWN) {
+    if (x >= LIMIT_LEFT && x <= LIMIT_RIGHT && y >= LIMIT_UP && y <= LIMIT_DOWN) {
         return 1;
     }else {
         return 0;
@@ -137,32 +137,39 @@ bool piece_selection (tower_t *checkerboard, const coordinate_t c, const coordin
     }
 }/*restituisce 1 se la pedina è in una posizione in cui può essere scelta altimenti restituisce 0*/
 
-void composition_update(tower_t *checkerboard, const coordinate_t r, const coordinate_t c, const coordinate_t move_y, const coordinate_t move_x) {
-    checkerboard[move_y * COLUMNS + move_x].composition[0] = checkerboard[r * COLUMNS + c].composition[0];
-    checkerboard[move_y * COLUMNS + move_x].composition[1] = checkerboard[r * COLUMNS + c].composition[1];
-    checkerboard[move_y * COLUMNS + move_x].composition[2] = checkerboard[r * COLUMNS + c].composition[2];
+void composition_update(tower_t *checkerboard, coordinate_t r, coordinate_t c, coordinate_t move_r, coordinate_t move_c) {
+    int i;
+    for (i = 0; i < COMPOSITION_SIZE; i ++) {
+        checkerboard[move_r * COLUMNS + move_c].composition[i] = checkerboard[r * COLUMNS + c].composition[i];
+    }
 } /*TODO da generalizzare dopo mangiata*/
 
-
+void clear_square(tower_t *checkerboard, coordinate_t r, coordinate_t c) {
+    int i;
+    PLAYER_TOWER = VOID; /*svuota la casella che ha effettuato la mangiata*/
+    for (i = 0; i < COMPOSITION_SIZE; i ++) {
+        checkerboard[r * COLUMNS + c].composition[i] = VOID;
+    }
+}
 
 bool move_selection(tower_t *checkerboard, const coordinate_t c, const coordinate_t r, const int *turn, const coordinate_t move_c, const coordinate_t move_r){
     /* controlla se le coordinate della destinazione inserite dall'utente corrispondono ad una casella vuota e valida*/
-    if (control_range (c, r)) {
+    if (control_range (move_c, move_r)) {
         if (*turn == PLAYER_1 && PLAYER_DESTINATION == VOID) {
             if (HEAD_TOWER == PLAYER_1_PRO) { /*se il player è promosso ha liberta di movimento in ogni direzione*/
                 if ((move_r == r + 1 || move_r == r - 1) && (move_c == c + 1 || move_c == c - 1) &&
                     PLAYER_DESTINATION == VOID && control_range(move_c, move_r)) {
                     PLAYER_DESTINATION = *turn; /*assegnamento alla casella del player*/
-                    PLAYER_TOWER = VOID; /*svuota casella old*/
                     composition_update(checkerboard, r, c, move_r, move_c);
+                    clear_square(checkerboard, r, c);
                     return 1;
                 }
             } /*player 1 non pro*/
             else if ((move_r == r + 1) && ((move_c == c + 1) || (move_c == c - 1)) && PLAYER_DESTINATION == VOID &&
                      control_range(move_c, move_r)) { /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
                 PLAYER_DESTINATION = *turn; /*assegnamento alla casella del player*/
-                PLAYER_TOWER = VOID; /*svuota casella old*/
                 composition_update(checkerboard, r, c, move_r, move_c);
+                clear_square(checkerboard, r, c);
                 return 1;
             }
         } else if (*turn == PLAYER_2 && PLAYER_DESTINATION == VOID) {
@@ -170,8 +177,8 @@ bool move_selection(tower_t *checkerboard, const coordinate_t c, const coordinat
                 if ((move_r == r + 1 || move_r == r - 1) && (move_c == c + 1 || move_c == c - 1) &&
                     PLAYER_DESTINATION == VOID && control_range(move_c, move_r)) {
                     PLAYER_DESTINATION = *turn; /*assegnamento alla casella del player*/
-                    PLAYER_TOWER = VOID; /*svuota casella old*/
                     composition_update(checkerboard, r, c, move_r, move_c);
+                    clear_square(checkerboard, r, c);
                     return 1;
                 }
             } /*player 2 non pro*/
@@ -179,8 +186,8 @@ bool move_selection(tower_t *checkerboard, const coordinate_t c, const coordinat
                      control_range(move_c,
                                    move_r)) { /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
                 PLAYER_DESTINATION = *turn;
-                PLAYER_TOWER = VOID;
                 composition_update(checkerboard, r, c, move_r, move_c);
+                clear_square(checkerboard, r, c);
                 return 1;
             }
         }
@@ -283,34 +290,25 @@ bool win (tower_t *checkerboard, const int *turn) { /*controlla se la partita ar
 void piece_capture(tower_t *checkerboard, const coordinate_t r, const coordinate_t c, const int *turn, const coordinate_t move_r, const coordinate_t move_c, const coordinate_t enemy_r, const coordinate_t enemy_c){
     /*effettua la mangiata e il conseguente aggiornamento della composzione delle torri
     3 if per il controllo pedine intermedie dell'attaccante ed eventuale sostituzione se vuote con pedine del nemico*/
-    if (MID_TOWER == 0) { /*controllo se non c'è una seconda pedina nella torre*/
-        HEAD_DESTINATION = HEAD_TOWER;
-        MID_DESTINATION = HEAD_ENEMY;
-        TAIL_DESTINATION = TAIL_TOWER;
-        /*sostituisce al secondo o terzo elemento dell'attaccante la testa del nemico*/
-    } else if (TAIL_TOWER == 0) { /*controllo se non c'è una terza pedina nella torre*/
-        HEAD_DESTINATION = HEAD_TOWER;
-        MID_DESTINATION = MID_TOWER;
-        TAIL_DESTINATION = HEAD_ENEMY;
+    int i;
+    for (i = 1; i < COMPOSITION_SIZE; i++) {
+        if (checkerboard[r * COLUMNS + c].composition[i] == 0) {
+            checkerboard[r * COLUMNS + c].composition[i] = HEAD_ENEMY;
+            i = COMPOSITION_SIZE;
+        }
     }
-    else if (TAIL_TOWER != 0) { /*controllo se torre attaccante aveva più di una pedina, se si sostituisco tutte le vecchie composizioni in quelle nuove*/
-        HEAD_DESTINATION = HEAD_TOWER;
-        MID_DESTINATION = MID_TOWER;
-        TAIL_DESTINATION = TAIL_TOWER;
-    }
-
+    composition_update(checkerboard, r, c, move_r, move_c);
     /*assegnamento player a torre di destinazione*/
     PLAYER_DESTINATION = *turn;
 
     /* sostituzione vecchia posizione dell'attaccante con parametri player=VUOTO e composizione 000*/
-    PLAYER_TOWER = VOID; /*AGGIORNAMENTO POSIZIONE PRIMA DELLA MANGIATA DELL'ATTACCANTE*/
-    HEAD_TOWER = VOID;
-    MID_TOWER = VOID;
-    TAIL_TOWER = VOID;
+    clear_square(checkerboard, r, c);
 
     /*sostituzione ultima pedina mangiata con ZERO e scalamento delle superiori */
-    HEAD_ENEMY = MID_ENEMY; /*scala di una posizione gli elementi della pedina mangiata*/
-    MID_ENEMY = TAIL_ENEMY;
+     /*scala di una posizione gli elementi della pedina mangiata*/
+    for (i = 0; i < COMPOSITION_SIZE - 1; i ++) {
+        checkerboard[enemy_r * COLUMNS + enemy_c].composition[i] = checkerboard[enemy_r * COLUMNS + enemy_c].composition[i + 1]; /*scala di una posizione gli elementi della pedina mangiata*/
+    }
     TAIL_ENEMY = VOID;
 
     /*assegnamento nuovo player a pedina mangiata basandosi sulla testa*/
