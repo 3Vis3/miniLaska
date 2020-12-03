@@ -2,7 +2,6 @@
 // Created by franc on 28/11/2020.
 //
 #include "minilaska.h"
-
 #include <stdio.h>
 #include <stdbool.h>
 #define ROWS (7)
@@ -31,12 +30,13 @@
 
 
 
-const int VOID = 0;  /* nessun giocatore*/
+/*const int VOID = 0;  *//* nessun giocatore*//*
 const player_t PLAYER_1 = 1;
 const player_t PLAYER_2 = 2;
 const player_t PLAYER_1_PRO = 3;
-const player_t PLAYER_2_PRO = 4;
+const player_t PLAYER_2_PRO = 4;*/
 const size_t COMPOSITION_SIZE = 3;
+
 
 /*ogni casella è formata da una struttura tower_t, composta da player (un intero) e da un array di tre elementi (composition),
 il primo elemento corrisponde alla testa (la quale determinerà il campo player), il secondo alla parte centrale e il terzo alla coda.
@@ -118,9 +118,9 @@ void promotion_check(tower_t *checkerboard) { /*dopo ogni mossa controlla se a f
     }
 }
 
-bool control_range(const coordinate_t x, const coordinate_t y){ /*controlla che le coordinate x e y siano dentro la scacchiera (comprese tra 0 e 6), se sono all'interno restituisce 1,
+bool control_range(const coordinate_t c, const coordinate_t r){ /*controlla che le coordinate x e y siano dentro la scacchiera (comprese tra 0 e 6), se sono all'interno restituisce 1,
  *                                                              altrimenti restituisce 0*/
-    if (x >= LIMIT_LEFT && x <= LIMIT_RIGHT && y >= LIMIT_UP && y <= LIMIT_DOWN) {
+    if (c >= LIMIT_LEFT && c <= LIMIT_RIGHT && r >= LIMIT_UP && r <= LIMIT_DOWN) {
         return 1;
     }else {
         return 0;
