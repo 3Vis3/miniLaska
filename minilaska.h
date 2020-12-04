@@ -60,7 +60,7 @@ bool control_range(coordinate_t c, coordinate_t r);
  * @param turn - Puntatore all'indirizzo di memoria del turno
  * @return 1 se la selezione è corretta, 0 altrimenti
  */
-bool piece_selection (tower_t *checkerboard, coordinate_t c, coordinate_t r, const int *turn);
+bool piece_selection (tower_t *checkerboard, coordinate_t c, coordinate_t r, int turn);
 
 /**
  * Aggiorna la composizione della pedina dopo lo spostamento, eliminando quella vecchia
@@ -90,7 +90,7 @@ void clear_square(tower_t *checkerboard, coordinate_t r, coordinate_t c);
  * @param move_r - copia della coordinata della riga di destinazione
  * @return 1 se lo spostamento è andato a buon fine, 0 altrimenti
  */
-bool move_selection(tower_t *checkerboard, coordinate_t c, coordinate_t r, const int *turn, coordinate_t move_c, coordinate_t move_r);
+bool move_selection(tower_t *checkerboard, coordinate_t c, coordinate_t r, int turn, coordinate_t move_c, coordinate_t move_r);
 
 /**
  * Controlla il player nelle diagonali in basso a sinistra dato il parametro "is_first_diagonal". Oltre al player della casella destinataria può tornare ERROR, nel caso le coordinate siano fuori dal range valido
@@ -137,12 +137,20 @@ player_t diagonal_up_left_check(tower_t *checkerboard, coordinate_t r, coordinat
 player_t diagonal_up_right_check(tower_t *checkerboard, coordinate_t r, coordinate_t c, bool is_first_diagonal);
 
 /**
+ * controlla quante pedine rimaste ha il giocatore passato come turno
+ * @param checkerboard  - Puntatore all'indirizzo di memoria della scacchiera (una matrice bidimensionale di tipo struct tower)
+ * @param turn - Puntatore all'indirizzo di memoria del turno
+ * @return il numero di pedine rimanenti del giocatore
+ */
+int pieces_left (tower_t *checkerboard, int turn);
+
+/**
  * Controlla se la partita arriva al termine, verificando se non sono ancora presenti pedine del player corrente, oppure se ci sono ma sono bloccate
  * @param checkerboard - Puntatore all'indirizzo di memoria della scacchiera (una matrice bidimensionale di tipo struct tower)
  * @param turn - Puntatore all'indirizzo di memoria del turno
  * @return 1 nel caso di vittoria, 0 altrimetni
  */
-bool win(tower_t *checkerboard, const int *turn);
+bool win(tower_t *checkerboard, int turn);
 
 /**
  * Effettua la mangiata e il conseguente aggiornamento della composizione delle torri chiamando composition_update
@@ -155,7 +163,7 @@ bool win(tower_t *checkerboard, const int *turn);
  * @param enemy_r - copia della coordinata della riga della pedina avversaria
  * @param enemy_c copia della coordinata della colonna della pedina avversaria
  */
-void piece_capture(tower_t *checkerboard, coordinate_t r, coordinate_t c, const int *turn, coordinate_t move_r, coordinate_t move_c, coordinate_t enemy_r, coordinate_t enemy_c);
+void piece_capture(tower_t *checkerboard, coordinate_t r, coordinate_t c, int turn, coordinate_t move_r, coordinate_t move_c, coordinate_t enemy_r, coordinate_t enemy_c);
 
 /**
  * controlla attraverso le funzioni di diagonal_check se ci sono mangiate possibili e chiede all'utente se vuole mangiare o no
@@ -163,6 +171,6 @@ void piece_capture(tower_t *checkerboard, coordinate_t r, coordinate_t c, const 
  * @param turn - Puntatore all'indirizzo di memoria del turno
  * @return 0 se non ci sono mangiate, 1 se il player ha mangiato, 2 se non ha voluto mangiare
  */
-int capture_check(tower_t *checkerboard, int *turn);
+int capture_check(tower_t *checkerboard, int turn);
 
 #endif //MINILASKA_MINILASKA_H

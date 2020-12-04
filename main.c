@@ -16,26 +16,26 @@ int main() {
 
     setvbuf(stdout, NULL, _IONBF, 0); /* permette di debuggare con scanf */
 
-    checkerboard_init(&(checkerboard[0][0]));
+    checkerboard_init(&(checkerboard[0][0])); /*funzione checkerboard create a cui non passi nulla e ti crea la checkerboard inizializzandola*/
     checkerboard_print(&(checkerboard[0][0]));
-    while (win_count == 0) {
-        switch (capture_check(&checkerboard[0][0], &turn)) {
+    while (!win_count) {
+        switch (capture_check(&checkerboard[0][0], turn)) {
             case 0:
                 printf("case 0\n");
-                if (win(&(checkerboard[0][0]), &turn)) {
+                if (win(&(checkerboard[0][0]), turn)) {
                     win_count++;
                     continue;
                 }
                 printf("\nTURNO GIOCATORE %d \n", turn);
                 printf("Seleziona le coordinate della pedina x , y: \n");
                 scanf("%d %d", &x, &y); /*inserimento pedina da controllare*/ /*TODO, RICHIEDERE SELEZIONE SE INSERISCI non numeri*/
-                if (!piece_selection(&(checkerboard[0][0]), x, y, &turn)) {
+                if (!piece_selection(&(checkerboard[0][0]), x, y, turn)) {
                     continue;
                 } else {
                     printf("Hai selezionato le coordinate x=%d y=%d\n", x, y);
                     printf("seleziona le coordinate in cui muovere la pedina x , y: \n");
                     scanf("%d %d", &move_x, &move_y); /*inserimento coordinate destinazione pedina*/
-                    if (!move_selection(&(checkerboard[0][0]), x, y, &turn, move_x, move_y)) {
+                    if (!move_selection(&(checkerboard[0][0]), x, y, turn, move_x, move_y)) {
                         continue;
                     } /*se la mossa è valida stampa chessboard*/
                 }
