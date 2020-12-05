@@ -39,6 +39,7 @@ int main() {
                         continue;
                     } /*se la mossa è valida stampa chessboard*/
                 }
+                turn_update(&turn);
                 break;
             case 1:
                 printf("case 1\n");
@@ -46,11 +47,14 @@ int main() {
             case 2:
                 printf("case 2\n");
                 continue;
+            case 3:
+                printf("case 3\n");
+                turn_update(&turn);
+                continue;
         }
         printf("updating\n");
         promotion_check(&(checkerboard[0][0]));
         checkerboard_print(&(checkerboard[0][0]));
-        turn_update(&turn);
     }
     turn_update(&turn);
     printf("WIN Player %d ", turn);

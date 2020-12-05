@@ -17,7 +17,7 @@ typedef enum player_t {VOID = 0, PLAYER_1 = 1, PLAYER_2 = 2, PLAYER_1_PRO = 3, P
 typedef
 struct tower {
     player_t player;
-    composition_t composition[3];
+    composition_t composition[22];
 } tower_t;
 
 /**

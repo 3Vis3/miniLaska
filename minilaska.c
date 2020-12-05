@@ -35,31 +35,35 @@ const player_t PLAYER_1 = 1;
 const player_t PLAYER_2 = 2;
 const player_t PLAYER_1_PRO = 3;
 const player_t PLAYER_2_PRO = 4;*/
-const size_t COMPOSITION_SIZE = 3;
+const size_t COMPOSITION_SIZE = 22;
+int s_chance[3] = {0, 0, 0};
 
 
 /*ogni casella è formata da una struttura tower_t, composta da player (un intero) e da un array di tre elementi (composition),
 il primo elemento corrisponde alla testa (la quale determinerà il campo player), il secondo alla parte centrale e il terzo alla coda.
 Nel caso la pedina fosse formata da meno di tre elementi, l'elemento dell'array sarà uguale a 0*/
 void checkerboard_init(tower_t *checkerboard){ /*funzione che inizializza la scacchiera e anche le pedine N.B. sarà chiamata una volta sola */
-    int r, c;
+    int r, c, i;
     for (r = 0; r < ROWS; r++) {
         for (c = 0; c < COLUMNS; c++) {
             if (r < 3 && ((r % 2 == 0 && c % 2 == 0) || (r % 2 != 0 && c % 2 !=0))) { /*se ci troviamo sulla parte superiore della scacchiera e l'indice delle righe e colonne è entrambe pari o entrambe dispari*/
                 PLAYER_TOWER = PLAYER_1;                              /*assegnamo il posto al giocatore 1 e componiamo la sua torre*/
                 HEAD_TOWER = PLAYER_1;
-                MID_TOWER = VOID;
-                TAIL_TOWER = VOID;
+                for (i = 1; i < COMPOSITION_SIZE; i++) {
+                    checkerboard[r * COLUMNS + c].composition[i] = 0;
+                }
             }else if (r > 3 && ((r % 2 == 0 && c % 2 == 0) || (r % 2 != 0 && c % 2 !=0))) { /*se ci troviamo sulla parte della scacchiera inferiore e l'indice delle righe e colonne è o entrambe pari o entrambe dispari*/
                 PLAYER_TOWER = PLAYER_2;                               /*assegnamo il posto al giocatore 2 e componiamo la sua torre*/
                 HEAD_TOWER = PLAYER_2;
-                MID_TOWER = VOID;
-                TAIL_TOWER = VOID;
+                for (i = 1; i < COMPOSITION_SIZE; i++) {
+                    checkerboard[r * COLUMNS + c].composition[i] = 0;
+                }
             } else {
                 PLAYER_TOWER = VOID;                                  /*la casella avrà una struttura tower_t inizializzata a 0 (vuota), sia nel player che nella composition*/
                 HEAD_TOWER = VOID;
-                MID_TOWER = VOID;
-                TAIL_TOWER = VOID;
+                for (i = 1; i < COMPOSITION_SIZE; i++) {
+                    checkerboard[r * COLUMNS + c].composition[i] = 0;
+                }
             }
         }
     }
@@ -162,6 +166,7 @@ bool move_selection(tower_t *checkerboard, const coordinate_t c, const coordinat
                     PLAYER_DESTINATION = turn; /*assegnamento alla casella del player*/
                     composition_update(checkerboard, r, c, move_r, move_c);
                     clear_square(checkerboard, r, c);
+                    printf("player vecchio e %d, player nuovo e %d, composition vecchia e %d %d %d, composition nuova e %d %d %d", checkerboard[r * COLUMNS + c].player, checkerboard[move_r * COLUMNS + move_c].player, checkerboard[r * COLUMNS + c].composition[0], checkerboard[r * COLUMNS + c].composition[1], checkerboard[r * COLUMNS + c].composition[2], checkerboard[move_r * COLUMNS + move_c].composition[0], checkerboard[move_r * COLUMNS + move_c].composition[1], checkerboard[move_r * COLUMNS + move_c].composition[2]);
                     return 1;
                 }
             } /*player 1 non pro*/
@@ -170,6 +175,7 @@ bool move_selection(tower_t *checkerboard, const coordinate_t c, const coordinat
                 PLAYER_DESTINATION = turn; /*assegnamento alla casella del player*/
                 composition_update(checkerboard, r, c, move_r, move_c);
                 clear_square(checkerboard, r, c);
+                printf("player vecchio e %d, player nuovo e %d, composition vecchia e %d %d %d, composition nuova e %d %d %d", checkerboard[r * COLUMNS + c].player, checkerboard[move_r * COLUMNS + move_c].player, checkerboard[r * COLUMNS + c].composition[0], checkerboard[r * COLUMNS + c].composition[1], checkerboard[r * COLUMNS + c].composition[2], checkerboard[move_r * COLUMNS + move_c].composition[0], checkerboard[move_r * COLUMNS + move_c].composition[1], checkerboard[move_r * COLUMNS + move_c].composition[2]);
                 return 1;
             }
         } else if (turn == PLAYER_2 && PLAYER_DESTINATION == VOID) {
@@ -179,6 +185,7 @@ bool move_selection(tower_t *checkerboard, const coordinate_t c, const coordinat
                     PLAYER_DESTINATION = turn; /*assegnamento alla casella del player*/
                     composition_update(checkerboard, r, c, move_r, move_c);
                     clear_square(checkerboard, r, c);
+                    printf("player vecchio e %d, player nuovo e %d, composition vecchia e %d %d %d, composition nuova e %d %d %d", checkerboard[r * COLUMNS + c].player, checkerboard[move_r * COLUMNS + move_c].player, checkerboard[r * COLUMNS + c].composition[0], checkerboard[r * COLUMNS + c].composition[1], checkerboard[r * COLUMNS + c].composition[2], checkerboard[move_r * COLUMNS + move_c].composition[0], checkerboard[move_r * COLUMNS + move_c].composition[1], checkerboard[move_r * COLUMNS + move_c].composition[2]);
                     return 1;
                 }
             } /*player 2 non pro*/
@@ -188,6 +195,7 @@ bool move_selection(tower_t *checkerboard, const coordinate_t c, const coordinat
                 PLAYER_DESTINATION = turn;
                 composition_update(checkerboard, r, c, move_r, move_c);
                 clear_square(checkerboard, r, c);
+                printf("player vecchio e %d, player nuovo e %d, composition vecchia e %d %d %d, composition nuova e %d %d %d", checkerboard[r * COLUMNS + c].player, checkerboard[move_r * COLUMNS + move_c].player, checkerboard[r * COLUMNS + c].composition[0], checkerboard[r * COLUMNS + c].composition[1], checkerboard[r * COLUMNS + c].composition[2], checkerboard[move_r * COLUMNS + move_c].composition[0], checkerboard[move_r * COLUMNS + move_c].composition[1], checkerboard[move_r * COLUMNS + move_c].composition[2]);
                 return 1;
             }
         }
@@ -341,8 +349,8 @@ int capture_check(tower_t *checkerboard, int turn){
     char selection; /*variabili char checkerboard da scanf riceve s oppure n e fa il confronto tra selezione e i caratteri n o s*/ /*TODO SISTEMARE LOOP INFINITO SE INSERISCI SN*/
     char si= 's';
     int count=0; /*conta le pedine obbligate a mangiare*/
-    for (r = 0; r < ROWS; r++) {
-        for (c = 0; c < COLUMNS; c++) {
+    for (r = s_chance[0]; r < ROWS; r++) {
+        for (c = s_chance[1]; c < COLUMNS; c++) {
             if (PLAYER_TOWER == turn) {
                 if (turn == PLAYER_1 /*|| PLAYER2 == promoted*/) {
                     if (diagonal_down_left_check(checkerboard, r, c, FIRST_DIAGONAL) == PLAYER_2) {
@@ -356,6 +364,9 @@ int capture_check(tower_t *checkerboard, int turn){
                             printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c - 1, r + 1);
                             scanf(" %c", &selection); /*chiede se vuoi mangiare con quella pedina*/
                             if (selection==si) { /*se dici si chiama mangiata*/
+                                s_chance[0] = r + 2;
+                                s_chance[1] = c - 2;
+                                s_chance[2] = 1;
                                 piece_capture(checkerboard, r, c, turn, r + 2, c - 2, r + 1, c - 1);
                                 return 1;
                             }
@@ -369,6 +380,9 @@ int capture_check(tower_t *checkerboard, int turn){
                             printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c + 1, r + 1);
                             scanf(" %c", &selection);
                             if (selection==si) {
+                                s_chance[0] = r + 2;
+                                s_chance[1] = c + 2;
+                                s_chance[2] = 1;
                                 piece_capture(checkerboard, r, c, turn, r + 2, c + 2, r + 1, c + 1);
                                 return 1;
                             }
@@ -384,6 +398,9 @@ int capture_check(tower_t *checkerboard, int turn){
                                 printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c - 1, r - 1);
                                 scanf(" %c", &selection);
                                 if (selection==si) {
+                                    s_chance[0] = r - 2;
+                                    s_chance[1] = c - 2;
+                                    s_chance[2] = 1;
                                     piece_capture(checkerboard, r, c, turn, r - 2, c - 2, r - 1, c - 1);
                                     return 1;
                                 }
@@ -398,6 +415,9 @@ int capture_check(tower_t *checkerboard, int turn){
                                 printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c + 1, r - 1);
                                 scanf(" %c", &selection);
                                 if (selection==si) {
+                                    s_chance[0] = r - 2;
+                                    s_chance[1] = c + 2;
+                                    s_chance[2] = 1;
                                     piece_capture(checkerboard, r, c, turn, r - 2, c + 2, r - 1, c + 1);
                                     return 1;
                                 }
@@ -415,6 +435,9 @@ int capture_check(tower_t *checkerboard, int turn){
                             printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c - 1, r - 1);
                             scanf(" %c", &selection);
                             if (selection==si) {
+                                s_chance[0] = r - 2;
+                                s_chance[1] = c - 2;
+                                s_chance[2] = 1;
                                 piece_capture(checkerboard, r, c, turn, r - 2, c - 2, r - 1, c - 1);
                                 return 1;
                             }
@@ -429,6 +452,9 @@ int capture_check(tower_t *checkerboard, int turn){
                             printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c + 1, r - 1);
                             scanf(" %c", &selection);
                             if (selection==si) {
+                                s_chance[0] = r - 2;
+                                s_chance[1] = c + 2;
+                                s_chance[2] = 1;
                                 piece_capture(checkerboard, r, c, turn, r - 2, c + 2, r - 1, c + 1);
                                 return 1;
                             }
@@ -445,6 +471,9 @@ int capture_check(tower_t *checkerboard, int turn){
                                 printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c - 1, r + 1);
                                 scanf(" %c", &selection); /*chiede se vuoi mangiare con quella pedina*/
                                 if (selection==si) { /*se dici si chiama mangiata*/
+                                    s_chance[0] = r + 2;
+                                    s_chance[1] = c - 2;
+                                    s_chance[2] = 1;
                                     piece_capture(checkerboard, r, c, turn, r + 2, c - 2, r + 1, c - 1);
                                     return 1;
                                 }
@@ -458,6 +487,9 @@ int capture_check(tower_t *checkerboard, int turn){
                                 printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c + 1, r + 1);
                                 scanf(" %c", &selection);
                                 if (selection==si) {
+                                    s_chance[0] = r + 2;
+                                    s_chance[1] = c + 2;
+                                    s_chance[2] = 1;
                                     piece_capture(checkerboard, r, c, turn, r + 2, c + 2, r + 1, c + 1);
                                     return 1;
                                 }
@@ -465,6 +497,11 @@ int capture_check(tower_t *checkerboard, int turn){
                         }
                     }
                 }
+            } if (s_chance[2] != 0) {
+                s_chance[0] = 0;
+                s_chance[1] = 0;
+                s_chance[2] = 0;
+                return 3;
             }
         }
     } if (count != 0) { /*se il conteggio delle obbligate è diverso da zero riparte il controllo*/
