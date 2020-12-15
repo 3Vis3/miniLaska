@@ -9,7 +9,8 @@ coordinate_t best_move[4] = {-1, -1, -1, -1}; /*r c base e r c destinazione*/
 
 int main() {
     tower_t checkerboard[ROWS][COLUMNS];
-    coordinate_t x, y, move_x, move_y;
+    coordinate_t src, dst;
+    move_t move;
     char xx; /*per poi convertirlo in integer e chiamare le coordinate*/
     int turn = 1;
     int win_count = 0;
@@ -28,14 +29,15 @@ int main() {
                 }
                 printf("\nTURNO GIOCATORE %d \n", turn);
                 printf("Seleziona le coordinate della pedina x , y: \n");
-                scanf("%d %d", &x, &y); /*inserimento pedina da controllare*/ /*TODO, RICHIEDERE SELEZIONE SE INSERISCI non numeri*/
-                if (!piece_selection(&(checkerboard[0][0]), x, y, turn)) {
+                scanf("%d %d", &src.c, &src.r); /*inserimento pedina da controllare*/ /*TODO, RICHIEDERE SELEZIONE SE INSERISCI non numeri*/
+                if (!piece_selection(&(checkerboard[0][0]), src, turn)) {
                     continue;
                 } else {
-                    printf("Hai selezionato le coordinate x=%d y=%d\n", x, y);
+                    printf("Hai selezionato le coordinate x=%d y=%d\n", src.c, src.r);
                     printf("seleziona le coordinate in cui muovere la pedina x , y: \n");
-                    scanf("%d %d", &move_x, &move_y); /*inserimento coordinate destinazione pedina*/
-                    if (!move_selection(&(checkerboard[0][0]), x, y, turn, move_x, move_y)) {
+                    scanf("%d %d", &dst.c, &dst.r); /*inserimento coordinate destinazione pedina*/
+                    move.src = src, move.dst = dst;
+                    if (!move_selection(&(checkerboard[0][0]), move, turn)) {
                         continue;
                     } /*se la mossa è valida stampa chessboard*/
                 }

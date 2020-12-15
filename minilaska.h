@@ -31,6 +31,8 @@ struct move {
     coordinate_t dst;
 } move_t;
 
+
+
 /**
  * Crea la scacchiera inizializzando ogni casella con i corrispettivi player e la composizione delle loro pedine
  * @param checkerboard - Puntatore all'indirizzo di memoria della scacchiera (una matrice bidimensionale di tipo struct tower)
@@ -61,7 +63,7 @@ void promotion_check(tower_t *checkerboard);
  * @param r - copia della coordinata della riga
  * @return 1 se sono all'interno, 0 altrimenti
  */
-bool control_range(coordinate_t src);
+bool control_range(int c, int r);
 
 /**
  * Controlla se il giocatore seleziona una pedina corretta, basandosi sul turno e sulla validità delle coordinate
@@ -175,6 +177,16 @@ bool win(tower_t *checkerboard, int turn);
  * @param enemy_c copia della coordinata della colonna della pedina avversaria
  */
 void piece_capture(tower_t *checkerboard, move_t move, int turn, coordinate_t enemy);
+
+/**
+ * funzione che dice se una certa pedina può mangiare o no
+ * @param checkerboard
+ * @param r
+ * @param c
+ * @param turn
+ * @return
+ */
+bool can_capture (tower_t* checkerboard, coordinate_t src, int turn);
 
 /**
  * controlla attraverso le funzioni di diagonal_check se ci sono mangiate possibili e chiede all'utente se vuole mangiare o no

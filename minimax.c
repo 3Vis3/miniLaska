@@ -66,54 +66,65 @@ int* get_valid_moves (tower_t* temp_checkerboard, int turn) {
 
 }
 
-
-bool can_piece_be_moved(tower_t* checkerboard, coordinate_t r, coordinate_t c, int turn, coordinate_t* move_array){
-    int move_r, move_c;
-    [r, c];
+/*ritorna il numero delle mosse possibili date le coordinate della pedina src (ex get_nr_all_moves), modifica inoltre l'array dst con tutte le possibili coordinate dst*/
+int can_piece_be_moved(tower_t* checkerboard, coordinate_t src, int turn, coordinate_t* dst){
+    int nr_moves = 0;
     if (turn == PLAYER_1) { /*mi interessa sapere se, date le coordinate r e c della pedina, ci sono movimenti possibili*/
 
         if (HEAD_TOWER == PLAYER_1_PRO) { /*se il player è promosso ha liberta di movimento in ogni direzione*/
             /*(move_r == r + 1 || move_r == r - 1) && (move_c == c + 1 || move_c == c - 1)*/
-            if (checkerboard[(r + 1) * COLUMNS + (c+1)].player == VOID || checkerboard[(r + 1) * COLUMNS + (c - 1)].player == VOID || checkerboard[(r - 1) * COLUMNS + (c + 1)].player == VOID || checkerboard[(r - 1) * COLUMNS + (c - 1)].player == VOID ) {
-                return 1;
+            if (checkerboard[(r - 1) * COLUMNS + (c + 1)].player == VOID({
+                    nr_moves++;
+                    dst[nr_moves]->r = r - 1;
+                    dst[nr_moves]->c = c + 1;
+            }
+            if(checkerboard[(r - 1) * COLUMNS + (c - 1)].player == VOID ) {
+                nr_moves++;
+                dst[nr_moves]->r = r - 1;
+                dst[nr_moves]->c = c - 1;
             }
         } /*player 1 non pro*/
         /*(move_r == r + 1) && ((move_c == c + 1) || (move_c == c - 1))*/
-        else if (checkerboard[(r + 1) * COLUMNS + (c + 1)].player == VOID || checkerboard[(r + 1) * COLUMNS + (c - 1)].player == VOID) { /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
-            return 1;
+        if (checkerboard[(r + 1) * COLUMNS + (c + 1)].player == VOID){
+            nr_moves++;
+            dst[nr_moves]->r = r + 1;
+            dst[nr_moves]->c = c + 1;
         }
+        if(checkerboard[(r + 1) * COLUMNS + (c - 1)].player == VOID) { /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
+            nr_moves++;
+            dst[nr_moves]->r = r + 1;
+            dst[nr_moves]->c = c - 1;
+        }
+
     } else if (turn == PLAYER_2) {
         if (HEAD_TOWER == PLAYER_2_PRO) {
             if (checkerboard[(r + 1) * COLUMNS + (c+1)].player == VOID || checkerboard[(r + 1) * COLUMNS + (c - 1)].player == VOID || checkerboard[(r - 1) * COLUMNS + (c + 1)].player == VOID || checkerboard[(r - 1) * COLUMNS + (c - 1)].player == VOID ) {
-                return 1;
+                nr_moves++;
             }
         } /*player 2 non pro*/
         else if (checkerboard[(r + 1) * COLUMNS + (c + 1)].player == VOID || checkerboard[(r + 1) * COLUMNS + (c - 1)].player == VOID) { /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
-            return 1;
+            nr_moves++;
         }
     }
-    return 0;
+    return nr_moves;
 }
 
 /**
  * data la funzione get_all_pieces di un giocatore, mi torna tutte le mosse possibili data una simulazione della checkerboard e il turno, in modo da valutare i vari score possibili
  * @return
  */
-int get_nr_all_moves (tower_t* checkerboard, int turn) {
+/*int get_nr_all_moves (tower_t* checkerboard, coordinate_t src, int turn) {
     int move_r, move_c, nr_movements = 0;
-    for (move_r = 0; move_r < ROWS; move_r++){
-        for (move_c = 0; move_c < COLUMNS; move_c++){
-            nr_movements += can_piece_be_moved(checkerboard, r, c, turn, move_r, move_c);
-        }
-    }
-    /*chiama la funzione get_valid_moves per ogni piece restituito da get_all_pieces e la inserisco in un array composto dalla checkerboard e dalla pedina*/
+
+    nr_movements += can_piece_be_moved(checkerboard, src, turn, NULL);
+    *//*chiama la funzione get_valid_moves per ogni piece restituito da get_all_pieces e la inserisco in un array composto dalla checkerboard e dalla pedina*//*
     return nr_movements;
-}
+}*/
 
 /**
  * effettua la mossa e ritorna la simulazione della temp_checkerboard
  */
-tower_t* cpu_play (tower_t* temp_checkerboard, coordinate_t r, coordinate_t c, int turn) {
+tower_t* cpu_play (tower_t* temp_checkerboard, move_t move, int turn) {
     if(move_selection(temp_checkerboard,)){
         return  temp_checkerboard;
     }
@@ -134,26 +145,35 @@ tower_t* deep_tower_copy (const tower_t* checkerboard){
     return temp_checkerboard;
 }
 
+
+
 /*PLAYER 2 è il CPU*/
 /**
  * torna un array di due elementi corrispondenti alle coordinate x, y su cui effettura la mossa
  */
-int minimax (tower_t *checkerboard, coordinate_t r, coordinate_t c, int depth, int turn, int* best_move){ /*l'array best move conterrà le coordinate x e y della migliore mossa*/
+int minimax (tower_t *checkerboard, coordinate_t src, int depth, int turn, coordinate_t *best_move){ /*l'array best move conterrà le coordinate x e y della migliore mossa*/
     int best_score, curr_score, i;
 
     tower_t* temp_checkerboard = deep_tower_copy(checkerboard); /*TODO free*/
 
-    int* curr_move = (int*) calloc(4, sizeof(int));
-    /*free(checkerboard);*/
+    /*int* curr_move = (int*) calloc(4, sizeof(int));
+    free(checkerboard);*/
+
     if(win(temp_checkerboard, turn) || depth == 0){
         return get_score(temp_checkerboard, turn);
     }
 
     if(turn == PLAYER_1) { /*player NON CPU vuole -1000*/
         best_score = +1000; /*peggiore dei casi*/
-        for (i = 0, i < get_nr_all_moves(temp_checkerboard[r * COLUMNS + c], turn); i++){ /*itera per tutte le mosse possibili di quella pedina, / 2 perchè l'array contiene coppie di coordinate*/
-            /*TODO esegui mossa nella temp_checkerboard*/
-            curr_score = min(best_score, minimax(temp_checkerboard, depth - 1, PLAYER_2)); /*min tra curr_score e il punteggio restituito dalla simulazione della scacchiera*/
+        for (i = 0, i < can_piece_be_moved(temp_checkerboard, src, turn, dst); i++){ /*itera per tutte le mosse possibili di quella pedina, / 2 perchè l'array contiene coppie di coordinate*/
+            move_t curr_move;
+            curr_move.src = src;
+            curr_move.dst = dst[i]; /*parametro dato da can piece be moved*/
+            cpu_play (temp_checkerboard, curr_move, turn);
+            /*TODO CPU_PLAY esegui mossa nella temp_checkerboard*/
+
+            /*TODO nuovo src?*/
+            curr_score = min(best_score, minimax(temp_checkerboard, dst[i], depth - 1, PLAYER_2)); /*min tra curr_score e il punteggio restituito dalla simulazione della scacchiera*/
             if (curr_score < best_score) {
                 best_score = curr_score;
                 *best_move = *curr_move; /* TODO assegno al puntatore best_move il valore del puntatore della mossa corrente*/
@@ -175,6 +195,36 @@ int minimax (tower_t *checkerboard, coordinate_t r, coordinate_t c, int depth, i
     }
     free(temp_checkerboard);
     return best_score;
+}
+
+/*funzione che restituisce le coordinate della mossa migliore per la CPU, chiamando minimax per ogni sua mossa valida delle sue pedine*/
+move_t best_move (tower_t *checkerboard, move_t move, int turn) {
+    int r, c, curr_score = 0, best_score = -1000;
+    move_t best_move, curr_move[4];
+    for (r = 0; r < ROWS; r++) {
+        for (c = 0; c < COLUMNS; c++) {
+            if(can_piece_be_moved(checkerboard, r, c, turn, &curr_move.dst)){
+                int i;
+                curr_move.src.r = r;
+                curr_move.src.c = c;
+                /*i al massimo arriverà a 4 perchè è il nr max che una pedina può muoversi*/
+                for(i = 0; i < can_piece_be_moved(checkerboard, curr_move.src, turn, &curr_move.dst); i++) {
+
+                    curr_score = minimax(checkerboard, curr_move.src, MAX_DEPTH, turn, &curr_move[i].dst);
+
+                    if(best_score < curr_score) {
+
+                        best_score = curr_score;
+                        best_move.src.r = curr_move.src.r;
+                        best_move.src.c = curr_move.src.c;
+                        best_move.dst.r = curr_move.dst.r;
+                        best_move.dst.c = curr_move.dst.c;
+                    }
+                }
+            }
+        }
+    }
+    return best_move;
 }
 
 
