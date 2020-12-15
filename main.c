@@ -1,16 +1,16 @@
 #include <stdio.h>
+#include <string.h>
 #define ROWS (7)
 #define COLUMNS (7)
 
 #include "minilaska.h"
 
-typedef int player_t;
-typedef int coordinate_t;
-
+coordinate_t best_move[4] = {-1, -1, -1, -1}; /*r c base e r c destinazione*/
 
 int main() {
     tower_t checkerboard[ROWS][COLUMNS];
     coordinate_t x, y, move_x, move_y;
+    char xx; /*per poi convertirlo in integer e chiamare le coordinate*/
     int turn = 1;
     int win_count = 0;
 
@@ -40,21 +40,27 @@ int main() {
                     } /*se la mossa è valida stampa chessboard*/
                 }
                 turn_update(&turn);
+                promotion_check(&(checkerboard[0][0]));
+                printf("\n");
+                checkerboard_print(&(checkerboard[0][0]));
                 break;
             case 1:
                 printf("case 1\n");
-                break;
+                printf("updating\n");
+                promotion_check(&(checkerboard[0][0]));
+                checkerboard_print(&(checkerboard[0][0]));
+                /*DOPO IL case 1 andrà sempre di nuovo o a case 1 o case 3*/
+                continue;
             case 2:
+                /*quando spammi no continuamente ti obbliga a scegliere ripetendo il ciclo*/
                 printf("case 2\n");
                 continue;
             case 3:
+                /*ci entra sempre dopo case 1 (quando mangi) e se quella pedina non puo fare catene di mangiate, case 3 fa un cambio turno e basta*/
                 printf("case 3\n");
                 turn_update(&turn);
-                continue;
-        }
-        printf("updating\n");
-        promotion_check(&(checkerboard[0][0]));
-        checkerboard_print(&(checkerboard[0][0]));
+                break;
+        } /*minimax();*/
     }
     turn_update(&turn);
     printf("WIN Player %d ", turn);

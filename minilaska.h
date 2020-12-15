@@ -5,7 +5,6 @@
 #include <stdbool.h>
 
 typedef int player_t;
-typedef int coordinate_t;
 typedef enum player_t {VOID = 0, PLAYER_1 = 1, PLAYER_2 = 2, PLAYER_1_PRO = 3, PLAYER_2_PRO = 4} composition_t;
 
 /**
@@ -19,6 +18,18 @@ struct tower {
     player_t player;
     composition_t composition[22];
 } tower_t;
+
+typedef
+struct coordinate {
+    int c;
+    int r;
+} coordinate_t;
+
+typedef
+struct move {
+    coordinate_t src;
+    coordinate_t dst;
+} move_t;
 
 /**
  * Crea la scacchiera inizializzando ogni casella con i corrispettivi player e la composizione delle loro pedine
@@ -50,7 +61,7 @@ void promotion_check(tower_t *checkerboard);
  * @param r - copia della coordinata della riga
  * @return 1 se sono all'interno, 0 altrimenti
  */
-bool control_range(coordinate_t c, coordinate_t r);
+bool control_range(coordinate_t src);
 
 /**
  * Controlla se il giocatore seleziona una pedina corretta, basandosi sul turno e sulla validità delle coordinate
@@ -60,7 +71,7 @@ bool control_range(coordinate_t c, coordinate_t r);
  * @param turn - Puntatore all'indirizzo di memoria del turno
  * @return 1 se la selezione è corretta, 0 altrimenti
  */
-bool piece_selection (tower_t *checkerboard, coordinate_t c, coordinate_t r, int turn);
+bool piece_selection (tower_t *checkerboard, coordinate_t src, int turn);
 
 /**
  * Aggiorna la composizione della pedina dopo lo spostamento, eliminando quella vecchia
@@ -70,7 +81,7 @@ bool piece_selection (tower_t *checkerboard, coordinate_t c, coordinate_t r, int
  * @param move_r - copia della coordinata della riga di destinazione
  * @param move_c - copia della coordinata della colonna di destinazione
  */
-void composition_update(tower_t *checkerboard, coordinate_t r, coordinate_t c, coordinate_t move_r, coordinate_t move_c);
+void composition_update(tower_t *checkerboard, move_t move);
 
 /**
  * Elimina la pedina e la sua composizione nelle coordinate passate
@@ -78,7 +89,7 @@ void composition_update(tower_t *checkerboard, coordinate_t r, coordinate_t c, c
  * @param r - copia della coordinata della riga
  * @param c - copia della coordinata della colonna
  */
-void clear_square(tower_t *checkerboard, coordinate_t r, coordinate_t c);
+void clear_square(tower_t *checkerboard, coordinate_t src);
 
 /**
  * controlla che nelle coordinate di destinazione non ci siano pedine e, se sono valide, richiama composition_update per spostare la pedina e la sua composizione, anche per i promossi
@@ -90,7 +101,7 @@ void clear_square(tower_t *checkerboard, coordinate_t r, coordinate_t c);
  * @param move_r - copia della coordinata della riga di destinazione
  * @return 1 se lo spostamento è andato a buon fine, 0 altrimenti
  */
-bool move_selection(tower_t *checkerboard, coordinate_t c, coordinate_t r, int turn, coordinate_t move_c, coordinate_t move_r);
+bool move_selection(tower_t *checkerboard, move_t move, int turn);
 
 /**
  * Controlla il player nelle diagonali in basso a sinistra dato il parametro "is_first_diagonal". Oltre al player della casella destinataria può tornare ERROR, nel caso le coordinate siano fuori dal range valido
@@ -101,7 +112,7 @@ bool move_selection(tower_t *checkerboard, coordinate_t c, coordinate_t r, int t
  * la casella dove la pedina dovrà muoversi se potrà mangiare
  * @return PLAYER_1 / PLAYER_2 / VOID / ERROR (-1)
  */
-player_t diagonal_down_left_check(tower_t *checkerboard, coordinate_t r, coordinate_t c, bool is_first_diagonal);
+player_t diagonal_down_left_check(tower_t *checkerboard, coordinate_t src, bool is_first_diagonal);
 
 /**
 * Controlla il player nelle diagonali in basso a destra dato il parametro "is_first_diagonal". Oltre al player della casella destinataria può tornare ERROR, nel caso le coordinate siano fuori dal range valido
@@ -112,7 +123,7 @@ player_t diagonal_down_left_check(tower_t *checkerboard, coordinate_t r, coordin
  * la casella dove la pedina dovrà muoversi se potrà mangiare
  * @return PLAYER_1 / PLAYER_2 / VOID / ERROR (-1)
  */
-player_t diagonal_down_right_check(tower_t *checkerboard, coordinate_t r, coordinate_t c, bool is_first_diagonal);
+player_t diagonal_down_right_check(tower_t *checkerboard, coordinate_t src, bool is_first_diagonal);
 
 /**
  * * Controlla il player nelle diagonali in alto a sinistra dato il parametro "is_first_diagonal". Oltre al player della casella destinataria può tornare ERROR, nel caso le coordinate siano fuori dal range valido
@@ -123,7 +134,7 @@ player_t diagonal_down_right_check(tower_t *checkerboard, coordinate_t r, coordi
  * la casella dove la pedina dovrà muoversi se potrà mangiare
  * @return PLAYER_1 / PLAYER_2 / VOID / ERROR (-1)
  */
-player_t diagonal_up_left_check(tower_t *checkerboard, coordinate_t r, coordinate_t c, bool is_first_diagonal);
+player_t diagonal_up_left_check(tower_t *checkerboard, coordinate_t src, bool is_first_diagonal);
 
 /**
  * * Controlla il player nelle diagonali in alto a destra dato il parametro "is_first_diagonal". Oltre al player della casella destinataria può tornare ERROR, nel caso le coordinate siano fuori dal range valido
@@ -134,7 +145,7 @@ player_t diagonal_up_left_check(tower_t *checkerboard, coordinate_t r, coordinat
  * la casella dove la pedina dovrà muoversi se potrà mangiare
  * @return PLAYER_1 / PLAYER_2 / VOID / ERROR (-1)
  */
-player_t diagonal_up_right_check(tower_t *checkerboard, coordinate_t r, coordinate_t c, bool is_first_diagonal);
+player_t diagonal_up_right_check(tower_t *checkerboard, coordinate_t src, bool is_first_diagonal);
 
 /**
  * controlla quante pedine rimaste ha il giocatore passato come turno
@@ -163,7 +174,7 @@ bool win(tower_t *checkerboard, int turn);
  * @param enemy_r - copia della coordinata della riga della pedina avversaria
  * @param enemy_c copia della coordinata della colonna della pedina avversaria
  */
-void piece_capture(tower_t *checkerboard, coordinate_t r, coordinate_t c, int turn, coordinate_t move_r, coordinate_t move_c, coordinate_t enemy_r, coordinate_t enemy_c);
+void piece_capture(tower_t *checkerboard, move_t move, int turn, coordinate_t enemy);
 
 /**
  * controlla attraverso le funzioni di diagonal_check se ci sono mangiate possibili e chiede all'utente se vuole mangiare o no

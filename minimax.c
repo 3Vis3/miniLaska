@@ -62,14 +62,14 @@ int get_score (tower_t *checkerboard, int turn) {
  * @return
  */
 
-int* get_valid_moves () {
+int* get_valid_moves (tower_t* temp_checkerboard, int turn) {
 
 }
 
 
-bool can_piece_be_moved(tower_t* checkerboard, coordinate_t r, coordinate_t c, int turn){
+bool can_piece_be_moved(tower_t* checkerboard, coordinate_t r, coordinate_t c, int turn, coordinate_t* move_array){
     int move_r, move_c;
-
+    [r, c];
     if (turn == PLAYER_1) { /*mi interessa sapere se, date le coordinate r e c della pedina, ci sono movimenti possibili*/
 
         if (HEAD_TOWER == PLAYER_1_PRO) { /*se il player è promosso ha liberta di movimento in ogni direzione*/
@@ -118,17 +118,17 @@ tower_t* cpu_play (tower_t* temp_checkerboard, coordinate_t r, coordinate_t c, i
         return  temp_checkerboard;
     }
 }
-
+/* TODO Riccardo ha cambiato deeptower con cicli for*/
 /*copia la scacchiera creando nuovi puntatori e quindi non andando a modificare la scacchiera base, per le simulazioni*/
 tower_t* deep_tower_copy (const tower_t* checkerboard){
-    int r, c;
+    int r, c, i;
     tower_t* temp_checkerboard = (tower_t*) malloc (ROWS * COLUMNS * sizeof(tower_t));
     for (r = 0; r < ROWS; r++){
         for (c = 0; c < COLUMNS; c++){
-            temp_checkerboard[r * COLUMNS + c].player = checkerboard->player;
-            temp_checkerboard[r * COLUMNS + c].composition[0] = checkerboard->composition[0];
-            temp_checkerboard[r * COLUMNS + c].composition[1] = checkerboard->composition[1];
-            temp_checkerboard[r * COLUMNS + c].composition[2] = checkerboard->composition[2];
+            temp_checkerboard[r * COLUMNS + c].player = checkerboard[r * COLUMNS + c].player;
+            for (i = 0; i < COMPOSIZION_SIZE; i++) {
+                temp_checkerboard[r * COLUMNS + c].composition[i] = checkerboard[r * COLUMNS + c].composition[i];
+            }
         }
     }
     return temp_checkerboard;
@@ -173,5 +173,8 @@ int minimax (tower_t *checkerboard, coordinate_t r, coordinate_t c, int depth, i
             }
         }
     }
+    free(temp_checkerboard);
     return best_score;
 }
+
+

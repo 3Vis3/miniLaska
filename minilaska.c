@@ -13,7 +13,7 @@
 #define FIRST_DIAGONAL (1)
 #define SECOND_DIAGONAL (0)
 #define ERROR (-1)
-#define PLAYER_TOWER checkerboard[r * COLUMNS + c].player
+#define PLAYER_TOWER checkerboard[src.r * COLUMNS + src.c].player
 #define HEAD_TOWER checkerboard[r * COLUMNS + c].composition[0]
 #define MID_TOWER checkerboard[r * COLUMNS + c].composition[1]
 #define TAIL_TOWER checkerboard[r * COLUMNS + c].composition[2]
@@ -26,7 +26,7 @@
 #define PLAYER_ENEMY checkerboard[enemy_r * COLUMNS + enemy_c].player /*player nemico che sta per essere mangiato*/
 #define HEAD_ENEMY checkerboard[enemy_r * COLUMNS + enemy_c].composition[0]
 #define MID_ENEMY checkerboard[enemy_r * COLUMNS + enemy_c].composition[1]
-#define TAIL_ENEMY checkerboard[enemy_r * COLUMNS + enemy_c].composition[2]
+#define TAIL_ENEMY checkerboard[enemy_r * COLUMNS + enemy_c].composition[COMPOSITION_SIZE-1]
 
 
 
@@ -35,7 +35,7 @@ const player_t PLAYER_1 = 1;
 const player_t PLAYER_2 = 2;
 const player_t PLAYER_1_PRO = 3;
 const player_t PLAYER_2_PRO = 4;*/
-const size_t COMPOSITION_SIZE = 22;
+const size_t COMPOSITION_SIZE = 22; /*TODO SISTEMA TAIL ENEMY*/
 int s_chance[3] = {0, 0, 0};
 
 
@@ -122,18 +122,18 @@ void promotion_check(tower_t *checkerboard) { /*dopo ogni mossa controlla se a f
     }
 }
 
-bool control_range(const coordinate_t c, const coordinate_t r){ /*controlla che le coordinate x e y siano dentro la scacchiera (comprese tra 0 e 6), se sono all'interno restituisce 1,
+bool control_range(const coordinate_t src){ /*controlla che le coordinate x e y siano dentro la scacchiera (comprese tra 0 e 6), se sono all'interno restituisce 1,
  *                                                              altrimenti restituisce 0*/
-    if (c >= LIMIT_LEFT && c <= LIMIT_RIGHT && r >= LIMIT_UP && r <= LIMIT_DOWN) {
+    if (src.c >= LIMIT_LEFT && src.c <= LIMIT_RIGHT && src.r >= LIMIT_UP && src.r <= LIMIT_DOWN) {
         return 1;
     }else {
         return 0;
     }
 }
 
-bool piece_selection (tower_t *checkerboard, const coordinate_t c, const coordinate_t r, const int turn){ /*controlla se la pedina, date le coordinate in input, corrisponde al proprio player.
+bool piece_selection (tower_t *checkerboard, coordinate_t src, int turn){ /*controlla se la pedina, date le coordinate in input, corrisponde al proprio player.
                                                                                                        Viene chiamata dopo che l'utente ha inserito le coordinate per verificarne la validità*/
-    if (control_range(c, r) && PLAYER_TOWER == turn){ /*controlla se le coordinate sono valide*/
+    if (control_range(src) && PLAYER_TOWER == turn){ /*controlla se le coordinate sono valide*/
         return 1;
     } else {
         printf("SCELTA SBAGLIATA\n");
@@ -141,14 +141,14 @@ bool piece_selection (tower_t *checkerboard, const coordinate_t c, const coordin
     }
 }/*restituisce 1 se la pedina è in una posizione in cui può essere scelta altimenti restituisce 0*/
 
-void composition_update(tower_t *checkerboard, coordinate_t r, coordinate_t c, coordinate_t move_r, coordinate_t move_c) {
+void composition_update(tower_t *checkerboard, move_t move) {
     int i;
     for (i = 0; i < COMPOSITION_SIZE; i ++) {
         checkerboard[move_r * COLUMNS + move_c].composition[i] = checkerboard[r * COLUMNS + c].composition[i];
     }
 } /*TODO da generalizzare dopo mangiata*/
 
-void clear_square(tower_t *checkerboard, coordinate_t r, coordinate_t c) {
+void clear_square(tower_t *checkerboard, coordinate_t src) {
     int i;
     PLAYER_TOWER = VOID; /*svuota la casella che ha effettuato la mangiata*/
     for (i = 0; i < COMPOSITION_SIZE; i ++) {
@@ -156,7 +156,7 @@ void clear_square(tower_t *checkerboard, coordinate_t r, coordinate_t c) {
     }
 }
 
-bool move_selection(tower_t *checkerboard, const coordinate_t c, const coordinate_t r, const int turn, const coordinate_t move_c, const coordinate_t move_r){
+bool move_selection(tower_t *checkerboard, move_t move, int turn){
     /* controlla se le coordinate della destinazione inserite dall'utente corrispondono ad una casella vuota e valida*/
     if (control_range (move_c, move_r)) {
         if (turn == PLAYER_1 && PLAYER_DESTINATION == VOID) {
@@ -204,7 +204,7 @@ bool move_selection(tower_t *checkerboard, const coordinate_t c, const coordinat
     return 0;
 }
 
-player_t diagonal_down_left_check(tower_t *checkerboard, const coordinate_t r, const coordinate_t c, bool is_first_diagonal){
+player_t diagonal_down_left_check(tower_t *checkerboard, coordinate_t src, bool is_first_diagonal){
     /*il "is_first_diagonal" serve per capire se la diagonale su cui eseguire il controllo è la prima (1) altrimenti è la seconda (0)
      * la prima diagonale corrisponde a quella adiacente, la seconda diagonale corrisponde a quella dove la pedina dovrà muoversi se potrà mangiare */
     if(is_first_diagonal && control_range(c - 1, r + 1)){
@@ -216,7 +216,7 @@ player_t diagonal_down_left_check(tower_t *checkerboard, const coordinate_t r, c
     }
 }
 
-player_t diagonal_down_right_check(tower_t *checkerboard, const coordinate_t r, const coordinate_t c, bool is_first_diagonal){
+player_t diagonal_down_right_check(tower_t *checkerboard, coordinate_t src, bool is_first_diagonal){
     /*is_first_diagonal serve per capire se la diaonale su cui eseguire il controllo è la prima (1) altrimenti è la seconda (0)
      * la prima diagonale corrisponde a quella adiacente, la seconda diagonale corrisponde a quella dove la pedina dovrà muoversi se potrà mangiare */
     if(is_first_diagonal && control_range(c + 1, r + 1)){
@@ -228,7 +228,7 @@ player_t diagonal_down_right_check(tower_t *checkerboard, const coordinate_t r, 
     }
 }
 
-player_t diagonal_up_left_check(tower_t *checkerboard, const coordinate_t r, const coordinate_t c, bool is_first_diagonal){
+player_t diagonal_up_left_check(tower_t *checkerboard, coordinate_t src, bool is_first_diagonal){
     /*is_first_diagonal serve per capire se la diaonale su cui eseguire il controllo è la prima (1) altrimenti è la seconda (0)
      * la prima diagonale corrisponde a quella adiacente, la seconda diagonale corrisponde a quella dove la pedina dovrà muoversi se potrà mangiare */
     if(is_first_diagonal && control_range(c - 1, r - 1)){
@@ -240,7 +240,7 @@ player_t diagonal_up_left_check(tower_t *checkerboard, const coordinate_t r, con
     }
 }
 
-player_t diagonal_up_right_check(tower_t *checkerboard, const coordinate_t r, const coordinate_t c, bool is_first_diagonal){
+player_t diagonal_up_right_check(tower_t *checkerboard, coordinate_t src, bool is_first_diagonal){
     /*is_first_diagonal serve per capire se la diaonale su cui eseguire il controllo è la prima (1) altrimenti è la seconda (0)
      * la prima diagonale corrisponde a quella adiacente, la seconda diagonale corrisponde a quella dove la pedina dovrà muoversi se potrà mangiare */
     if(is_first_diagonal && control_range(c + 1, r - 1)){
@@ -305,7 +305,7 @@ bool win (tower_t *checkerboard, int turn) { /*controlla se la partita arriva al
     }
 }
 
-void piece_capture(tower_t *checkerboard, const coordinate_t r, const coordinate_t c, const int turn, const coordinate_t move_r, const coordinate_t move_c, const coordinate_t enemy_r, const coordinate_t enemy_c){
+void piece_capture(tower_t *checkerboard, move_t move, int turn, coordinate_t enemy){
     /*effettua la mangiata e il conseguente aggiornamento della composzione delle torri
     3 if per il controllo pedine intermedie dell'attaccante ed eventuale sostituzione se vuote con pedine del nemico*/
     int i;
@@ -327,7 +327,7 @@ void piece_capture(tower_t *checkerboard, const coordinate_t r, const coordinate
     for (i = 0; i < COMPOSITION_SIZE - 1; i ++) {
         checkerboard[enemy_r * COLUMNS + enemy_c].composition[i] = checkerboard[enemy_r * COLUMNS + enemy_c].composition[i + 1]; /*scala di una posizione gli elementi della pedina mangiata*/
     }
-    TAIL_ENEMY = VOID;
+    TAIL_ENEMY = VOID; /*TODO DEVI FARE FOR PER METTERE VOID AL PRIMO ELEMENTO GIUSTO*/
 
     /*assegnamento nuovo player a pedina mangiata basandosi sulla testa*/
     if (HEAD_ENEMY == 0) { /*controllo testa pedina attaccata*/
@@ -497,7 +497,7 @@ int capture_check(tower_t *checkerboard, int turn){
                         }
                     }
                 }
-            } if (s_chance[2] != 0) {
+            } if (s_chance[2] != 0 && count == 0) {
                 s_chance[0] = 0;
                 s_chance[1] = 0;
                 s_chance[2] = 0;
