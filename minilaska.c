@@ -69,7 +69,7 @@ void checkerboard_init(tower_t *checkerboard){ /*funzione che inizializza la sca
                 for (i = 1; i < COMPOSITION_SIZE; i++) {
                     checkerboard[r * COLUMNS + c].composition[i] = 0;
                 }
-            }
+            } /*TODO generalizzare controlli +1 e -1 e aumentsre grandezza scacchiera*/
         }
     }
 }
@@ -415,8 +415,8 @@ int capture_check(tower_t *checkerboard, int turn){
     for (r = s_chance[0]; r < ROWS; r++) {
         for (c = s_chance[1]; c < COLUMNS; c++) {
             if (PLAYER_TOWER == turn) {
+                src.c = c, src.r = r;
                 if (turn == PLAYER_1 /*|| PLAYER2 == promoted*/) {
-                    src.c = c, src.r = r;
                     if (diagonal_down_left_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_2) {
                         /*ho inserito degli and per evitare il controllo a sx se sei vicino al bordo sx e viceversa a dx*/
                         /*controllo diagonale sinistra checkerboard sia player avversario e non vuoto*/
