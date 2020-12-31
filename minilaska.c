@@ -35,12 +35,13 @@
 
 
 
+
 /*const int VOID = 0;  *//* nessun giocatore*//*
 const player_t PLAYER_1 = 1;
 const player_t PLAYER_2 = 2;
 const player_t PLAYER_1_PRO = 3;
 const player_t PLAYER_2_PRO = 4;*/
-const size_t COMPOSITION_SIZE = 22; /*TODO SISTEMA TAIL ENEMY*/
+const size_t COMPOSITION_SIZE = 3; /*TODO SISTEMA TAIL ENEMY*/
 int s_chance[3] = {0, 0, 0};
 
 
@@ -171,7 +172,8 @@ bool move_selection(tower_t *checkerboard, move_t move, int turn){
                     PLAYER_DESTINATION = turn; /*assegnamento alla casella del player*/
                     composition_update(checkerboard, move);
                     clear_square(checkerboard, move.src);
-                    printf("player vecchio e %d, player nuovo e %d, composition vecchia e %d %d %d, composition nuova e %d %d %d", checkerboard[move.src.r * COLUMNS + move.src.c].player, checkerboard[move.dst.r * COLUMNS + move.dst.c].player, checkerboard[move.src.r * COLUMNS + move.src.c].composition[0], checkerboard[move.src.r * COLUMNS + move.src.c].composition[1], checkerboard[move.src.r * COLUMNS + move.src.c].composition[2], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[0], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[1], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[2]);
+                    /*printf("player vecchio e %d, player nuovo e %d, composition vecchia e %d %d %d, composition nuova e %d %d %d", checkerboard[move.src.r * COLUMNS + move.src.c].player, checkerboard[move.dst.r * COLUMNS + move.dst.c].player, checkerboard[move.src.r * COLUMNS + move.src.c].composition[0], checkerboard[move.src.r * COLUMNS + move.src.c].composition[1], checkerboard[move.src.r * COLUMNS + move.src.c].composition[2], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[0], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[1], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[2]);
+                    */
                     return 1;
                 }
             } /*player 1 non pro*/
@@ -180,7 +182,8 @@ bool move_selection(tower_t *checkerboard, move_t move, int turn){
                 PLAYER_DESTINATION = turn; /*assegnamento alla casella del player*/
                 composition_update(checkerboard, move);
                 clear_square(checkerboard, move.src);
-                printf("player vecchio e %d, player nuovo e %d, composition vecchia e %d %d %d, composition nuova e %d %d %d", checkerboard[move.src.r * COLUMNS + move.src.c].player, checkerboard[move.dst.r * COLUMNS + move.dst.c].player, checkerboard[move.src.r * COLUMNS + move.src.c].composition[0], checkerboard[move.src.r * COLUMNS + move.src.c].composition[1], checkerboard[move.src.r * COLUMNS + move.src.c].composition[2], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[0], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[1], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[2]);
+                /*printf("player vecchio e %d, player nuovo e %d, composition vecchia e %d %d %d, composition nuova e %d %d %d", checkerboard[move.src.r * COLUMNS + move.src.c].player, checkerboard[move.dst.r * COLUMNS + move.dst.c].player, checkerboard[move.src.r * COLUMNS + move.src.c].composition[0], checkerboard[move.src.r * COLUMNS + move.src.c].composition[1], checkerboard[move.src.r * COLUMNS + move.src.c].composition[2], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[0], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[1], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[2]);
+                */
                 return 1;
             }
         } else if (turn == PLAYER_2 && PLAYER_DESTINATION == VOID) {
@@ -190,7 +193,8 @@ bool move_selection(tower_t *checkerboard, move_t move, int turn){
                     PLAYER_DESTINATION = turn; /*assegnamento alla casella del player*/
                     composition_update(checkerboard, move);
                     clear_square(checkerboard, move.src);
-                    printf("player vecchio e %d, player nuovo e %d, composition vecchia e %d %d %d, composition nuova e %d %d %d", checkerboard[move.src.r * COLUMNS + move.src.c].player, checkerboard[move.dst.r * COLUMNS + move.dst.c].player, checkerboard[move.src.r * COLUMNS + move.src.c].composition[0], checkerboard[move.src.r * COLUMNS + move.src.c].composition[1], checkerboard[move.src.r * COLUMNS + move.src.c].composition[2], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[0], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[1], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[2]);
+                    /*printf("player vecchio e %d, player nuovo e %d, composition vecchia e %d %d %d, composition nuova e %d %d %d", checkerboard[move.src.r * COLUMNS + move.src.c].player, checkerboard[move.dst.r * COLUMNS + move.dst.c].player, checkerboard[move.src.r * COLUMNS + move.src.c].composition[0], checkerboard[move.src.r * COLUMNS + move.src.c].composition[1], checkerboard[move.src.r * COLUMNS + move.src.c].composition[2], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[0], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[1], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[2]);
+                    */
                     return 1;
                 }
             } /*player 2 non pro*/
@@ -199,12 +203,13 @@ bool move_selection(tower_t *checkerboard, move_t move, int turn){
                 PLAYER_DESTINATION = turn;
                 composition_update(checkerboard, move);
                 clear_square(checkerboard, move.src);
-                printf("player vecchio e %d, player nuovo e %d, composition vecchia e %d %d %d, composition nuova e %d %d %d", checkerboard[move.src.r * COLUMNS + move.src.c].player, checkerboard[move.dst.r * COLUMNS + move.dst.c].player, checkerboard[move.src.r * COLUMNS + move.src.c].composition[0], checkerboard[move.src.r * COLUMNS + move.src.c].composition[1], checkerboard[move.src.r * COLUMNS + move.src.c].composition[2], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[0], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[1], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[2]);
+                /*printf("player vecchio e %d, player nuovo e %d, composition vecchia e %d %d %d, composition nuova e %d %d %d", checkerboard[move.src.r * COLUMNS + move.src.c].player, checkerboard[move.dst.r * COLUMNS + move.dst.c].player, checkerboard[move.src.r * COLUMNS + move.src.c].composition[0], checkerboard[move.src.r * COLUMNS + move.src.c].composition[1], checkerboard[move.src.r * COLUMNS + move.src.c].composition[2], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[0], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[1], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[2]);
+                */
                 return 1;
             }
         }
     }
-    printf("MOSSA NON VALIDA\n");
+    /*printf("MOSSA NON VALIDA\n");*/
     return 0;
 }
 
@@ -331,7 +336,7 @@ void piece_capture(tower_t *checkerboard, move_t move, int turn, coordinate_t en
     clear_square(checkerboard, move.src);
 
     /*sostituzione ultima pedina mangiata con ZERO e scalamento delle superiori */
-     /*scala di una posizione gli elementi della pedina mangiata*/
+    /*scala di una posizione gli elementi della pedina mangiata*/
     for (i = 0; i < COMPOSITION_SIZE - 1; i ++) {
         checkerboard[enemy.r * COLUMNS + enemy.c].composition[i] = checkerboard[enemy.r * COLUMNS + enemy.c].composition[i + 1]; /*scala di una posizione gli elementi della pedina mangiata*/
     }
@@ -346,33 +351,137 @@ void piece_capture(tower_t *checkerboard, move_t move, int turn, coordinate_t en
         PLAYER_ENEMY = PLAYER_2;
     }
     /*stampe di verifiche composizione player*/
-    printf("\nl'attaccante ora vale %d %d %d", checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[0], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[1], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[2]);
+    /*printf("\nl'attaccante ora vale %d %d %d", checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[0], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[1], checkerboard[move.dst.r * COLUMNS + move.dst.c].composition[2]);
     printf("\nil mangiato ora vale %d, %d, %d", checkerboard[enemy.r * COLUMNS + enemy.c].composition[0], checkerboard[enemy.r * COLUMNS + enemy.c].composition[1], checkerboard[enemy.r * COLUMNS + enemy.c].composition[2]);
     printf("\n la vecchia posizione ora vale %d %d %d\n", checkerboard[move.src.r * COLUMNS + move.src.c].composition[0], checkerboard[move.src.r * COLUMNS + move.src.c].composition[1], checkerboard[move.src.r * COLUMNS + move.src.c].composition[2]);
     printf("i player ora sono attaccante %d, attaccato %d, vecchia posizione %d\n", checkerboard[move.dst.r * COLUMNS + move.dst.c].player, checkerboard[enemy.r * COLUMNS + enemy.c].player, checkerboard[move.src.r * COLUMNS + move.src.c].player);
+    */
 }
 
-bool can_capture (tower_t* checkerboard, coordinate_t src, int turn){
+/*ritorna il numero delle mosse possibili date le coordinate della pedina src (ex get_nr_all_moves), modifica inoltre l'array move con tutte le possibili coordinate move*/
+int can_piece_be_moved(tower_t* checkerboard, coordinate_t src, move_t* move, int nr_moves, int turn){
+
+    /*puntatore indirizzo move avrà al massimo 4 elementi, ovvero le 4 coordinate in cui una pedina pro può mangiare*/
+
+    if (turn == PLAYER_1 && SRC_PLAYER_TOWER == PLAYER_1) { /*mi interessa sapere se, date le coordinate r e c della pedina, ci sono movimenti possibili*/
+
+        if (SRC_HEAD_TOWER == PLAYER_1_PRO) { /*se il player è promosso ha liberta di movimento in ogni direzione*/
+
+            if (checkerboard[(src.r - 1) * COLUMNS + (src.c + 1)].player == VOID){
+                move[nr_moves].src.r = src.r;
+                move[nr_moves].src.c = src.c;
+                move[nr_moves].dst.r = src.r - 1;
+                move[nr_moves].dst.c = src.c + 1;
+                nr_moves++;
+            }
+            if(checkerboard[(src.r - 1) * COLUMNS + (src.c - 1)].player == VOID ) {
+                move[nr_moves].src.r = src.r;
+                move[nr_moves].src.c = src.c;
+                move[nr_moves].dst.r = src.r - 1;
+                move[nr_moves].dst.c = src.c - 1;
+                nr_moves++;
+            }
+        } /*player 1 non pro*/
+
+        if (checkerboard[(src.r + 1) * COLUMNS + (src.c + 1)].player == VOID){
+            move[nr_moves].src.r = src.r;
+            move[nr_moves].src.c = src.c;
+            move[nr_moves].dst.r = src.r + 1;
+            move[nr_moves].dst.c = src.c + 1;
+            nr_moves++;
+        }
+        if(checkerboard[(src.r + 1) * COLUMNS + (src.c - 1)].player == VOID) { /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
+            move[nr_moves].src.r = src.r;
+            move[nr_moves].src.c = src.c;
+            move[nr_moves].dst.r = src.r + 1;
+            move[nr_moves].dst.c = src.c - 1;
+            nr_moves++;
+        }
+
+    } else if (turn == PLAYER_2 && SRC_PLAYER_TOWER == PLAYER_2) {
+        if (SRC_HEAD_TOWER == PLAYER_2_PRO) {
+            if (checkerboard[(src.r + 1) * COLUMNS + (src.c + 1)].player == VOID) {
+                move[nr_moves].src.r = src.r;
+                move[nr_moves].src.c = src.c;
+                move[nr_moves].dst.r = src.r + 1;
+                move[nr_moves].dst.c = src.c + 1;
+                nr_moves++;
+            }
+            if (checkerboard[(src.r + 1) * COLUMNS + (src.c - 1)].player == VOID ) {
+                move[nr_moves].src.r = src.r;
+                move[nr_moves].src.c = src.c;
+                move[nr_moves].dst.r = src.r + 1;
+                move[nr_moves].dst.c = src.c - 1;
+                nr_moves++;
+            }
+        } /*player 2 non pro*/
+        if (checkerboard[(src.r - 1) * COLUMNS + (src.c + 1)].player == VOID) {
+            move[nr_moves].src.r = src.r;
+            move[nr_moves].src.c = src.c;
+            move[nr_moves].dst.r = src.r - 1;
+            move[nr_moves].dst.c = src.c + 1;
+            nr_moves++;
+        }
+        if (checkerboard[(src.r - 1) * COLUMNS + (src.c - 1)].player == VOID) { /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
+            move[nr_moves].src.r = src.r;
+            move[nr_moves].src.c = src.c;
+            move[nr_moves].dst.r = src.r - 1;
+            move[nr_moves].dst.c = src.c - 1;
+            nr_moves++;
+        }
+    }
+
+    /*TODO mossa mangiata in tutte e 4 le direzioni*/
+
+    return nr_moves;
+}
+
+/*verifica se la pedina di coordinate src ha manigate possibili e mette nelgli array move e enemy
+ * le coordinate della mangiata e del nemico, restituendo se ci sono mangiate o no
+ * nr_captures corrisponde all'indice nel quale salvare le mosse */
+int can_piece_capture (tower_t* checkerboard, coordinate_t src, move_t* move, coordinate_t* enemy, int nr_captures, int turn){
+
     if (SRC_PLAYER_TOWER == turn) {
         if (turn == PLAYER_1 /*|| PLAYER2 == promoted*/) {
             if (diagonal_down_left_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_2) {
                 if (diagonal_down_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
-                    return true;
+                    move[nr_captures].src = src;
+                    move[nr_captures].dst.r = src.r + 2;
+                    move[nr_captures].dst.c = src.c - 2;
+                    enemy[nr_captures].r = src.r + 1;
+                    enemy[nr_captures].c = src.c - 1;
+                    nr_captures++;
                 }
-            } if (diagonal_down_right_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_2) {
+            }
+            if (diagonal_down_right_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_2) {
                 if (diagonal_down_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
-                    return true;
+                    move[nr_captures].src = src;
+                    move[nr_captures].dst.r = src.r + 2;
+                    move[nr_captures].dst.c = src.c + 2;
+                    enemy[nr_captures].r = src.r + 1;
+                    enemy[nr_captures].c = src.c + 1;
+                    nr_captures++;
                 }
             }
             if (SRC_HEAD_TOWER == PLAYER_1_PRO) {
                 if (diagonal_up_left_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_2) {
                     if (diagonal_up_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
-                        return true;
+                        move[nr_captures].src = src;
+                        move[nr_captures].dst.r = src.r - 2;
+                        move[nr_captures].dst.c = src.c - 2;
+                        enemy[nr_captures].r = src.r - 1;
+                        enemy[nr_captures].c = src.c - 1;
+                        nr_captures++;
                     }
                 }
                 if (diagonal_up_right_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_2) {
                     if (diagonal_up_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
-                        return true;
+                        move[nr_captures].src = src;
+                        move[nr_captures].dst.r = src.r - 2;
+                        move[nr_captures].dst.c = src.c + 2;
+                        enemy[nr_captures].r = src.r - 1;
+                        enemy[nr_captures].c = src.c + 1;
+                        nr_captures++;
                     }
                 }
             }
@@ -380,29 +489,52 @@ bool can_capture (tower_t* checkerboard, coordinate_t src, int turn){
         if (turn == PLAYER_2 /*|| PLAYER1 == promoted*/) {
             if (diagonal_up_left_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_1) {
                 if (diagonal_up_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
-                    return true;
+                    move[nr_captures].src = src;
+                    move[nr_captures].dst.r = src.r - 2;
+                    move[nr_captures].dst.c = src.c - 2;
+                    enemy[nr_captures].r = src.r - 1;
+                    enemy[nr_captures].c = src.c - 1;
+                    nr_captures++;
                 }
             }
             if (diagonal_up_right_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_1) {
                 if (diagonal_up_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
-                    return true;
+                    move[nr_captures].src = src;
+                    move[nr_captures].dst.r = src.r - 2;
+                    move[nr_captures].dst.c = src.c + 2;
+                    enemy[nr_captures].r = src.r - 1;
+                    enemy[nr_captures].c = src.c + 1;
+                    nr_captures++;
                 }
             }
             if (SRC_HEAD_TOWER == PLAYER_2_PRO) {
                 if (diagonal_down_left_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_1) {
                     if (diagonal_down_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
-                        return true;
+                        move[nr_captures].src = src;
+                        move[nr_captures].dst.r = src.r + 2;
+                        move[nr_captures].dst.c = src.c - 2;
+                        enemy[nr_captures].r = src.r + 1;
+                        enemy[nr_captures].c = src.c - 1;
+                        nr_captures++;
                     }
                 } if (diagonal_down_right_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_1) {
                     if (diagonal_down_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
-                        return true;
+                        move[nr_captures].src = src;
+                        move[nr_captures].dst.r = src.r + 2;
+                        move[nr_captures].dst.c = src.c + 2;
+                        enemy[nr_captures].r = src.r + 1;
+                        enemy[nr_captures].c = src.c + 1;
+                        nr_captures++;
                     }
                 }
             }
         }
     }
-    return false;
+
+    return nr_captures;
+    /*ritorna valore effettivo di mangiate salvate nell'array*/
 }
+
 
 int capture_check(tower_t *checkerboard, int turn){
     int r, c;
@@ -435,7 +567,7 @@ int capture_check(tower_t *checkerboard, int turn){
                                 move.src.r = r;
                                 move.dst.c = c - 2;
                                 move.dst.r = r + 2;
-                                enemy.c = c -1;
+                                enemy.c = c - 1;
                                 enemy.r = r + 1;
                                 piece_capture(checkerboard, move, turn, enemy);
                                 return 1;

@@ -184,9 +184,19 @@ void piece_capture(tower_t *checkerboard, move_t move, int turn, coordinate_t en
  * @param r
  * @param c
  * @param turn
+ * @return valore dell'indice nr_captures, ovvero di quante possibili mangiate ci sono
+ */
+int can_piece_capture (tower_t* checkerboard, coordinate_t src, move_t* move, coordinate_t* enemy, int nr_captures, int turn);
+
+/**
+ *
+ * @param checkerboard
+ * @param src
+ * @param turn
+ * @param dst
  * @return
  */
-bool can_capture (tower_t* checkerboard, coordinate_t src, int turn);
+int can_piece_be_moved(tower_t* checkerboard, coordinate_t src, move_t* move, int nr_moves, int turn);
 
 /**
  * controlla attraverso le funzioni di diagonal_check se ci sono mangiate possibili e chiede all'utente se vuole mangiare o no
@@ -195,5 +205,12 @@ bool can_capture (tower_t* checkerboard, coordinate_t src, int turn);
  * @return 0 se non ci sono mangiate, 1 se il player ha mangiato, 2 se non ha voluto mangiare
  */
 int capture_check(tower_t *checkerboard, int turn);
+
+/**
+ * esegue la mossa della CPU, per l'AI
+ * @param checkerboard
+ * @return 0 se ha eseguito la mossa, 1 se non ci sono più mosse disponibili
+ */
+int cpu_minimax (tower_t *checkerboard);
 
 #endif //MINILASKA_MINILASKA_H
