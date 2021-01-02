@@ -367,14 +367,14 @@ int can_piece_be_moved(tower_t* checkerboard, coordinate_t src, move_t* move, in
 
         if (SRC_HEAD_TOWER == PLAYER_1_PRO) { /*se il player è promosso ha liberta di movimento in ogni direzione*/
 
-            if (checkerboard[(src.r - 1) * COLUMNS + (src.c + 1)].player == VOID){
+            if (control_range(src.c + 1, src.r - 1) && checkerboard[(src.r - 1) * COLUMNS + (src.c + 1)].player == VOID){
                 move[nr_moves].src.r = src.r;
                 move[nr_moves].src.c = src.c;
                 move[nr_moves].dst.r = src.r - 1;
                 move[nr_moves].dst.c = src.c + 1;
                 nr_moves++;
             }
-            if(checkerboard[(src.r - 1) * COLUMNS + (src.c - 1)].player == VOID ) {
+            if(control_range(src.c - 1, src.r - 1) && checkerboard[(src.r - 1) * COLUMNS + (src.c - 1)].player == VOID ) {
                 move[nr_moves].src.r = src.r;
                 move[nr_moves].src.c = src.c;
                 move[nr_moves].dst.r = src.r - 1;
@@ -383,14 +383,14 @@ int can_piece_be_moved(tower_t* checkerboard, coordinate_t src, move_t* move, in
             }
         } /*player 1 non pro*/
 
-        if (checkerboard[(src.r + 1) * COLUMNS + (src.c + 1)].player == VOID){
+        if (control_range(src.c + 1, src.r + 1) && checkerboard[(src.r + 1) * COLUMNS + (src.c + 1)].player == VOID){
             move[nr_moves].src.r = src.r;
             move[nr_moves].src.c = src.c;
             move[nr_moves].dst.r = src.r + 1;
             move[nr_moves].dst.c = src.c + 1;
             nr_moves++;
         }
-        if(checkerboard[(src.r + 1) * COLUMNS + (src.c - 1)].player == VOID) { /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
+        if(control_range(src.c - 1, src.r + 1) && checkerboard[(src.r + 1) * COLUMNS + (src.c - 1)].player == VOID) { /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
             move[nr_moves].src.r = src.r;
             move[nr_moves].src.c = src.c;
             move[nr_moves].dst.r = src.r + 1;
@@ -400,14 +400,14 @@ int can_piece_be_moved(tower_t* checkerboard, coordinate_t src, move_t* move, in
 
     } else if (turn == PLAYER_2 && SRC_PLAYER_TOWER == PLAYER_2) {
         if (SRC_HEAD_TOWER == PLAYER_2_PRO) {
-            if (checkerboard[(src.r + 1) * COLUMNS + (src.c + 1)].player == VOID) {
+            if (control_range(src.c + 1, src.r + 1) && checkerboard[(src.r + 1) * COLUMNS + (src.c + 1)].player == VOID) {
                 move[nr_moves].src.r = src.r;
                 move[nr_moves].src.c = src.c;
                 move[nr_moves].dst.r = src.r + 1;
                 move[nr_moves].dst.c = src.c + 1;
                 nr_moves++;
             }
-            if (checkerboard[(src.r + 1) * COLUMNS + (src.c - 1)].player == VOID ) {
+            if (control_range(src.c - 1, src.r + 1) && checkerboard[(src.r + 1) * COLUMNS + (src.c - 1)].player == VOID ) {
                 move[nr_moves].src.r = src.r;
                 move[nr_moves].src.c = src.c;
                 move[nr_moves].dst.r = src.r + 1;
@@ -415,14 +415,14 @@ int can_piece_be_moved(tower_t* checkerboard, coordinate_t src, move_t* move, in
                 nr_moves++;
             }
         } /*player 2 non pro*/
-        if (checkerboard[(src.r - 1) * COLUMNS + (src.c + 1)].player == VOID) {
+        if (control_range(src.c + 1, src.r - 1) && checkerboard[(src.r - 1) * COLUMNS + (src.c + 1)].player == VOID) {
             move[nr_moves].src.r = src.r;
             move[nr_moves].src.c = src.c;
             move[nr_moves].dst.r = src.r - 1;
             move[nr_moves].dst.c = src.c + 1;
             nr_moves++;
         }
-        if (checkerboard[(src.r - 1) * COLUMNS + (src.c - 1)].player == VOID) { /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
+        if (control_range(src.c - 1, src.r - 1) && checkerboard[(src.r - 1) * COLUMNS + (src.c - 1)].player == VOID) { /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
             move[nr_moves].src.r = src.r;
             move[nr_moves].src.c = src.c;
             move[nr_moves].dst.r = src.r - 1;

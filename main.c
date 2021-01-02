@@ -68,7 +68,7 @@ int main() {
                     printf("case 3\n");
                     turn_update(&turn);
                     break;
-            } /*minimax();*/
+            }
         }
         turn_update(&turn);
         printf("WIN Player %d ", turn);
@@ -106,12 +106,15 @@ int main() {
                         printf("\n");
                         checkerboard_print(&(checkerboard[0][0]));
 
-                    }else{ /*turno CPU, mossa eseguita da minimax*/
+                    }/*else{ *//*turno CPU, mossa eseguita da minimax*//*
                         cpu_minimax(&(checkerboard[0][0]));
-                    }
-
+                    }*/
+                    printf("qui\n");
+/*
                     turn_update(&turn);
-
+*/
+                    cpu_minimax(&(checkerboard[0][0]));
+                    /*turn_update(&turn);*/
                     break;
                 case 1:
                     printf("case 1\n");
@@ -127,7 +130,9 @@ int main() {
                 case 3:
                     /*ci entra sempre dopo case 1 (quando mangi) e se quella pedina non puo fare catene di mangiate, case 3 fa un cambio turno e basta*/
                     printf("case 3\n");
-                    turn_update(&turn);
+                    /*turn_update(&turn);*/
+                    cpu_minimax(&(checkerboard[0][0]));
+                    /*turn_update(&turn);*/
                     break;
             }
         }
