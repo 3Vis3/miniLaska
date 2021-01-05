@@ -4,6 +4,13 @@
 #include "minilaska.h"
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
+
+#ifdef _WIN32
+    #include <windows.h>
+    #define OS_Windows 1
+#endif
+
 #define ROWS (7)
 #define COLUMNS (7)
 #define LIMIT_RIGHT (6)
@@ -12,7 +19,6 @@
 #define LIMIT_UP (0)
 #define FIRST_DIAGONAL (1)
 #define SECOND_DIAGONAL (0)
-#define ERROR (-1)
 #define PLAYER_TOWER checkerboard[r * COLUMNS + c].player
 #define HEAD_TOWER checkerboard[r * COLUMNS + c].composition[0]
 #define SRC_PLAYER_TOWER checkerboard[src.r * COLUMNS + src.c].player
@@ -33,16 +39,61 @@
 #define MID_ENEMY checkerboard[enemy_r * COLUMNS + enemy_c].composition[1]
 #define TAIL_ENEMY checkerboard[enemy.r * COLUMNS + enemy.c].composition[COMPOSITION_SIZE-1]
 
+#define _ERROR (-1)
+
+
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
 
 
 
-/*const int VOID = 0;  *//* nessun giocatore*//*
-const player_t PLAYER_1 = 1;
-const player_t PLAYER_2 = 2;
-const player_t PLAYER_1_PRO = 3;
-const player_t PLAYER_2_PRO = 4;*/
+
+
 const size_t COMPOSITION_SIZE = 3; /*TODO SISTEMA TAIL ENEMY*/
 int s_chance[3] = {0, 0, 0};
+
+
+/*funzione per la parte grafica, passando il tipo di os (w, windows, oppure l, linux) permette di cambiare il colore per la stampa*/
+void print_player_color (char color, char player) {
+    #ifdef OS_Windows
+        HANDLE hConsole;
+        hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+        if(color == 'r'){
+            SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+            printf(" %c ", player);
+            SetConsoleTextAttribute(hConsole, 15); /*colore bianco*/
+        }
+        else if (color == 'y') {
+            SetConsoleTextAttribute(hConsole, 14);
+            printf(" %c ", player);
+            SetConsoleTextAttribute(hConsole, 15);
+        }
+        else if (color == 'b') {
+            SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
+            printf(" %c ", player);
+            SetConsoleTextAttribute(hConsole, 15);
+        }
+    #else
+        if(color == 'r'){
+            /*s = strcat ("ANSI_COLOR_RED ", player);
+            s = strcat (s, " ANSI_COLOR_RESET"); */
+            printf("%s %s %s","\x1b[31m", player, "\x1b[0m");
+        }
+        else if (color == 'y') {
+            printf("%s %s %s","\x1b[33m", player, "\x1b[0m");
+        }else if (color == 'b') {
+            printf("%s %s %s","\x1b[34m", player, "\x1b[0m");
+        }
+
+    #endif
+
+}
 
 
 /*ogni casella è formata da una struttura tower_t, composta da player (un intero) e da un array di tre elementi (composition),
@@ -65,8 +116,8 @@ void checkerboard_init(tower_t *checkerboard){ /*funzione che inizializza la sca
                     checkerboard[r * COLUMNS + c].composition[i] = 0;
                 }
             } else {
-                PLAYER_TOWER = VOID;                                  /*la casella avrà una struttura tower_t inizializzata a 0 (vuota), sia nel player che nella composition*/
-                HEAD_TOWER = VOID;
+                PLAYER_TOWER = VOID_0;                                  /*la casella avrà una struttura tower_t inizializzata a 0 (vuota), sia nel player che nella composition*/
+                HEAD_TOWER = VOID_0;
                 for (i = 1; i < COMPOSITION_SIZE; i++) {
                     checkerboard[r * COLUMNS + c].composition[i] = 0;
                 }
@@ -75,23 +126,36 @@ void checkerboard_init(tower_t *checkerboard){ /*funzione che inizializza la sca
     }
 }
 
-void checkerboard_print (tower_t *checkerboard) { /*funzione di stampa della checkerboard che verrà chiamata tutte le volte in cui viene fatta una mossa*/
+void checkerboard_print (tower_t *checkerboard, coordinate_t last_move) { /*funzione di stampa della checkerboard che verrà chiamata tutte le volte in cui viene fatta una mossa*/
     int r , c;
+    char color;
+
     for (r = 0; r < ROWS; r++) {
         printf("%d|", r); /*stampa l'indice delle righe*/
         for (c = 0; c < COLUMNS; c++) {
+            color = 'a'; /*valore iniziale non possibile*/
+            if(last_move.r == r && last_move.c == c) { /*cambia colore ultima mossa in blu evidenziandola*/
+                color = 'b';
+            }
+
             int square = PLAYER_TOWER;
             if (square == PLAYER_1) {
+                if(color == 'a'){
+                    color = 'r';
+                }
                 if (HEAD_TOWER == PLAYER_1_PRO) {
-                    printf(" O ");
+                    print_player_color(color, 'O');
                 } else {
-                    printf(" o ");
+                    print_player_color(color, 'o');
                 }
             } else if (square == PLAYER_2){
+                if(color == 'a'){
+                    color = 'y';
+                }
                 if (HEAD_TOWER == PLAYER_2_PRO) {
-                    printf(" X ");
+                    print_player_color (color, 'X');
                 } else {
-                    printf(" x ");
+                    print_player_color (color, 'x');
                 }
             } else{
                 printf("   ");
@@ -156,19 +220,19 @@ void composition_update(tower_t *checkerboard, move_t move) {
 
 void clear_square(tower_t *checkerboard, coordinate_t src) {
     int i;
-    SRC_PLAYER_TOWER = VOID; /*svuota la casella che ha effettuato la mangiata*/
+    SRC_PLAYER_TOWER = VOID_0; /*svuota la casella che ha effettuato la mangiata*/
     for (i = 0; i < COMPOSITION_SIZE; i ++) {
-        checkerboard[src.r * COLUMNS + src.c].composition[i] = VOID;
+        checkerboard[src.r * COLUMNS + src.c].composition[i] = VOID_0;
     }
 }
 
 bool move_selection(tower_t *checkerboard, move_t move, int turn){
     /* controlla se le coordinate della destinazione inserite dall'utente corrispondono ad una casella vuota e valida*/
     if (control_range (move.dst.c, move.dst.r)) {
-        if (turn == PLAYER_1 && PLAYER_DESTINATION == VOID) {
+        if (turn == PLAYER_1 && PLAYER_DESTINATION == VOID_0) {
             if (MOVE_HEAD_TOWER == PLAYER_1_PRO) { /*se il player è promosso ha liberta di movimento in ogni direzione*/
                 if ((move.dst.r == move.src.r + 1 || move.dst.r == move.src.r - 1) && (move.dst.c == move.src.c + 1 || move.dst.c == move.src.c - 1) &&
-                    PLAYER_DESTINATION == VOID && control_range(move.dst.c, move.dst.r)) {
+                    PLAYER_DESTINATION == VOID_0 && control_range(move.dst.c, move.dst.r)) {
                     PLAYER_DESTINATION = turn; /*assegnamento alla casella del player*/
                     composition_update(checkerboard, move);
                     clear_square(checkerboard, move.src);
@@ -177,7 +241,7 @@ bool move_selection(tower_t *checkerboard, move_t move, int turn){
                     return 1;
                 }
             } /*player 1 non pro*/
-            else if ((move.dst.r == move.src.r + 1) && ((move.dst.c == move.src.c + 1) || (move.dst.c == move.src.c - 1)) && PLAYER_DESTINATION == VOID &&
+            else if ((move.dst.r == move.src.r + 1) && ((move.dst.c == move.src.c + 1) || (move.dst.c == move.src.c - 1)) && PLAYER_DESTINATION == VOID_0 &&
                      control_range(move.dst.c, move.dst.r)) { /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
                 PLAYER_DESTINATION = turn; /*assegnamento alla casella del player*/
                 composition_update(checkerboard, move);
@@ -186,10 +250,10 @@ bool move_selection(tower_t *checkerboard, move_t move, int turn){
                 */
                 return 1;
             }
-        } else if (turn == PLAYER_2 && PLAYER_DESTINATION == VOID) {
+        } else if (turn == PLAYER_2 && PLAYER_DESTINATION == VOID_0) {
             if (MOVE_HEAD_TOWER == PLAYER_2_PRO) {
                 if ((move.dst.r == move.src.r + 1 || move.dst.r == move.src.r - 1) && (move.dst.c == move.src.c + 1 || move.dst.c == move.src.c - 1) &&
-                    PLAYER_DESTINATION == VOID && control_range(move.dst.c, move.dst.r)) {
+                    PLAYER_DESTINATION == VOID_0 && control_range(move.dst.c, move.dst.r)) {
                     PLAYER_DESTINATION = turn; /*assegnamento alla casella del player*/
                     composition_update(checkerboard, move);
                     clear_square(checkerboard, move.src);
@@ -198,7 +262,7 @@ bool move_selection(tower_t *checkerboard, move_t move, int turn){
                     return 1;
                 }
             } /*player 2 non pro*/
-            else if ((move.dst.r == move.src.r - 1) && ((move.dst.c == move.src.c + 1) || (move.dst.c == move.src.c - 1)) && PLAYER_DESTINATION == VOID &&
+            else if ((move.dst.r == move.src.r - 1) && ((move.dst.c == move.src.c + 1) || (move.dst.c == move.src.c - 1)) && PLAYER_DESTINATION == VOID_0 &&
                      control_range(move.dst.c, move.dst.r)) { /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
                 PLAYER_DESTINATION = turn;
                 composition_update(checkerboard, move);
@@ -221,7 +285,7 @@ player_t diagonal_down_left_check(tower_t *checkerboard, coordinate_t src, bool 
     }else if(!is_first_diagonal && control_range(src.c - 2, src.r + 2)) {
         return checkerboard[(src.r + 2) * COLUMNS + src.c - 2].player;
     }else{
-        return ERROR;
+        return _ERROR;
     }
 }
 
@@ -233,7 +297,7 @@ player_t diagonal_down_right_check(tower_t *checkerboard, coordinate_t src, bool
     }else if(!is_first_diagonal && control_range(src.c + 2, src.r + 2)) {
         return checkerboard[(src.r + 2) * COLUMNS + src.c + 2].player;
     }else{
-        return ERROR;
+        return _ERROR;
     }
 }
 
@@ -245,7 +309,7 @@ player_t diagonal_up_left_check(tower_t *checkerboard, coordinate_t src, bool is
     }else if(!is_first_diagonal && control_range(src.c - 2, src.r - 2)) {
         return checkerboard[(src.r - 2) * COLUMNS + src.c - 2].player;
     }else{
-        return ERROR;
+        return _ERROR;
     }
 }
 
@@ -257,7 +321,7 @@ player_t diagonal_up_right_check(tower_t *checkerboard, coordinate_t src, bool i
     }else if(!is_first_diagonal && control_range(src.c + 2, src.r - 2)) {
         return checkerboard[(src.r - 2) * COLUMNS + src.c + 2].player;
     }else{
-        return ERROR;
+        return _ERROR;
     }
 }
 
@@ -283,24 +347,24 @@ bool win (tower_t *checkerboard, int turn) { /*controlla se la partita arriva al
             if (PLAYER_TOWER == turn) {
                 if (HEAD_TOWER == PLAYER_1) {
                     src.r = r, src.c = c;
-                    if (diagonal_down_left_check(checkerboard, src, FIRST_DIAGONAL) != VOID &&
-                        diagonal_down_right_check(checkerboard, src, FIRST_DIAGONAL) != VOID) {
+                    if (diagonal_down_left_check(checkerboard, src, FIRST_DIAGONAL) != VOID_0 &&
+                        diagonal_down_right_check(checkerboard, src, FIRST_DIAGONAL) != VOID_0) {
                         pieces_blocked++;
                     }
                 }
                 if (HEAD_TOWER == PLAYER_2) {
                     src.r = r, src.c = c;
-                    if (diagonal_up_left_check(checkerboard, src, FIRST_DIAGONAL) != VOID &&
-                        diagonal_up_right_check(checkerboard, src, FIRST_DIAGONAL) != VOID) {
+                    if (diagonal_up_left_check(checkerboard, src, FIRST_DIAGONAL) != VOID_0 &&
+                        diagonal_up_right_check(checkerboard, src, FIRST_DIAGONAL) != VOID_0) {
                         pieces_blocked++;
                     }
                 }
                 if(HEAD_TOWER == PLAYER_1_PRO || HEAD_TOWER == PLAYER_2_PRO){
                     src.r = r, src.c = c;
-                    if(diagonal_down_left_check(checkerboard, src, FIRST_DIAGONAL) != VOID &&
-                       diagonal_down_right_check(checkerboard, src, FIRST_DIAGONAL) != VOID &&
-                       diagonal_up_left_check(checkerboard, src, FIRST_DIAGONAL) != VOID &&
-                       diagonal_up_right_check(checkerboard, src, FIRST_DIAGONAL) != VOID){
+                    if(diagonal_down_left_check(checkerboard, src, FIRST_DIAGONAL) != VOID_0 &&
+                       diagonal_down_right_check(checkerboard, src, FIRST_DIAGONAL) != VOID_0 &&
+                       diagonal_up_left_check(checkerboard, src, FIRST_DIAGONAL) != VOID_0 &&
+                       diagonal_up_right_check(checkerboard, src, FIRST_DIAGONAL) != VOID_0){
                         pieces_blocked++;
                     }
                 }
@@ -340,11 +404,11 @@ void piece_capture(tower_t *checkerboard, move_t move, int turn, coordinate_t en
     for (i = 0; i < COMPOSITION_SIZE - 1; i ++) {
         checkerboard[enemy.r * COLUMNS + enemy.c].composition[i] = checkerboard[enemy.r * COLUMNS + enemy.c].composition[i + 1]; /*scala di una posizione gli elementi della pedina mangiata*/
     }
-    TAIL_ENEMY = VOID; /*TODO DEVI FARE FOR PER METTERE VOID AL PRIMO ELEMENTO GIUSTO*/
+    TAIL_ENEMY = VOID_0; /*TODO DEVI FARE FOR PER METTERE VOID_0 AL PRIMO ELEMENTO GIUSTO*/
 
     /*assegnamento nuovo player a pedina mangiata basandosi sulla testa*/
     if (HEAD_ENEMY == 0) { /*controllo testa pedina attaccata*/
-        PLAYER_ENEMY = VOID;
+        PLAYER_ENEMY = VOID_0;
     } else if (HEAD_ENEMY == 1 || HEAD_ENEMY == 3) { /*controllo se testa è player 1 o player 2 e aggiorna player*/
         PLAYER_ENEMY = PLAYER_1;
     } else if (HEAD_ENEMY == 2 || HEAD_ENEMY == 4) {
@@ -367,14 +431,14 @@ int can_piece_be_moved(tower_t* checkerboard, coordinate_t src, move_t* move, in
 
         if (SRC_HEAD_TOWER == PLAYER_1_PRO) { /*se il player è promosso ha liberta di movimento in ogni direzione*/
 
-            if (control_range(src.c + 1, src.r - 1) && checkerboard[(src.r - 1) * COLUMNS + (src.c + 1)].player == VOID){
+            if (control_range(src.c + 1, src.r - 1) && checkerboard[(src.r - 1) * COLUMNS + (src.c + 1)].player == VOID_0){
                 move[nr_moves].src.r = src.r;
                 move[nr_moves].src.c = src.c;
                 move[nr_moves].dst.r = src.r - 1;
                 move[nr_moves].dst.c = src.c + 1;
                 nr_moves++;
             }
-            if(control_range(src.c - 1, src.r - 1) && checkerboard[(src.r - 1) * COLUMNS + (src.c - 1)].player == VOID ) {
+            if(control_range(src.c - 1, src.r - 1) && checkerboard[(src.r - 1) * COLUMNS + (src.c - 1)].player == VOID_0 ) {
                 move[nr_moves].src.r = src.r;
                 move[nr_moves].src.c = src.c;
                 move[nr_moves].dst.r = src.r - 1;
@@ -383,14 +447,14 @@ int can_piece_be_moved(tower_t* checkerboard, coordinate_t src, move_t* move, in
             }
         } /*player 1 non pro*/
 
-        if (control_range(src.c + 1, src.r + 1) && checkerboard[(src.r + 1) * COLUMNS + (src.c + 1)].player == VOID){
+        if (control_range(src.c + 1, src.r + 1) && checkerboard[(src.r + 1) * COLUMNS + (src.c + 1)].player == VOID_0){
             move[nr_moves].src.r = src.r;
             move[nr_moves].src.c = src.c;
             move[nr_moves].dst.r = src.r + 1;
             move[nr_moves].dst.c = src.c + 1;
             nr_moves++;
         }
-        if(control_range(src.c - 1, src.r + 1) && checkerboard[(src.r + 1) * COLUMNS + (src.c - 1)].player == VOID) { /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
+        if(control_range(src.c - 1, src.r + 1) && checkerboard[(src.r + 1) * COLUMNS + (src.c - 1)].player == VOID_0) { /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
             move[nr_moves].src.r = src.r;
             move[nr_moves].src.c = src.c;
             move[nr_moves].dst.r = src.r + 1;
@@ -400,14 +464,14 @@ int can_piece_be_moved(tower_t* checkerboard, coordinate_t src, move_t* move, in
 
     } else if (turn == PLAYER_2 && SRC_PLAYER_TOWER == PLAYER_2) {
         if (SRC_HEAD_TOWER == PLAYER_2_PRO) {
-            if (control_range(src.c + 1, src.r + 1) && checkerboard[(src.r + 1) * COLUMNS + (src.c + 1)].player == VOID) {
+            if (control_range(src.c + 1, src.r + 1) && checkerboard[(src.r + 1) * COLUMNS + (src.c + 1)].player == VOID_0) {
                 move[nr_moves].src.r = src.r;
                 move[nr_moves].src.c = src.c;
                 move[nr_moves].dst.r = src.r + 1;
                 move[nr_moves].dst.c = src.c + 1;
                 nr_moves++;
             }
-            if (control_range(src.c - 1, src.r + 1) && checkerboard[(src.r + 1) * COLUMNS + (src.c - 1)].player == VOID ) {
+            if (control_range(src.c - 1, src.r + 1) && checkerboard[(src.r + 1) * COLUMNS + (src.c - 1)].player == VOID_0 ) {
                 move[nr_moves].src.r = src.r;
                 move[nr_moves].src.c = src.c;
                 move[nr_moves].dst.r = src.r + 1;
@@ -415,14 +479,14 @@ int can_piece_be_moved(tower_t* checkerboard, coordinate_t src, move_t* move, in
                 nr_moves++;
             }
         } /*player 2 non pro*/
-        if (control_range(src.c + 1, src.r - 1) && checkerboard[(src.r - 1) * COLUMNS + (src.c + 1)].player == VOID) {
+        if (control_range(src.c + 1, src.r - 1) && checkerboard[(src.r - 1) * COLUMNS + (src.c + 1)].player == VOID_0) {
             move[nr_moves].src.r = src.r;
             move[nr_moves].src.c = src.c;
             move[nr_moves].dst.r = src.r - 1;
             move[nr_moves].dst.c = src.c + 1;
             nr_moves++;
         }
-        if (control_range(src.c - 1, src.r - 1) && checkerboard[(src.r - 1) * COLUMNS + (src.c - 1)].player == VOID) { /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
+        if (control_range(src.c - 1, src.r - 1) && checkerboard[(src.r - 1) * COLUMNS + (src.c - 1)].player == VOID_0) { /*verifica se destinazione è valida e verifica che in quella posizione non ci siano altre pedine e che il range sia corretto*/
             move[nr_moves].src.r = src.r;
             move[nr_moves].src.c = src.c;
             move[nr_moves].dst.r = src.r - 1;
@@ -444,7 +508,7 @@ int can_piece_capture (tower_t* checkerboard, coordinate_t src, move_t* move, co
     if (SRC_PLAYER_TOWER == turn) {
         if (turn == PLAYER_1 /*|| PLAYER2 == promoted*/) {
             if (diagonal_down_left_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_2) {
-                if (diagonal_down_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
+                if (diagonal_down_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID_0) {
                     move[nr_captures].src = src;
                     move[nr_captures].dst.r = src.r + 2;
                     move[nr_captures].dst.c = src.c - 2;
@@ -454,7 +518,7 @@ int can_piece_capture (tower_t* checkerboard, coordinate_t src, move_t* move, co
                 }
             }
             if (diagonal_down_right_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_2) {
-                if (diagonal_down_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
+                if (diagonal_down_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID_0) {
                     move[nr_captures].src = src;
                     move[nr_captures].dst.r = src.r + 2;
                     move[nr_captures].dst.c = src.c + 2;
@@ -465,7 +529,7 @@ int can_piece_capture (tower_t* checkerboard, coordinate_t src, move_t* move, co
             }
             if (SRC_HEAD_TOWER == PLAYER_1_PRO) {
                 if (diagonal_up_left_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_2) {
-                    if (diagonal_up_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
+                    if (diagonal_up_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID_0) {
                         move[nr_captures].src = src;
                         move[nr_captures].dst.r = src.r - 2;
                         move[nr_captures].dst.c = src.c - 2;
@@ -475,7 +539,7 @@ int can_piece_capture (tower_t* checkerboard, coordinate_t src, move_t* move, co
                     }
                 }
                 if (diagonal_up_right_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_2) {
-                    if (diagonal_up_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
+                    if (diagonal_up_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID_0) {
                         move[nr_captures].src = src;
                         move[nr_captures].dst.r = src.r - 2;
                         move[nr_captures].dst.c = src.c + 2;
@@ -488,7 +552,7 @@ int can_piece_capture (tower_t* checkerboard, coordinate_t src, move_t* move, co
         }
         if (turn == PLAYER_2 /*|| PLAYER1 == promoted*/) {
             if (diagonal_up_left_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_1) {
-                if (diagonal_up_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
+                if (diagonal_up_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID_0) {
                     move[nr_captures].src = src;
                     move[nr_captures].dst.r = src.r - 2;
                     move[nr_captures].dst.c = src.c - 2;
@@ -498,7 +562,7 @@ int can_piece_capture (tower_t* checkerboard, coordinate_t src, move_t* move, co
                 }
             }
             if (diagonal_up_right_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_1) {
-                if (diagonal_up_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
+                if (diagonal_up_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID_0) {
                     move[nr_captures].src = src;
                     move[nr_captures].dst.r = src.r - 2;
                     move[nr_captures].dst.c = src.c + 2;
@@ -509,7 +573,7 @@ int can_piece_capture (tower_t* checkerboard, coordinate_t src, move_t* move, co
             }
             if (SRC_HEAD_TOWER == PLAYER_2_PRO) {
                 if (diagonal_down_left_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_1) {
-                    if (diagonal_down_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
+                    if (diagonal_down_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID_0) {
                         move[nr_captures].src = src;
                         move[nr_captures].dst.r = src.r + 2;
                         move[nr_captures].dst.c = src.c - 2;
@@ -518,7 +582,7 @@ int can_piece_capture (tower_t* checkerboard, coordinate_t src, move_t* move, co
                         nr_captures++;
                     }
                 } if (diagonal_down_right_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_1) {
-                    if (diagonal_down_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
+                    if (diagonal_down_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID_0) {
                         move[nr_captures].src = src;
                         move[nr_captures].dst.r = src.r + 2;
                         move[nr_captures].dst.c = src.c + 2;
@@ -543,7 +607,7 @@ int capture_check(tower_t *checkerboard, int turn){
     int count=0; /*conta le pedine obbligate a mangiare*/
     coordinate_t src;
     move_t move;
-    coordinate_t enemy, check;
+    coordinate_t enemy /*, check */;
     for (r = s_chance[0]; r < ROWS; r++) {
         for (c = s_chance[1]; c < COLUMNS; c++) {
             if (PLAYER_TOWER == turn) {
@@ -552,11 +616,11 @@ int capture_check(tower_t *checkerboard, int turn){
                     if (diagonal_down_left_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_2) {
                         /*ho inserito degli and per evitare il controllo a sx se sei vicino al bordo sx e viceversa a dx*/
                         /*controllo diagonale sinistra checkerboard sia player avversario e non vuoto*/
-                        if (diagonal_down_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
+                        if (diagonal_down_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID_0) {
                             /*TODO funzione checkerboard controlla se esce dall'array del checkerboard*/
                             /*passo i e c come coordinate per mangiata obbligatoria*/
                             count++; /*incrementa il conteggio se rilevata una pedina obbligata*/
-                            printf("TURNO GIOCATORE %d\n", turn);
+                            printf("TURNO GIOCATORE %d\n\n", turn);
                             printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c - 1, r + 1);
                             scanf(" %c", &selection); /*chiede se vuoi mangiare con quella pedina*/
                             if (selection==si) { /*se dici si chiama mangiata*/
@@ -575,10 +639,10 @@ int capture_check(tower_t *checkerboard, int turn){
                         }
                     } if (diagonal_down_right_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_2) {
                         /*controllo diagonale destra checkerboard sia player avversario e non vuoto*/
-                        if (diagonal_down_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
+                        if (diagonal_down_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID_0) {
                             /*passo i e c come coordinate per mangiata obbligatoria*/
                             count++;
-                            printf("TURNO GIOCATORE %d\n", turn);
+                            printf("TURNO GIOCATORE %d\n\n", turn);
                             printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c + 1, r + 1);
                             scanf(" %c", &selection);
                             if (selection==si) {
@@ -599,10 +663,10 @@ int capture_check(tower_t *checkerboard, int turn){
                     if (HEAD_TOWER == PLAYER_1_PRO) {
                         if (diagonal_up_left_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_2) {
                             /*controllo diagonale sinistra checkerboard sia player avversario e non vuoto*/
-                            if (diagonal_up_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
+                            if (diagonal_up_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID_0) {
                                 /*passo i e c come coordinate per mangiata obbligatoria*/
                                 count++;
-                                printf("TURNO GIOCATORE %d\n", turn);
+                                printf("TURNO GIOCATORE %d\n\n", turn);
                                 printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c - 1, r - 1);
                                 scanf(" %c", &selection);
                                 if (selection==si) {
@@ -622,10 +686,10 @@ int capture_check(tower_t *checkerboard, int turn){
                         }
                         if (diagonal_up_right_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_2) {
                             /*controllo diagonale destra checkerboard sia player avversario e non vuoto*/
-                            if (diagonal_up_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
+                            if (diagonal_up_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID_0) {
                                 /*passo i e c come coordinate per mangiata obbligatoria*/
                                 count++;
-                                printf("TURNO GIOCATORE %d\n", turn);
+                                printf("TURNO GIOCATORE %d\n\n", turn);
                                 printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c + 1, r - 1);
                                 scanf(" %c", &selection);
                                 if (selection==si) {
@@ -648,10 +712,10 @@ int capture_check(tower_t *checkerboard, int turn){
                 if (turn == PLAYER_2 /*|| PLAYER1 == promoted*/) {
                     if (diagonal_up_left_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_1) {
                         /*controllo diagonale sinistra checkerboard sia player avversario e non vuoto*/
-                        if (diagonal_up_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
+                        if (diagonal_up_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID_0) {
                             /*passo i e c come coordinate per mangiata obbligatoria*/
                             count++;
-                            printf("TURNO GIOCATORE %d\n", turn);
+                            printf("TURNO GIOCATORE %d\n\n", turn);
                             printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c - 1, r - 1);
                             scanf(" %c", &selection);
                             if (selection==si) {
@@ -671,10 +735,10 @@ int capture_check(tower_t *checkerboard, int turn){
                     }
                     if (diagonal_up_right_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_1) {
                         /*controllo diagonale destra checkerboard sia player avversario e non vuoto*/
-                        if (diagonal_up_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
+                        if (diagonal_up_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID_0) {
                             /*passo i e c come coordinate per mangiata obbligatoria*/
                             count++;
-                            printf("TURNO GIOCATORE %d\n", turn);
+                            printf("TURNO GIOCATORE %d\n\n", turn);
                             printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c + 1, r - 1);
                             scanf(" %c", &selection);
                             if (selection==si) {
@@ -696,10 +760,10 @@ int capture_check(tower_t *checkerboard, int turn){
                         if (diagonal_down_left_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_1) {
                             /*ho inserito degli and per evitare il controllo a sx se sei vicino al bordo sx e viceversa a dx*/
                             /*controllo diagonale sinistra checkerboard sia player avversario e non vuoto*/
-                            if (diagonal_down_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
+                            if (diagonal_down_left_check(checkerboard, src, SECOND_DIAGONAL) == VOID_0) {
                                 /*passo i e c come coordinate per mangiata obbligatoria*/
                                 count++; /*incrementa il conteggio se rilevata una pedina obbligata*/
-                                printf("TURNO GIOCATORE %d\n", turn);
+                                printf("TURNO GIOCATORE %d\n\n", turn);
                                 printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c - 1, r + 1);
                                 scanf(" %c", &selection); /*chiede se vuoi mangiare con quella pedina*/
                                 if (selection==si) { /*se dici si chiama mangiata*/
@@ -718,10 +782,10 @@ int capture_check(tower_t *checkerboard, int turn){
                             }
                         } if (diagonal_down_right_check(checkerboard, src, FIRST_DIAGONAL) == PLAYER_1) {
                             /*controllo diagonale destra checkerboard sia player avversario e non vuoto*/
-                            if (diagonal_down_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID) {
+                            if (diagonal_down_right_check(checkerboard, src, SECOND_DIAGONAL) == VOID_0) {
                                 /*passo i e c come coordinate per mangiata obbligatoria*/
                                 count++;
-                                printf("TURNO GIOCATORE %d\n", turn);
+                                printf("TURNO GIOCATORE %d\n\n", turn);
                                 printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c + 1, r + 1);
                                 scanf(" %c", &selection);
                                 if (selection==si) {
