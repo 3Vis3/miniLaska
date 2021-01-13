@@ -36,6 +36,7 @@ int main() {
                     printf("\nTURNO GIOCATORE %d \n", turn);
                     printf("Seleziona le coordinate della pedina x , y: \n");
                     scanf("%d %d", &src.c, &src.r); /*inserimento pedina da controllare*/ /*TODO, RICHIEDERE SELEZIONE SE INSERISCI non numeri*/
+                    getchar(); /*evita che se si digitano dei caratteri vada in endless loop*/
                     if (!piece_selection(&(checkerboard[0][0]), src, turn)) {
                         continue;
                     } else {
