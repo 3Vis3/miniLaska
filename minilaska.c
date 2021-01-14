@@ -1,10 +1,6 @@
-//
-// Created by franc on 28/11/2020.
-//
 #include "minilaska.h"
 #include <stdio.h>
 #include <stdbool.h>
-#include <string.h>
 
 #ifdef _WIN32
     #include <windows.h>
@@ -22,33 +18,13 @@
 #define PLAYER_TOWER checkerboard[r * COLUMNS + c].player
 #define HEAD_TOWER checkerboard[r * COLUMNS + c].composition[0]
 #define SRC_PLAYER_TOWER checkerboard[src.r * COLUMNS + src.c].player
-#define MOVE_PLAYER_TOWER checkerboard[move.src.r * COLUMNS + move.src.c].player
 #define SRC_HEAD_TOWER checkerboard[src.r * COLUMNS + src.c].composition[0]
 #define MOVE_HEAD_TOWER checkerboard[move.src.r * COLUMNS + move.src.c].composition[0]
-
-#define MID_TOWER checkerboard[src.r * COLUMNS + src.c].composition[1]
-#define TAIL_TOWER checkerboard[src.r * COLUMNS + src.c].composition[2]
-
 #define PLAYER_DESTINATION checkerboard[move.dst.r * COLUMNS + move.dst.c].player /*player della casella in cui effettuare il movimento nella funzione piece_move*/
-#define HEAD_DESTINATION checkerboard[move_r * COLUMNS + move_c].composition[0]
-#define MID_DESTINATION checkerboard[move_r * COLUMNS + move_c].composition[1]
-#define TAIL_DESTINATION checkerboard[move_r * COLUMNS + move_c].composition[2]
-
 #define PLAYER_ENEMY checkerboard[enemy.r * COLUMNS + enemy.c].player /*player nemico che sta per essere mangiato*/
 #define HEAD_ENEMY checkerboard[enemy.r * COLUMNS + enemy.c].composition[0]
-#define MID_ENEMY checkerboard[enemy_r * COLUMNS + enemy_c].composition[1]
 #define TAIL_ENEMY checkerboard[enemy.r * COLUMNS + enemy.c].composition[COMPOSITION_SIZE-1]
-
 #define _ERROR (-1)
-
-
-#define ANSI_COLOR_RED     "\x1b[31m"
-#define ANSI_COLOR_GREEN   "\x1b[32m"
-#define ANSI_COLOR_YELLOW  "\x1b[33m"
-#define ANSI_COLOR_BLUE    "\x1b[34m"
-#define ANSI_COLOR_MAGENTA "\x1b[35m"
-#define ANSI_COLOR_CYAN    "\x1b[36m"
-#define ANSI_COLOR_RESET   "\x1b[0m"
 
 
 
@@ -81,14 +57,12 @@ void print_player_color (char color, char player) {
         }
     #else
         if(color == 'r'){
-            /*s = strcat ("ANSI_COLOR_RED ", player);
-            s = strcat (s, " ANSI_COLOR_RESET"); */
-            printf("%s %s %s","\x1b[31m", player, "\x1b[0m");
+            printf("%s %c %s","\x1b[31m", player, "\x1b[0m");
         }
         else if (color == 'y') {
-            printf("%s %s %s","\x1b[33m", player, "\x1b[0m");
+            printf("%s %c %s","\x1b[33m", player, "\x1b[0m");
         }else if (color == 'b') {
-            printf("%s %s %s","\x1b[34m", player, "\x1b[0m");
+            printf("%s %c %s","\x1b[34m", player, "\x1b[0m");
         }
 
     #endif
@@ -126,9 +100,19 @@ void checkerboard_init(tower_t *checkerboard){ /*funzione che inizializza la sca
     }
 }
 
+int string_to_coordinate(const char* s, coordinate_t* src) {
+    if(s){
+        src->c = s[0] - 'a';
+        src->r = s[1] - '0';
+        return 1;
+    }
+    return 0;
+}
+
 void checkerboard_print (tower_t *checkerboard, coordinate_t last_move) { /*funzione di stampa della checkerboard che verrà chiamata tutte le volte in cui viene fatta una mossa*/
-    int r , c;
+    int r , c, square;
     char color;
+    char* map = "abcdefg";
 
     for (r = 0; r < ROWS; r++) {
         printf("%d|", r); /*stampa l'indice delle righe*/
@@ -138,7 +122,7 @@ void checkerboard_print (tower_t *checkerboard, coordinate_t last_move) { /*funz
                 color = 'b';
             }
 
-            int square = PLAYER_TOWER;
+            square = PLAYER_TOWER;
             if (square == PLAYER_1) {
                 if(color == 'a'){
                     color = 'r';
@@ -165,7 +149,7 @@ void checkerboard_print (tower_t *checkerboard, coordinate_t last_move) { /*funz
     }
     printf("  ");
     for (c = 0; c < COLUMNS; c++) { /*ciclo per stampare l'indice delle colonne*/
-        printf(" %d ", c);
+        printf(" %c ", map[c]);
     }
     printf("\n");
 }

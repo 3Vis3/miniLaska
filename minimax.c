@@ -1,6 +1,3 @@
-//
-// Created by franc on 04/12/2020.
-//
 #include "minilaska.h"
 #include "stdio.h"
 #include <stdlib.h>
@@ -195,8 +192,8 @@ tower_t* deep_tower_copy (const tower_t* checkerboard){
  */
 double minimax (tower_t *checkerboard, int depth, int turn){
 
-    int i, i_moves = 0, i_captures = 0;
-    double curr_score = 0., best_score;
+    int i, i_moves, i_captures;
+    double curr_score, best_score;
     move_t possible_move[44], possible_capture[44];
     coordinate_t possible_enemy[44];
 
@@ -275,7 +272,7 @@ double minimax (tower_t *checkerboard, int depth, int turn){
     return best_score;
 }
 
-bool check_capture_concatenation_cpu(tower_t* checkerboard, coordinate_t old_capture, coordinate_t new_capture){
+bool check_capture_concatenation_cpu(coordinate_t old_capture, coordinate_t new_capture){
 
     if(new_capture.r == old_capture.r && new_capture.c == old_capture.c){
         return true;
@@ -288,8 +285,8 @@ int cpu_minimax (tower_t *checkerboard) {
 
     /*per ogni pedina che può fare una mossa nella scacchiera originale chiamo la funzione minimax, salvando alla fine le coordinate della mossa con punteggio migliore*/
 
-    int i, i_best_move = 0, i_moves = 0, i_captures = 0, check = 1;
-    double curr_score = 0., best_score = -1000.;
+    int i, i_best_move, i_moves, i_captures, check = 1;
+    double curr_score, best_score = -1000.;
     move_t possible_move[44], possible_capture[44];
     coordinate_t possible_enemy[44], temp_possible_capture;
 
@@ -334,7 +331,7 @@ int cpu_minimax (tower_t *checkerboard) {
             i_captures = possible_captures(checkerboard, PLAYER_2, possible_capture, possible_enemy);
 
             for (i = 0; i < i_captures; i++) { /*verifico se tra tutte le nuove mangiate possibili c'è la pedina che ha appena mangiato*/
-                if(check_capture_concatenation_cpu(checkerboard, temp_possible_capture, possible_capture[i].src)){
+                if(check_capture_concatenation_cpu(temp_possible_capture, possible_capture[i].src)){
 
                     cpu_play(checkerboard, possible_capture[i], possible_enemy[i], PLAYER_2, 1);
 

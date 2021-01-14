@@ -40,6 +40,14 @@ struct move {
 void checkerboard_init(tower_t *checkerboard);
 
 /**
+ * converte stringa passata in input in una coordinata
+ * @param s
+ * @param src
+ * @return
+ */
+int string_to_coordinate(const char* s, coordinate_t* src);
+
+/**
  * Stampa a video la scacchiera aggiornata all'ultima modifica
  * @param checkerboard - Puntatore all'indirizzo di memoria della scacchiera (una matrice bidimensionale di tipo struct tower)
  */
@@ -214,4 +222,4 @@ int capture_check(tower_t *checkerboard, int turn);
  */
 int cpu_minimax (tower_t *checkerboard);
 
-#endif //MINILASKA_MINILASKA_H
+#endif /*MINILASKA_MINILASKA_H */
