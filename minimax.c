@@ -90,11 +90,11 @@ double get_square_score (tower_t* checkerboard, coordinate_t src, int turn) {
 double get_total_score (tower_t *checkerboard, int turn) {
     double score = 0.;
     int r, c;
-    if(win(checkerboard, turn)){
-        if(turn == PLAYER_1){
-            return -INF; /*caso migliore del turno giocatore umano, che deve minimizzare*/
+    if(win(checkerboard, turn)){ /*se siamo in turno cpu (2) e è stato sconfitto, la funzione win restituirà true, dato il turno 2*/
+        if(turn == PLAYER_2){
+            return INF; /*se entra in vittoria con turno 2 significa che il player cpu (2) sta perdendo, torno -INF*/
         }else{
-            return  INF;
+            return  -INF;
         }
     }
 

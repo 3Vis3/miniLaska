@@ -42,27 +42,31 @@ void print_player_color (char color, char player) {
 
         if(color == 'r'){
             SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-            printf(" %c ", player);
+            printf("%c", player);
             SetConsoleTextAttribute(hConsole, 15); /*colore bianco*/
         }
         else if (color == 'y') {
             SetConsoleTextAttribute(hConsole, 14);
-            printf(" %c ", player);
+            printf("%c", player);
             SetConsoleTextAttribute(hConsole, 15);
         }
         else if (color == 'b') {
             SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
-            printf(" %c ", player);
+            printf("%c", player);
             SetConsoleTextAttribute(hConsole, 15);
+        }else{
+            printf("%c", player);
         }
     #else
         if(color == 'r'){
-            printf("%s %c %s","\x1b[31m", player, "\x1b[0m");
+            printf("%s%c%s","\x1b[31m", player, "\x1b[0m");
         }
         else if (color == 'y') {
-            printf("%s %c %s","\x1b[33m", player, "\x1b[0m");
+            printf("%s%c%s","\x1b[33m", player, "\x1b[0m");
         }else if (color == 'b') {
-            printf("%s %c %s","\x1b[34m", player, "\x1b[0m");
+            printf("%s%c%s","\x1b[34m", player, "\x1b[0m");
+        }else{
+            printf("%c", player);
         }
 
     #endif
@@ -84,6 +88,9 @@ void checkerboard_init(tower_t *checkerboard){ /*funzione che inizializza la sca
                     checkerboard[r * COLUMNS + c].composition[i] = 0;
                 }
             }else if (r > 3 && ((r % 2 == 0 && c % 2 == 0) || (r % 2 != 0 && c % 2 !=0))) { /*se ci troviamo sulla parte della scacchiera inferiore e l'indice delle righe e colonne è o entrambe pari o entrambe dispari*/
+                /*if(r == 4 && c == 6){
+                    continue;
+                }*/
                 PLAYER_TOWER = PLAYER_2;                               /*assegnamo il posto al giocatore 2 e componiamo la sua torre*/
                 HEAD_TOWER = PLAYER_2;
                 for (i = 1; i < COMPOSITION_SIZE; i++) {
@@ -109,16 +116,152 @@ int string_to_coordinate(const char* s, coordinate_t* src) {
     return 0;
 }
 
-void checkerboard_print (tower_t *checkerboard, coordinate_t last_move) { /*funzione di stampa della checkerboard che verrà chiamata tutte le volte in cui viene fatta una mossa*/
-    int r , c, square;
-    char color;
+int print_tower(tower_t* checkerboard, int i, int j, int height, char color) {
+
+
+    if(height != 0) {
+        color = 'w';
+    }
+
+        if (checkerboard[i * COLUMNS + j].composition[height] == PLAYER_1_PRO) {
+            print_player_color(color, 'O');
+            return 1;
+        } else if(checkerboard[i * COLUMNS + j].composition[height] == PLAYER_1){
+            print_player_color(color, 'o');
+            return 1;
+        }
+        if (checkerboard[i * COLUMNS + j].composition[height] == PLAYER_2_PRO) {
+            print_player_color(color, 'X');
+            return 1;
+        } else if(checkerboard[i * COLUMNS + j].composition[height] == PLAYER_2){
+            print_player_color(color, 'x');
+            return 1;
+        }
+        return 0;
+
+    /*} else if (height == 1) {
+        if (checkerboard[i * COLUMNS + j].player == PLAYER_1) {
+            if (checkerboard[i * COLUMNS + j].composition[1] == PLAYER_1_PRO) {
+                print_player_color(color, 'O');
+            } else if(checkerboard[i * COLUMNS + j].composition[1] == PLAYER_1){
+                print_player_color(color, 'o');
+            }
+        } else if (checkerboard[i * COLUMNS + j].player == PLAYER_2) {
+            if (checkerboard[i * COLUMNS + j].composition[1] == PLAYER_2_PRO) {
+                print_player_color(color, 'X');
+            } else if(checkerboard[i * COLUMNS + j].composition[1] == PLAYER_2){
+                print_player_color(color, 'x');
+            }
+        }
+    } else {
+        if (checkerboard[i * COLUMNS + j].player == PLAYER_1) {
+            if (checkerboard[i * COLUMNS + j].composition[2] == PLAYER_1_PRO) {
+                print_player_color(color, 'O');
+            } else if(checkerboard[i * COLUMNS + j].composition[2] == PLAYER_1){
+                print_player_color(color, 'o');
+            }
+        } else if (checkerboard[i * COLUMNS + j].player == PLAYER_2) {
+            if (checkerboard[i * COLUMNS + j].composition[2] == PLAYER_2_PRO) {
+                print_player_color(color, 'X');
+            } else if(checkerboard[i * COLUMNS + j].composition[2] == PLAYER_2){
+                print_player_color(color, 'x');
+            }
+        }*/
+
+    /*}*/
+}
+
+void checkerboard_print (tower_t* checkerboard, coordinate_t last_move) {
+    int r, c, i, j, square, z = 0, check_c = 0, check_r = 0;
+    char color = 'b';
     char* map = "abcdefg";
 
-    for (r = 0; r < ROWS; r++) {
-        printf("%d|", r); /*stampa l'indice delle righe*/
-        for (c = 0; c < COLUMNS; c++) {
+
+    for (r = 0; r < 28; r++) {
+        for (c = 0; c < 64; c++) {
             color = 'a'; /*valore iniziale non possibile*/
-            if(last_move.r == r && last_move.c == c) { /*cambia colore ultima mossa in blu evidenziandola*/
+            j = c / 9;
+            i = r / 4;
+            square = checkerboard[i * COLUMNS + j].player;
+            if(last_move.r == i && last_move.c == j) { /*cambia colore ultima mossa in blu evidenziandola*/
+                color = 'b';
+            }
+
+            if(((c-4) % 9 == 0) && (r % 4 != 0)) {
+
+                if(square == PLAYER_1) {
+                    if(color == 'a'){
+                        color = 'r';
+                    }
+                    if (!print_tower(checkerboard, i, j, z, color)){
+                        check_c = 3;
+                    }else{
+                        check_c = 1;
+                    }
+
+                    /*if(checkerboard[i * COLUMNS + j].composition[0] == PLAYER_1_PRO) {
+                        print_player_color(color, 'O');
+                        check_c = 1;
+                    }else{
+                        print_player_color(color, 'o');
+                        check_c = 1;
+                    }*/
+
+                }else if(square == PLAYER_2) {
+                    if(color == 'a'){
+                        color = 'y';
+                    }
+                    if (!print_tower(checkerboard, i, j, z, color)){
+                        check_c = 3;
+                    }else{
+                        check_c = 1;
+                    }
+
+                    /*if(checkerboard[i * COLUMNS + j].composition[0] == PLAYER_2_PRO) {
+                        print_player_color(color, 'X');
+                        check_c = 1;
+                    }else{
+                        print_player_color(color, 'x');
+                        check_c = 1;
+                    }*/
+
+                }else{
+                    check_c = 3;
+                }
+            }else if(r%4 == 0){
+
+                if(c%9 == 0)
+                    printf("+");
+                else
+                    printf("-");
+            }else{
+                if(c%9 == 0){
+                    printf("|");
+                }else{
+                    if(check_c == 3) {
+                        printf(" ");
+                        check_c = 0;
+                    }
+                    printf(" ");
+
+                }
+            }
+        }
+        printf("\n");
+        if(r % 4 != 0) {
+            z = (z + 1) % 3; /*z++ tra 0 e 2*/
+        }
+
+    }
+    printf("+--------+--------+--------+--------+--------+--------+--------+\n");
+
+
+
+    /*for (r = 0; r < ROWS; r++) {
+        printf("%d|", r); *//*stampa l'indice delle righe*//*
+        for (c = 0; c < COLUMNS; c++) {
+            color = 'a'; *//*valore iniziale non possibile*//*
+            if(last_move.r == r && last_move.c == c) { *//*cambia colore ultima mossa in blu evidenziandola*//*
                 color = 'b';
             }
 
@@ -148,11 +291,56 @@ void checkerboard_print (tower_t *checkerboard, coordinate_t last_move) { /*funz
         printf("\n");
     }
     printf("  ");
-    for (c = 0; c < COLUMNS; c++) { /*ciclo per stampare l'indice delle colonne*/
+    for (c = 0; c < COLUMNS; c++) { *//*ciclo per stampare l'indice delle colonne*//*
+                printf(" %c ", map[c]);
+    }
+    printf("\n");*/
+}
+
+/*void checkerboard_print (tower_t *checkerboard, coordinate_t last_move) { *//*funzione di stampa della checkerboard che verrà chiamata tutte le volte in cui viene fatta una mossa*//*
+    int r , c, square;
+    char color;
+    char* map = "abcdefg";
+
+    for (r = 0; r < ROWS; r++) {
+        printf("%d|", r); *//*stampa l'indice delle righe*//*
+        for (c = 0; c < COLUMNS; c++) {
+            color = 'a'; *//*valore iniziale non possibile*//*
+            if(last_move.r == r && last_move.c == c) { *//*cambia colore ultima mossa in blu evidenziandola*//*
+                color = 'b';
+            }
+
+            square = PLAYER_TOWER;
+            if (square == PLAYER_1) {
+                if(color == 'a'){
+                    color = 'r';
+                }
+                if (HEAD_TOWER == PLAYER_1_PRO) {
+                    print_player_color(color, 'O');
+                } else {
+                    print_player_color(color, 'o');
+                }
+            } else if (square == PLAYER_2){
+                if(color == 'a'){
+                    color = 'y';
+                }
+                if (HEAD_TOWER == PLAYER_2_PRO) {
+                    print_player_color (color, 'X');
+                } else {
+                    print_player_color (color, 'x');
+                }
+            } else{
+                printf("   ");
+            }
+        }
+        printf("\n");
+    }
+    printf("  ");
+    for (c = 0; c < COLUMNS; c++) { *//*ciclo per stampare l'indice delle colonne*//*
         printf(" %c ", map[c]);
     }
     printf("\n");
-}
+}*/
 
 void turn_update(int *turn){ /*funzione che cambia turno al termine di ogni mossa avvenuta con successo*/
     if(*turn == PLAYER_1){
@@ -323,9 +511,14 @@ int pieces_left (tower_t *checkerboard, int turn){
 
 bool win (tower_t *checkerboard, int turn) { /*controlla se la partita arriva al termine, verificando se non sono ancora presenti pedine del player corrente,
 *                                                    oppure se ci sono ma sono bloccate. Al verificarsi di uno di questi casi ritorna 1 e interrompe il gioco*/
+
+
     int r, c, pieces_blocked = 0;
     coordinate_t src;
     int counter_pieces = pieces_left(checkerboard, turn);
+
+    turn_update(&turn);
+
     for(r = 0; r < ROWS; r++) {
         for (c = 0; c < COLUMNS; c++) {
             if (PLAYER_TOWER == turn) {
@@ -355,6 +548,8 @@ bool win (tower_t *checkerboard, int turn) { /*controlla se la partita arriva al
             }
         }
     }
+
+    turn_update(&turn); /*useless*/
 
     if(pieces_blocked == counter_pieces){
         return 1;

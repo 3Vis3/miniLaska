@@ -35,15 +35,15 @@ int main() {
                         continue;
                     }
                     printf("\nTURNO GIOCATORE %d \n", turn);
-                    printf("Seleziona le coordinate della pedina x , y: \n");
+                    printf("Seleziona le coordinate della pedina: (Es. e4) \n");
                     scanf("%s", s_move ); /*inserimento pedina da controllare*/ /*TODO, RICHIEDERE SELEZIONE SE INSERISCI non numeri*/
                     string_to_coordinate(s_move, &src);
                     getchar(); /*evita che se si digitano dei caratteri vada in endless loop*/
                     if (!piece_selection(&(checkerboard[0][0]), src, turn)) {
                         continue;
                     } else {
-                        printf("Hai selezionato le coordinate x=%d y=%d\n", src.c, src.r);
-                        printf("seleziona le coordinate in cui muovere la pedina x , y: \n");
+                        printf("Hai selezionato le coordinate della pedina in %d%d\n", src.c, src.r);
+                        printf("seleziona le coordinate in cui muovere la pedina: \n");
                         scanf("%s", s_move ); /*inserimento pedina da controllare*/ /*TODO, RICHIEDERE SELEZIONE SE INSERISCI non numeri*/
                         string_to_coordinate(s_move, &dst);
                         move.src = src, move.dst = dst;
@@ -82,22 +82,22 @@ int main() {
             switch (capture_check(&checkerboard[0][0], PLAYER_1)) { /*TODO risolvere bug, controlla se ci sono mangiate anche dopo che il player 1 ha già fatto la mossa*/
                 case 0: /*non ci sono manigate disponibili*/
                     printf("case 0\n");
-                    if (win(&(checkerboard[0][0]), turn)) {
+                    if (win(&(checkerboard[0][0]), PLAYER_1) || win(&(checkerboard[0][0]), PLAYER_2)) {
                         win_count++;
                         continue;
                     }
                     /*GIOCATORE UMANO*/
                     printf("\nTURNO GIOCATORE 1 \n\n");
 
-                    printf("Seleziona le coordinate della pedina x , y: \n");
+                    printf("Seleziona le coordinate della pedina (Es. e4)): \n");
 
                     scanf("%s", s_move ); /*inserimento pedina da controllare*/ /*TODO, RICHIEDERE SELEZIONE SE INSERISCI non numeri*/
                     string_to_coordinate(s_move, &src);
                     if (!piece_selection(&(checkerboard[0][0]), src, turn)) {
                         continue;
                     } else {
-                        printf("Hai selezionato le coordinate x=%d y=%d\n", src.c, src.r);
-                        printf("seleziona le coordinate in cui muovere la pedina x , y: \n");
+                        printf("Hai selezionato le coordinate della pedina in %d%d\n", src.c, src.r);
+                        printf("seleziona le coordinate in cui muovere la pedina: \n");
                         scanf("%s", s_move); /*inserimento coordinate destinazione pedina*/
                         string_to_coordinate(s_move, &dst);
                         move.src = src, move.dst = dst;
@@ -135,8 +135,12 @@ int main() {
                     break;
             }
         }
-        turn_update(&turn);
-        printf("WIN Player %d ", turn);
+
+        if(win(&(checkerboard[0][0]), PLAYER_2)){
+            printf("WIN Player 2");
+        }else{
+            printf("WIN Player 1");
+        }
     }
 
     return 0;
