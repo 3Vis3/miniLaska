@@ -1,13 +1,14 @@
 /**
-* @file minilaska.h
+* @file minimax.c
 * @author Gruppo 15
-* @brief libreria per l'algoritmo dell'intelligienza artificiale per la CPU
+* @brief sorgente contenente l'algoritmo dell'intelligienza artificiale per la CPU in modalità 1 vs CPU
 * @date 16/01/2020
 */
 
-#include "minilaska.h"
-#include "stdio.h"
+#include <stdio.h>
 #include <stdlib.h>
+#include "minilaska.h"
+#include <unistd.h>
 
 #define ROWS (7)
 #define COLUMNS (7)
@@ -32,31 +33,33 @@
 const int MAX_DEPTH = 7;
 const double INF = 1000.;
 
-
 /**
- * sottofunzione che restituisce il punteggio della composizione di una singola torre in base a quanto è alta e a quanti player
- * promosso propri e avversari
- * */
-double get_composition_score (tower_t* checkerboard, coordinate_t src, int turn, double score) {
+ * Restituisce il punteggio della composizione di una singola torre in base a quanto è alta e a quanti player promossi
+ * ha, propri e avversari
+ * @param checkerboard - Puntatore all'indirizzo di memoria della scacchiera (una matrice bidimensionale flattened di tipo struct tower)
+ * @param src - coordinate sorgenti della pedina dove effettuare il controllo
+ * @param turn
+ * @param score - punteggio da modificare
+ * @return score, dopo averlo incrementato/ decrementato
+ */
+double get_composition_score (const tower_t* checkerboard, coordinate_t src, int turn, double score) {
     int i;
-    if(score != INF || score == -INF) {
-        for (i = 1; i < COMPOSITION_SIZE && checkerboard[src.r * COLUMNS + src.c].composition[i] != VOID_0; i++) {
+    for (i = 1; i < COMPOSITION_SIZE && checkerboard[src.r * COLUMNS + src.c].composition[i] != VOID_0; i++) {
 
-            if (checkerboard[src.r * COLUMNS + src.c].composition[i] == turn) {
-                /*se la pedina è del player attuale, ovvero corrisponde al turno, incremento lo score in base se è pro o normale*/
-                if (checkerboard[src.r * COLUMNS + src.c].composition[i] == PLAYER_1_PRO ||
-                    checkerboard[src.r * COLUMNS + src.c].composition[i] == PLAYER_2_PRO) {
-                    score *= 1.30;
-                } else {
-                    score *= 1.15;
-                }
-            } else { /*torre nemica*/
-                if (checkerboard[src.r * COLUMNS + src.c].composition[i] == PLAYER_1_PRO ||
-                    checkerboard[src.r * COLUMNS + src.c].composition[i] == PLAYER_2_PRO) {
-                    score *= 0.70;
-                } else {
-                    score *= 0.85;
-                }
+        if (checkerboard[src.r * COLUMNS + src.c].composition[i] == turn) {
+            /*se la pedina è del player attuale, ovvero corrisponde al turno, incremento lo score in base se è pro o normale*/
+            if (checkerboard[src.r * COLUMNS + src.c].composition[i] == PLAYER_1_PRO ||
+                checkerboard[src.r * COLUMNS + src.c].composition[i] == PLAYER_2_PRO) {
+                score *= 1.50;
+            } else {
+                score *= 1.25;
+            }
+        } else { /*torre nemica*/
+            if (checkerboard[src.r * COLUMNS + src.c].composition[i] == PLAYER_1_PRO ||
+                checkerboard[src.r * COLUMNS + src.c].composition[i] == PLAYER_2_PRO) {
+                score *= 0.60;
+            } else {
+                score *= 0.88;
             }
         }
     }
@@ -64,40 +67,41 @@ double get_composition_score (tower_t* checkerboard, coordinate_t src, int turn,
 }
 
 /**
- * funzione che restituisce il punteggio di una singola torre, aggiungendo quella della sua composizione
- * */
+ * Restituisce il punteggio di una singola torre, basandosi sulla testa promossa, aggiungendo quella della sua composizione
+ * @param checkerboard
+ * @param src
+ * @param turn
+ * @param score
+ * @return score, dopo averlo incrementato/ decrementato
+ */
 double get_square_score (tower_t* checkerboard, coordinate_t src, int turn, double score) {
-    if(score != INF || score == -INF) {
-        if(SRC_PLAYER_TOWER == turn){
-            if(SRC_HEAD_TOWER == PLAYER_1_PRO || SRC_HEAD_TOWER == PLAYER_2_PRO){
-                score += 0.5;
-            }
-            score = get_composition_score(checkerboard, src, turn, score);
-        }else if(SRC_PLAYER_TOWER != VOID_0){ /*pedina nemica ma non vuota*/
-            if(SRC_HEAD_TOWER == PLAYER_1_PRO || SRC_HEAD_TOWER == PLAYER_2_PRO){
-                score -= 0.5;
-            }
-            score = get_composition_score(checkerboard, src, turn, score);
+
+    if(SRC_PLAYER_TOWER == turn){
+        if(SRC_HEAD_TOWER == PLAYER_1_PRO || SRC_HEAD_TOWER == PLAYER_2_PRO){
+            score += 1.5;
         }
+        score = get_composition_score(checkerboard, src, turn, score);
+    }else if(SRC_PLAYER_TOWER != VOID_0){ /*pedina nemica ma non vuota*/
+        if(SRC_HEAD_TOWER == PLAYER_1_PRO || SRC_HEAD_TOWER == PLAYER_2_PRO){
+            score -= 1.5;
+        }
+        score = get_composition_score(checkerboard, src, turn, score);
     }
     return score;
 }
 
 /**
- * restituisce la sottrazione tra le pedine rimaste del player della CPU - quelle del player avversario e ci aggiunge la somma di tutte le torri in gioco
- * Per tornare un punteggio più significativo sommo lo score della sottrazione con la differenza tra il nr di pedine promosse della CPU (x 0.5) e quelle del player (x 0.5)
- * @return
+ * Restituisce il punteggio effettivo della scacchiera, calcolando il  punteggio di ogni torre e della sua composizione,
+ * e aggiungendoci la sottrazione tra le pedine rimaste del player della CPU sotratte a quelle del player avversario
+ * @param checkerboard
+ * @param turn
+ * @return score, il punteggio della versione della scacchiera passata
  */
 double get_total_score (tower_t *checkerboard, int turn) {
-    double score = 0.;
+    double score;
     int r, c;
-    if(win(checkerboard, turn)){ /*se siamo in turno cpu (2) e è stato sconfitto, la funzione win restituirà true, dato il turno 2*/
-        if(turn == PLAYER_2){
-            return INF; /*se entra in vittoria con turno 2 significa che il player cpu (2) sta perdendo, torno -INF*/
-        }else{
-            return  -INF;
-        }
-    }
+    /*sottraggo nr di pedine*/
+    score = pieces_left(checkerboard, PLAYER_2) - pieces_left(checkerboard, PLAYER_1);
 
     for (r = 0; r < ROWS; r++) {
         for (c = 0; c < COLUMNS; c++) {
@@ -106,110 +110,85 @@ double get_total_score (tower_t *checkerboard, int turn) {
             score = get_square_score(checkerboard, src, turn, score);
         }
     }
-
-    score += (pieces_left(checkerboard, PLAYER_2) - pieces_left(checkerboard, PLAYER_1)) / 2;
-
     return score;
 }
 
 /**
- * restituisce numero di mangiate possibili e mette in move un array contenente le struct mossa con coordinate sorgente e destinazione delle
- * pedine che possono mangiare, da controllare prima di quelle che possono muoversi, e le coordinate del nemico, necessarie per la funzione mangiata
- * */
-int possible_captures (tower_t* checkerboard, int turn, move_t* move, coordinate_t* enemy) {
-    int r, c, nr_captures = 0;
-    /*move e enemy saranno array di grandezza max 44, ovvero 11 pedine x 4 possibili mangiate ciascuna*/
-    coordinate_t src;
-    for (r = 0; r < ROWS; r++) {
-        for(c = 0; c < COLUMNS; c++) {
-            src.r = r, src.c = c;
-            nr_captures = can_piece_capture(checkerboard, src, move, enemy, nr_captures, turn);
-
-            /*incremento i in base a quante mangiate possibili ci sono state*/
-
-        }
-    }
-
-    return nr_captures;
-}
-
-/**
- * restituisce il numero delle mosse possibili chiamando per ogni cella se esiste una pedina che può spostarsi
- * */
-int possible_moves (tower_t* checkerboard, move_t* move, int turn) {
-    int r, c, nr_moves = 0;
-    /*move e enemy saranno array di grandezza max 44, ovvero 11 pedine x 4 possibili mangiate ciascuna*/
-    coordinate_t src;
-    for (r = 0; r < ROWS; r++) {
-        for(c = 0; c < COLUMNS; c++) {
-            src.r = r, src.c = c;
-            nr_moves = can_piece_be_moved(checkerboard, src, move, nr_moves, turn);
-
-            /*incremento i in base a quanti movimenti possibili ci sono stati*/
-
-        }
-    }
-
-    return nr_moves;
-}
-
-/**
- * effettua la mossa simulata, se eat è positivo effettua la mangiata, altrimenti effettua la mossa
- * @param eat se 1 effettua la manigata, se 0 la mossa
+ * Effettua la mossa simulata nella scacchiera passata come riferimento, sia la mangiata sia il movimento
+ * @param checkerboard - simulazione della scacchiera, creata con una deep copy
+ * @param move
+ * @param enemy
+ * @param turn
+ * @param eat - variabile booleana, se affermata effettua una manigata, altrimenti un movimento
+ * @return 1 se è andata a buon fine, 0 altrimenti
  */
-bool cpu_play (tower_t* checkerboard, move_t move, coordinate_t enemy, int turn, bool eat) {
+int cpu_play (tower_t* checkerboard, move_t move, coordinate_t enemy, int turn, int eat) {
 
     if(piece_selection(checkerboard, move.src, turn)){
         /*mangiata*/
         if(eat){
             piece_capture(checkerboard, move, turn, enemy);
-            return true;
+            return 1;
         }
-
         /*mossa*/
         if(move_selection(checkerboard, move, turn)){
-           return true;
+           return 1;
         }
     }
-    return false;
+    return 0;
 }
 
 
 
 /**
- * copia la scacchiera creando nuovi puntatori e quindi non andando a modificare la scacchiera base, per le simulazioni,
- * bisogna fare la FREE dopo averla chiamata
- * */
+ * Effettua una deep copy della scacchiera passata come parametro, creando nuovi puntatori e quindi non andando a modificare
+ * la scacchiera base, per le simulazioni. N.B. Il chiamante si occuperà di effettuare la free della nuova scacchiera
+ * @param checkerboard
+ * @return
+ */
 tower_t* deep_tower_copy (const tower_t* checkerboard){
     int r, c, i;
     tower_t* temp_checkerboard = (tower_t*) calloc (ROWS * COLUMNS, sizeof(tower_t));
     for (r = 0; r < ROWS; r++){
         for (c = 0; c < COLUMNS; c++){
-            temp_checkerboard[r * COLUMNS + c].player = checkerboard[r * COLUMNS + c].player;
+            temp_checkerboard[r * COLUMNS + c].player = PLAYER_TOWER;
             for (i = 0; i < COMPOSITION_SIZE; i++) {
                 temp_checkerboard[r * COLUMNS + c].composition[i] = checkerboard[r * COLUMNS + c].composition[i];
             }
-
         }
     }
     return temp_checkerboard;
 }
 
-/*PLAYER 2 è il CPU*/
 /**
- * restituisce un punteggio in base alle simulazioni effettuate e al giocatore
+ * Algoritmo ricorsivo che calcola il punteggio migliore per il proprio giocatore, in base alla versione della simulazione della scacchiera,
+ * richiamando sè stessa passando una nuova simulazione della scacchiera, eseguendo tutte le mosse possibili,
+ * cambiando turno e diminuendo la profondità. Si fermerà quando un giocatore raggiunge la vittoria o finisce la profondità
+ * @param checkerboard
+ * @param depth
+ * @param turn
+ * @return
  */
 double minimax (tower_t *checkerboard, int depth, int turn){
 
-    int i, i_moves, i_captures;
+    int i, i_moves, i_captures; /*indici mosse e mangiate*/
     double curr_score, best_score;
+    /*array memorizzati nello stack contenenti tutte le possibili combinazioni di mosse, mangiate e nemici*/
     move_t possible_move[44], possible_capture[44];
     coordinate_t possible_enemy[44];
 
-    if (win(checkerboard, turn) || depth == 0) {
+    /*casi base*/
+    if (win(checkerboard, turn)){
+        if(turn == PLAYER_2){
+            return INF;
+        }else{
+            return  -INF;
+        }
+    }else if(depth == 0) {
         return get_total_score(checkerboard, turn);
     }
 
+    /*passo ricorsivo*/
     i_captures = possible_captures(checkerboard, turn, possible_capture, possible_enemy);
 
     if(!i_captures){ /*calcolo mosse solo se non ci sono mangiate possibili*/
@@ -226,6 +205,7 @@ double minimax (tower_t *checkerboard, int depth, int turn){
 
         for (i = 0; i < i_captures; i++) {
             tower_t* temp_checkerboard = deep_tower_copy(checkerboard);
+            /*eseguo mangiata delle coordinate dell'array possible_captures[i]*/
             cpu_play(temp_checkerboard, possible_capture[i], possible_enemy[i], turn, 1);
 
             turn_update(&turn); /*cambio turno per chiamare minimax con turno cambiato*/
@@ -239,11 +219,11 @@ double minimax (tower_t *checkerboard, int depth, int turn){
                     best_score = curr_score;
                 }
             }else{
-                if(best_score > curr_score) {
+                if(best_score >= curr_score) {
                     best_score = curr_score;
                 }
             }
-
+            /*free della checkerboard simulata, creata con una deep copy*/
             free(temp_checkerboard);
         }
 
@@ -252,8 +232,9 @@ double minimax (tower_t *checkerboard, int depth, int turn){
 
         for (i = 0; i < i_moves; i++) {
             tower_t* temp_checkerboard = deep_tower_copy(checkerboard);
+            /*eseguo mossa delle coordinate dell'array possible_moves[i]*/
             cpu_play(temp_checkerboard, possible_move[i], possible_enemy[43], turn, 0);
-            /*passo possible_enemy[43] in quanto è poco possibile che sia occupato e non va modificato dalla mossa*/
+            /*passo possible_enemy[43] in quanto è poco possibile che sia occupato e non viene valutato dalla funzione*/
 
             turn_update(&turn); /*cambio turno per chiamare minimax con turno cambiato*/
 
@@ -266,34 +247,30 @@ double minimax (tower_t *checkerboard, int depth, int turn){
                     best_score = curr_score;
                 }
             }else{
-                if(best_score > curr_score) {
+                if(best_score >= curr_score) {
                     best_score = curr_score;
                 }
             }
-
             free(temp_checkerboard);
         }
     }
     return best_score;
 }
 
-#ifdef WIN32
-    #include <windows.h>
-    void sleep(unsigned m_seconds) {
-        Sleep(m_seconds);
-    }
-#else
-void sleep(unsigned m_seconds) {
-        usleep(m_seconds * 100);
-    }
-#endif
 
-bool check_capture_concatenation_cpu(coordinate_t old_capture, coordinate_t new_capture){
+/**
+ * Verifica se le coordinate della destinazione dell'ultima mangiata sono uguali a quelle di sorgente di una mangiata del turno successivo,
+ * in modo da capire se la stessa pedina può effettuare una concatenazione di mangiate
+ * @param old_capture - coordinate di destinazione dell'ultima mangiata
+ * @param new_capture - coordinate di sorgente di una possibile mangiata del turno successivo
+ * @return 1 se le coordinate coincidono e quindi può fare una concatenazione di manigate, 0 altrimenti
+ */
+int check_capture_concatenation_cpu(coordinate_t old_capture, coordinate_t new_capture){
 
     if(new_capture.r == old_capture.r && new_capture.c == old_capture.c){
-        return true;
+        return 1;
     }
-    return false;
+    return 0;
 }
 
 /**
@@ -302,7 +279,7 @@ bool check_capture_concatenation_cpu(coordinate_t old_capture, coordinate_t new_
  * */
 int cpu_minimax (tower_t *checkerboard) {
 
-    int i, i_best_move, i_moves, i_captures, check = 1;
+    int i, i_best_move = 0, i_moves, i_captures, check = 1;
     double curr_score, best_score = -INF;
     move_t possible_move[44], possible_capture[44];
     coordinate_t possible_enemy[44], temp_possible_capture;
@@ -315,28 +292,28 @@ int cpu_minimax (tower_t *checkerboard) {
 
     if(i_captures) {
 
-        /*if(i_captures != 1){ *//*se c'è solo una mangiata la eseguo dopo l'if senza controllare, perchè unica mossa possibile*/
+        if(i_captures != 1){ /*se c'è solo una mangiata la eseguo dopo l'if senza controllare, perchè unica mossa possibile*/
 
-        for (i = 0; i < i_captures; i++) {
-            tower_t* temp_checkerboard = deep_tower_copy(checkerboard);
-            cpu_play(temp_checkerboard, possible_capture[i], possible_enemy[i], PLAYER_2, 1);
-            curr_score = minimax(temp_checkerboard, MAX_DEPTH - 1, PLAYER_1);
+            for (i = 0; i < i_captures; i++) {
+                tower_t* temp_checkerboard = deep_tower_copy(checkerboard);
+                cpu_play(temp_checkerboard, possible_capture[i], possible_enemy[i], PLAYER_2, 1);
+                curr_score = minimax(temp_checkerboard, MAX_DEPTH - 1, PLAYER_1);
 
-            if(best_score <= curr_score) {
-                best_score = curr_score;
-                i_best_move = i;
+                if(best_score <= curr_score) {
+                    best_score = curr_score;
+                    i_best_move = i;
+                }
+                free(temp_checkerboard);
             }
-            free(temp_checkerboard);
-        }
 
-        /*} */
+        }
 
         /*nel caso di singola mangiata eseguo l'unica mosssa in quanto i_best_move è uguale a 0*/
         cpu_play(checkerboard, possible_capture[i_best_move], possible_enemy[i_best_move], PLAYER_2, 1);
 
         promotion_check(checkerboard);
         printf("\n");
-        Sleep(1000);
+        sleep(1);
         checkerboard_print(checkerboard, possible_capture[i_best_move].dst);
 
         /*se ha fatto la mangiata controllo se può fare la concatenazione di mangiate*/
@@ -344,6 +321,7 @@ int cpu_minimax (tower_t *checkerboard) {
         temp_possible_capture.r = possible_capture[i_best_move].dst.r;
         temp_possible_capture.c = possible_capture[i_best_move].dst.c;
 
+        /*controllo concatenazione finchè esegue una mangiata*/
         while (check != 0){
             check = 0;
             i_captures = possible_captures(checkerboard, PLAYER_2, possible_capture, possible_enemy);
@@ -355,7 +333,7 @@ int cpu_minimax (tower_t *checkerboard) {
 
                     promotion_check(checkerboard);
                     printf("\n");
-                    Sleep(1000);
+                    sleep(1);
                     checkerboard_print(checkerboard, possible_capture[i].dst);
 
                     temp_possible_capture.r = possible_capture[i].dst.r; /*nel caso di una ennesima concatenazione salvo la nuova destinazione della mangiata nella variabile temp*/
@@ -387,7 +365,7 @@ int cpu_minimax (tower_t *checkerboard) {
         promotion_check(checkerboard);
         printf("\n");
 
-        Sleep(1000);
+        sleep(1);
 
         checkerboard_print(checkerboard, possible_move[i_best_move].dst);
 
@@ -395,7 +373,6 @@ int cpu_minimax (tower_t *checkerboard) {
     else { /*non ci sono nè mangiate nè mosse possibli per il player 2, quindi ha perso, non dovrebbe entrare in quanto c'è la funzione win*/
         return 0;
     }
-
     return 1;
 }
 
