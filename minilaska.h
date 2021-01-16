@@ -80,7 +80,7 @@ void checkerboard_print (tower_t *checkerboard, coordinate_t last_move);
 void turn_update(int *turn);
 
 /**
- * Controlla se c'è un player che deve essere promosso all'interno della scacchiera
+ * Controlla se c'è un player che deve essere promosso all'interno della scacchiera controllando solo prima e ultima riga
  * @param checkerboard - Puntatore all'indirizzo di memoria della scacchiera (una matrice bidimensionale di tipo struct tower)
  */
 void promotion_check(tower_t *checkerboard);
@@ -104,7 +104,7 @@ bool control_range(int c, int r);
 bool piece_selection (tower_t *checkerboard, coordinate_t src, int turn);
 
 /**
- * Aggiorna la composizione della pedina dopo lo spostamento, eliminando quella vecchia
+ * Aggiorna la composizione della pedina dopo lo spostamento.
  * @param checkerboard - Puntatore all'indirizzo di memoria della scacchiera (una matrice bidimensionale di tipo struct tower)
  * @param r - copia della coordinata della riga
  * @param c - copia della coordinata della colonna
@@ -114,7 +114,7 @@ bool piece_selection (tower_t *checkerboard, coordinate_t src, int turn);
 void composition_update(tower_t *checkerboard, move_t move);
 
 /**
- * Elimina la pedina e la sua composizione nelle coordinate passate
+ * Dopo la mossa, questa funzione elimina la composizione e svuota la casella da dove è iniziato lo spostamento
  * @param checkerboard - Puntatore all'indirizzo di memoria della scacchiera (una matrice bidimensionale di tipo struct tower)
  * @param r - copia della coordinata della riga
  * @param c - copia della coordinata della colonna
