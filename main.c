@@ -98,13 +98,13 @@ int main() {
         while (!win_count) {
             switch (capture_check(&checkerboard[0][0], PLAYER_1)) { /*TODO risolvere bug, controlla se ci sono mangiate anche dopo che il player 1 ha già fatto la mossa*/
                 case 0: /*non ci sono manigate disponibili*/
-                    printf("case 0\n");
+                    /*printf("case 0\n");*/
                     if (win(&(checkerboard[0][0]), PLAYER_1) || win(&(checkerboard[0][0]), PLAYER_2)) {
                         win_count++;
                         continue;
                     }
                     /*GIOCATORE UMANO*/
-                    printf("\nTURNO GIOCATORE 1 \n\n");
+                    printf("\nTURNO GIOCATORE 1 \n");
 
                     printf("Seleziona le coordinate della pedina (Es. e4)): \n");
 
@@ -128,8 +128,6 @@ int main() {
                     promotion_check(&(checkerboard[0][0]));
                     printf("\n");
 
-
-
                     checkerboard_print(&(checkerboard[0][0]), move.dst);
 
                     /*GIOCATORE CPU*/
@@ -137,7 +135,7 @@ int main() {
                     cpu_minimax(&(checkerboard[0][0]));
                     break;
                 case 1: /*quando c'è la prima mangiata disponibile*/
-                    printf("case 1\n");
+                    /*printf("case 1\n");*/
                     printf("updating\n");
                     promotion_check(&(checkerboard[0][0]));
                     checkerboard_print(&(checkerboard[0][0]), move.dst);
@@ -145,21 +143,21 @@ int main() {
                     continue;
                 case 2:
                     /*quando spammi no continuamente ti obbliga a scegliere ripetendo il ciclo*/
-                    printf("case 2\n");
+                    /*printf("case 2\n");*/
                     continue;
                 case 3:
                     /*ci entra sempre dopo case 1 (quando mangi) e se quella pedina non puo fare catene di mangiate, case 3 fa un cambio turno e basta*/
-                    printf("case 3\n");
+                    /*printf("case 3\n");*/
                     printf("\nTURNO GIOCATORE CPU \n");
                     cpu_minimax(&(checkerboard[0][0]));
                     break;
             }
         }
 
-        if(win(&(checkerboard[0][0]), PLAYER_2)){
-            printf("WIN Player 2");
-        }else{
+        if(win(&(checkerboard[0][0]), PLAYER_1)){
             printf("WIN Player 1");
+        }else if(win(&(checkerboard[0][0]), PLAYER_2)){
+            printf("WIN Player 2");
         }
     }
 

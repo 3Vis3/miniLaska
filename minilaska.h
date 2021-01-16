@@ -80,7 +80,7 @@ void checkerboard_print (tower_t *checkerboard, coordinate_t last_move);
 void turn_update(int *turn);
 
 /**
- * Controlla se c'è un player che deve essere promosso all'interno della scacchiera controllando solo prima e ultima riga
+ * Controlla se c'è un player che deve essere promosso all'interno della scacchiera controllando solo la prima e l'ultima riga della scacchiera
  * @param checkerboard - Puntatore all'indirizzo di memoria della scacchiera (una matrice bidimensionale di tipo struct tower)
  */
 void promotion_check(tower_t *checkerboard);
@@ -186,10 +186,10 @@ player_t diagonal_up_right_check(tower_t *checkerboard, coordinate_t src, bool i
 int pieces_left (tower_t *checkerboard, int turn);
 
 /**
- * Controlla se la partita arriva al termine, verificando se non sono ancora presenti pedine del player corrente, oppure se ci sono ma sono bloccate
+ * Controlla se la partita arriva al termine, verificando se non sono ancora presenti pedine del player opposto, oppure se ci sono ma sono bloccate
  * @param checkerboard - Puntatore all'indirizzo di memoria della scacchiera (una matrice bidimensionale di tipo struct tower)
  * @param turn - Puntatore all'indirizzo di memoria del turno
- * @return 1 nel caso di vittoria, 0 altrimetni
+ * @return 1 nel caso di vittoria del player passato, 0 altrimenti
  */
 bool win(tower_t *checkerboard, int turn);
 
@@ -208,7 +208,7 @@ bool win(tower_t *checkerboard, int turn);
 void piece_capture(tower_t *checkerboard, move_t move, int turn, coordinate_t enemy);
 
 /**
- * funzione che dice se una certa pedina può mangiare o no
+ * funzione che dice se una certa pedina può mangiare o no, controllando le varie diagonali
  * @param checkerboard
  * @param r
  * @param c
@@ -218,7 +218,7 @@ void piece_capture(tower_t *checkerboard, move_t move, int turn, coordinate_t en
 int can_piece_capture (tower_t* checkerboard, coordinate_t src, move_t* move, coordinate_t* enemy, int nr_captures, int turn);
 
 /**
- *
+ * verifica se una pedina può effettuare un movimento
  * @param checkerboard
  * @param src
  * @param turn
@@ -236,7 +236,7 @@ int can_piece_be_moved(tower_t* checkerboard, coordinate_t src, move_t* move, in
 int capture_check(tower_t *checkerboard, int turn);
 
 /**
- * esegue la mossa della CPU, per l'AI
+ * esegue la mossa migliore per la CPU, simulando le mosse migliori dell'avversario
  * @param checkerboard
  * @return 0 se ha eseguito la mossa, 1 se non ci sono più mosse disponibili
  */

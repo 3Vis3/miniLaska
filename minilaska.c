@@ -115,7 +115,7 @@ void checkerboard_init(tower_t *checkerboard){ /*funzione che inizializza la sca
 }
 
 int string_to_coordinate(const char* s, coordinate_t* src) {
-    if(s){
+    if(strlen(s) <= 3){
         src->c = s[0] - 'a';
         src->r = s[1] - '0';
         return 1;
@@ -445,9 +445,12 @@ bool win (tower_t *checkerboard, int turn) { /*controlla se la partita arriva al
 
     int r, c, pieces_blocked = 0;
     coordinate_t src;
-    int counter_pieces = pieces_left(checkerboard, turn);
+    int counter_pieces;
 
     turn_update(&turn);
+
+    counter_pieces = pieces_left(checkerboard, turn);
+
 
     for(r = 0; r < ROWS; r++) {
         for (c = 0; c < COLUMNS; c++) {
