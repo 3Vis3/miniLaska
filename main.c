@@ -11,37 +11,35 @@
 * Qui abbiamo creato una nuova sezione dove possiamo scrivere
 * le istruzioni per installare il programma
 * @subsection step1 Step 1: Installa gcc
+* @subsection step1 Step 2: compila
+* @subsection step1 Step 3: Divertiti
 */
 
 #include <stdio.h>
-#include <malloc.h>
-
+#include "minilaska.h"
 #define ROWS (7)
 #define COLUMNS (7)
 
-#include "minilaska.h"
-
-
 int main() {
+    int turn = 1, win_count = 0, mode = 2;
+    char s_move[3];
     tower_t checkerboard[ROWS][COLUMNS];
     coordinate_t src, dst, last_move;
     move_t move;
-    int turn = 1, win_count = 0, mode = 2;
-    char s_move[3];
+
     last_move.c = -1, last_move.r = -1;
-
-    /*char xx; */ /*per poi convertirlo in integer e chiamare le coordinate*/
-
     s_move[2] = '\0';
 
-    setvbuf(stdout, NULL, _IONBF, 0); /* permette di debuggare con scanf */
+    /*setvbuf(stdout, NULL, _IONBF, 0); *//* permette di debuggare con scanf */
 
     printf("Inserire modalita' 1 (1 giocatore) o modalita' 2 (2 giocatori)\n");
     scanf("%d", &mode);
-
-    checkerboard_init(&(checkerboard[0][0])); /*funzione checkerboard create a cui non passi nulla e ti crea la checkerboard inizializzandola*/
+    /*inizializzazione checkerboard (scacchiera)*/
+    checkerboard_init(&(checkerboard[0][0]));
+    /*prima stampa della scacchiera*/
     checkerboard_print(&(checkerboard[0][0]), last_move);
 
+    /*modalità di gioco 2 player*/
     if(mode == 2){
         while (!win_count) {
             switch (capture_check(&checkerboard[0][0], turn)) {
@@ -94,7 +92,7 @@ int main() {
         turn_update(&turn);
         printf("WIN Player %d ", turn);
     }
-    else { /*modalità 1: 1 giocatore contro CPU*/
+    else { /*modalità 1 giocatore vs CPU*/
         while (!win_count) {
             switch (capture_check(&checkerboard[0][0], PLAYER_1)) { /*TODO risolvere bug, controlla se ci sono mangiate anche dopo che il player 1 ha già fatto la mossa*/
                 case 0: /*non ci sono manigate disponibili*/
@@ -122,6 +120,7 @@ int main() {
                     }
 
                     if (!move_selection(&(checkerboard[0][0]), move, turn)) {
+                        printf("La pedina selezionata non può muoversi in questa posizione\n");
                         continue;
                     }
 
