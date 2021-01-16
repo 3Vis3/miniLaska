@@ -1,4 +1,21 @@
+/**
+* @file main.c
+* @author Gruppo 15
+* @mainpage main miniLaska
+* @section intro_sec Introduzione
+*
+* Questa è una piccola introduzione, tipo la consegna e le specifiche del
+* programma.
+*
+* @section install_sec Installazione
+* Qui abbiamo creato una nuova sezione dove possiamo scrivere
+* le istruzioni per installare il programma
+* @subsection step1 Step 1: Installa gcc
+*/
+
 #include <stdio.h>
+#include <malloc.h>
+
 #define ROWS (7)
 #define COLUMNS (7)
 
@@ -110,6 +127,9 @@ int main() {
 
                     promotion_check(&(checkerboard[0][0]));
                     printf("\n");
+
+
+
                     checkerboard_print(&(checkerboard[0][0]), move.dst);
 
                     /*GIOCATORE CPU*/

@@ -1,30 +1,49 @@
+/**
+* @file minilaska.h
+* @author Gruppo 15
+* @brief libreria con le definizioni delle funzioni utilizzate nel minilaska.c
+* @date 16/01/2020
+*/
+
 #ifndef MINILASKA_MINILASKA_H
 #define MINILASKA_MINILASKA_H
 
 #include <stdio.h>
 #include <stdbool.h>
+#define COMPOSITION_SIZE (3)
 
 typedef int player_t;
+/**
+ * definizione tipo composition_t, un enum che può assumere solo 1 tra i 5 valori assegnati
+ */
 typedef enum player_t {VOID_0 = 0, PLAYER_1 = 1, PLAYER_2 = 2, PLAYER_1_PRO = 3, PLAYER_2_PRO = 4} composition_t;
 
 /**
  * Struttura dati di tipo struct tower: contiene il campo player, corrispondende al giocatore, e un array statico di
- * tre elementi corrispondente alla composizione della torre, ovvero alla sua altezza.
+ * COMPOSITION_SIZE elementi corrispondente alla composizione della torre, ovvero alla sua altezza.
  * All'inizio del gioco la composizione della torre avrà solo una pedina, quindi il secondo e il terzo elemento
  * dell'array composition saranno vuoti (VOID_0). Essa prenderà come valori VOID_0, PLAYER_1, PLAYER_2, PLAYER_1_PRO o PLAYER_2_PRO
  */
 typedef
 struct tower {
     player_t player;
-    composition_t composition[22];
+    composition_t composition[COMPOSITION_SIZE];
 } tower_t;
 
+
+/**
+ * Struttura dati di tipo struct coordinate: contiene due campi, corrispondenti alle coordinate (colonna, riga) della casella
+ */
 typedef
 struct coordinate {
     int c;
     int r;
 } coordinate_t;
 
+/**
+ * Struttura dati di tipo struct move: contiene due campi, di tipo coordinate_t, contententi le coordinate di partenza (src) e destinazione(dst)
+ * della mossa
+ */
 typedef
 struct move {
     coordinate_t src;
@@ -35,21 +54,22 @@ struct move {
 
 /**
  * Crea la scacchiera inizializzando ogni casella con i corrispettivi player e la composizione delle loro pedine
- * @param checkerboard - Puntatore all'indirizzo di memoria della scacchiera (una matrice bidimensionale di tipo struct tower)
+ * @param checkerboard - Puntatore all'indirizzo di memoria della scacchiera (una matrice bidimensionale flattened di tipo struct tower)
  */
 void checkerboard_init(tower_t *checkerboard);
 
 /**
- * converte stringa passata in input in una coordinata
- * @param s
- * @param src
- * @return
+ * converte una stringa passata in input in una coppia di interi, memorizzati nel parametro src
+ * @param s, stringa in input
+ * @param src, puntatore all'indirizzo di memoria del parametro src, di tipo coordinate_t
+ * @return 1 se s è un'indirizzo valido e quindi la conversione va a buon fine, 0 altrimenti
  */
 int string_to_coordinate(const char* s, coordinate_t* src);
 
 /**
- * Stampa a video la scacchiera aggiornata all'ultima modifica
+ * Stampa a video la scacchiera aggiornata all'ultima modifica, evidenziando di blu l'ultima mossa
  * @param checkerboard - Puntatore all'indirizzo di memoria della scacchiera (una matrice bidimensionale di tipo struct tower)
+ * @param last_move, coordinate dell'ultima mossa effettuata
  */
 void checkerboard_print (tower_t *checkerboard, coordinate_t last_move);
 
@@ -114,46 +134,46 @@ void clear_square(tower_t *checkerboard, coordinate_t src);
 bool move_selection(tower_t *checkerboard, move_t move, int turn);
 
 /**
- * Controlla il player nelle diagonali in basso a sinistra dato il parametro "is_first_diagonal". Oltre al player della casella destinataria può tornare _ERROR, nel caso le coordinate siano fuori dal range valido
+ * Controlla il player nelle diagonali in basso a sinistra dato il parametro "is_first_diagonal". Oltre al player della casella destinataria può tornare ERROR_, nel caso le coordinate siano fuori dal range valido
  * @param checkerboard - Puntatore all'indirizzo di memoria della scacchiera (una matrice bidimensionale di tipo struct tower)
  * @param r - copia della coordinata della riga
  * @param c - copia della coordinata della colonna
  * @param is_first_diagonal - stabilisce la diagonale su cui eseguire il controllo, 1 nel caso sia la prima diagonale, che corrisponde a quella adiacente, 0 nel caso sia la seconda, ovvero
  * la casella dove la pedina dovrà muoversi se potrà mangiare
- * @return PLAYER_1 / PLAYER_2 / VOID_0 / _ERROR (-1)
+ * @return PLAYER_1 / PLAYER_2 / VOID_0 / ERROR_ (-1)
  */
 player_t diagonal_down_left_check(tower_t *checkerboard, coordinate_t src, bool is_first_diagonal);
 
 /**
-* Controlla il player nelle diagonali in basso a destra dato il parametro "is_first_diagonal". Oltre al player della casella destinataria può tornare _ERROR, nel caso le coordinate siano fuori dal range valido
+* Controlla il player nelle diagonali in basso a destra dato il parametro "is_first_diagonal". Oltre al player della casella destinataria può tornare ERROR_, nel caso le coordinate siano fuori dal range valido
  * @param checkerboard - Puntatore all'indirizzo di memoria della scacchiera (una matrice bidimensionale di tipo struct tower)
  * @param r - copia della coordinata della riga
  * @param c - copia della coordinata della colonna
  * @param is_first_diagonal - stabilisce la diagonale su cui eseguire il controllo, 1 nel caso sia la prima diagonale, che corrisponde a quella adiacente, 0 nel caso sia la seconda, ovvero
  * la casella dove la pedina dovrà muoversi se potrà mangiare
- * @return PLAYER_1 / PLAYER_2 / VOID_0 / _ERROR (-1)
+ * @return PLAYER_1 / PLAYER_2 / VOID_0 / ERROR_ (-1)
  */
 player_t diagonal_down_right_check(tower_t *checkerboard, coordinate_t src, bool is_first_diagonal);
 
 /**
- * * Controlla il player nelle diagonali in alto a sinistra dato il parametro "is_first_diagonal". Oltre al player della casella destinataria può tornare _ERROR, nel caso le coordinate siano fuori dal range valido
+ * * Controlla il player nelle diagonali in alto a sinistra dato il parametro "is_first_diagonal". Oltre al player della casella destinataria può tornare ERROR_, nel caso le coordinate siano fuori dal range valido
  * @param checkerboard - Puntatore all'indirizzo di memoria della scacchiera (una matrice bidimensionale di tipo struct tower)
  * @param r - copia della coordinata della riga
  * @param c - copia della coordinata della colonna
  * @param is_first_diagonal - stabilisce la diagonale su cui eseguire il controllo, 1 nel caso sia la prima diagonale, che corrisponde a quella adiacente, 0 nel caso sia la seconda, ovvero
  * la casella dove la pedina dovrà muoversi se potrà mangiare
- * @return PLAYER_1 / PLAYER_2 / VOID_0 / _ERROR (-1)
+ * @return PLAYER_1 / PLAYER_2 / VOID_0 / ERROR_ (-1)
  */
 player_t diagonal_up_left_check(tower_t *checkerboard, coordinate_t src, bool is_first_diagonal);
 
 /**
- * * Controlla il player nelle diagonali in alto a destra dato il parametro "is_first_diagonal". Oltre al player della casella destinataria può tornare _ERROR, nel caso le coordinate siano fuori dal range valido
+ * * Controlla il player nelle diagonali in alto a destra dato il parametro "is_first_diagonal". Oltre al player della casella destinataria può tornare ERROR_, nel caso le coordinate siano fuori dal range valido
  * @param checkerboard - Puntatore all'indirizzo di memoria della scacchiera (una matrice bidimensionale di tipo struct tower)
  * @param r - copia della coordinata della riga
  * @param c - copia della coordinata della colonna
  * @param is_first_diagonal - stabilisce la diagonale su cui eseguire il controllo, 1 nel caso sia la prima diagonale, che corrisponde a quella adiacente, 0 nel caso sia la seconda, ovvero
  * la casella dove la pedina dovrà muoversi se potrà mangiare
- * @return PLAYER_1 / PLAYER_2 / VOID_0 / _ERROR (-1)
+ * @return PLAYER_1 / PLAYER_2 / VOID_0 / ERROR_ (-1)
  */
 player_t diagonal_up_right_check(tower_t *checkerboard, coordinate_t src, bool is_first_diagonal);
 

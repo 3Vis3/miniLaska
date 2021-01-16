@@ -1,3 +1,10 @@
+/**
+* @file minilaska.c
+* @author Gruppo 15
+* @brief file sorgente della libreria minilaska.h
+* @date 16/01/2020
+*/
+
 #include "minilaska.h"
 #include <stdio.h>
 #include <stdbool.h>
@@ -24,13 +31,13 @@
 #define PLAYER_ENEMY checkerboard[enemy.r * COLUMNS + enemy.c].player /*player nemico che sta per essere mangiato*/
 #define HEAD_ENEMY checkerboard[enemy.r * COLUMNS + enemy.c].composition[0]
 #define TAIL_ENEMY checkerboard[enemy.r * COLUMNS + enemy.c].composition[COMPOSITION_SIZE-1]
-#define _ERROR (-1)
+#define ERROR_ (-1)
+#define COMPOSITION_SIZE (3)  /*TODO SISTEMA TAIL ENEMY*/
 
 
 
 
 
-const size_t COMPOSITION_SIZE = 3; /*TODO SISTEMA TAIL ENEMY*/
 int s_chance[3] = {0, 0, 0};
 
 
@@ -123,59 +130,33 @@ int print_tower(tower_t* checkerboard, int i, int j, int height, char color) {
         color = 'w';
     }
 
-        if (checkerboard[i * COLUMNS + j].composition[height] == PLAYER_1_PRO) {
-            print_player_color(color, 'O');
-            return 1;
-        } else if(checkerboard[i * COLUMNS + j].composition[height] == PLAYER_1){
-            print_player_color(color, 'o');
-            return 1;
-        }
-        if (checkerboard[i * COLUMNS + j].composition[height] == PLAYER_2_PRO) {
-            print_player_color(color, 'X');
-            return 1;
-        } else if(checkerboard[i * COLUMNS + j].composition[height] == PLAYER_2){
-            print_player_color(color, 'x');
-            return 1;
-        }
-        return 0;
+    if (checkerboard[i * COLUMNS + j].composition[height] == PLAYER_1_PRO) {
+        print_player_color(color, 'O');
+        return 1;
+    } else if(checkerboard[i * COLUMNS + j].composition[height] == PLAYER_1){
+        print_player_color(color, 'o');
+        return 1;
+    }
+    if (checkerboard[i * COLUMNS + j].composition[height] == PLAYER_2_PRO) {
+        print_player_color(color, 'X');
+        return 1;
+    } else if(checkerboard[i * COLUMNS + j].composition[height] == PLAYER_2){
+        print_player_color(color, 'x');
+        return 1;
+    }
+    return 0;
 
-    /*} else if (height == 1) {
-        if (checkerboard[i * COLUMNS + j].player == PLAYER_1) {
-            if (checkerboard[i * COLUMNS + j].composition[1] == PLAYER_1_PRO) {
-                print_player_color(color, 'O');
-            } else if(checkerboard[i * COLUMNS + j].composition[1] == PLAYER_1){
-                print_player_color(color, 'o');
-            }
-        } else if (checkerboard[i * COLUMNS + j].player == PLAYER_2) {
-            if (checkerboard[i * COLUMNS + j].composition[1] == PLAYER_2_PRO) {
-                print_player_color(color, 'X');
-            } else if(checkerboard[i * COLUMNS + j].composition[1] == PLAYER_2){
-                print_player_color(color, 'x');
-            }
-        }
-    } else {
-        if (checkerboard[i * COLUMNS + j].player == PLAYER_1) {
-            if (checkerboard[i * COLUMNS + j].composition[2] == PLAYER_1_PRO) {
-                print_player_color(color, 'O');
-            } else if(checkerboard[i * COLUMNS + j].composition[2] == PLAYER_1){
-                print_player_color(color, 'o');
-            }
-        } else if (checkerboard[i * COLUMNS + j].player == PLAYER_2) {
-            if (checkerboard[i * COLUMNS + j].composition[2] == PLAYER_2_PRO) {
-                print_player_color(color, 'X');
-            } else if(checkerboard[i * COLUMNS + j].composition[2] == PLAYER_2){
-                print_player_color(color, 'x');
-            }
-        }*/
-
-    /*}*/
 }
 
-void checkerboard_print (tower_t* checkerboard, coordinate_t last_move) {
-    int r, c, i, j, square, z = 0, check_c = 0, check_r = 0;
-    char color = 'b';
-    char* map = "abcdefg";
 
+
+void checkerboard_print (tower_t* checkerboard, coordinate_t last_move) {
+    int r, c, i, j, square, z = 0, check_c = 0, h = 2;
+    char color;
+
+    #ifndef OS_Windows
+        system("clear");
+    #endif
 
     for (r = 0; r < 28; r++) {
         for (c = 0; c < 64; c++) {
@@ -199,14 +180,6 @@ void checkerboard_print (tower_t* checkerboard, coordinate_t last_move) {
                         check_c = 1;
                     }
 
-                    /*if(checkerboard[i * COLUMNS + j].composition[0] == PLAYER_1_PRO) {
-                        print_player_color(color, 'O');
-                        check_c = 1;
-                    }else{
-                        print_player_color(color, 'o');
-                        check_c = 1;
-                    }*/
-
                 }else if(square == PLAYER_2) {
                     if(color == 'a'){
                         color = 'y';
@@ -216,14 +189,6 @@ void checkerboard_print (tower_t* checkerboard, coordinate_t last_move) {
                     }else{
                         check_c = 1;
                     }
-
-                    /*if(checkerboard[i * COLUMNS + j].composition[0] == PLAYER_2_PRO) {
-                        print_player_color(color, 'X');
-                        check_c = 1;
-                    }else{
-                        print_player_color(color, 'x');
-                        check_c = 1;
-                    }*/
 
                 }else{
                     check_c = 3;
@@ -247,6 +212,10 @@ void checkerboard_print (tower_t* checkerboard, coordinate_t last_move) {
                 }
             }
         }
+        if(r == h) {
+            printf("  %d ", i);
+            h += 4;
+        }
         printf("\n");
         if(r % 4 != 0) {
             z = (z + 1) % 3; /*z++ tra 0 e 2*/
@@ -254,47 +223,8 @@ void checkerboard_print (tower_t* checkerboard, coordinate_t last_move) {
 
     }
     printf("+--------+--------+--------+--------+--------+--------+--------+\n");
+    printf("    a        b        c         d        e        f        g    \n");
 
-
-
-    /*for (r = 0; r < ROWS; r++) {
-        printf("%d|", r); *//*stampa l'indice delle righe*//*
-        for (c = 0; c < COLUMNS; c++) {
-            color = 'a'; *//*valore iniziale non possibile*//*
-            if(last_move.r == r && last_move.c == c) { *//*cambia colore ultima mossa in blu evidenziandola*//*
-                color = 'b';
-            }
-
-            square = PLAYER_TOWER;
-            if (square == PLAYER_1) {
-                if(color == 'a'){
-                    color = 'r';
-                }
-                if (HEAD_TOWER == PLAYER_1_PRO) {
-                    print_player_color(color, 'O');
-                } else {
-                    print_player_color(color, 'o');
-                }
-            } else if (square == PLAYER_2){
-                if(color == 'a'){
-                    color = 'y';
-                }
-                if (HEAD_TOWER == PLAYER_2_PRO) {
-                    print_player_color (color, 'X');
-                } else {
-                    print_player_color (color, 'x');
-                }
-            } else{
-                printf("   ");
-            }
-        }
-        printf("\n");
-    }
-    printf("  ");
-    for (c = 0; c < COLUMNS; c++) { *//*ciclo per stampare l'indice delle colonne*//*
-                printf(" %c ", map[c]);
-    }
-    printf("\n");*/
 }
 
 /*void checkerboard_print (tower_t *checkerboard, coordinate_t last_move) { *//*funzione di stampa della checkerboard che verrà chiamata tutte le volte in cui viene fatta una mossa*//*
@@ -457,7 +387,7 @@ player_t diagonal_down_left_check(tower_t *checkerboard, coordinate_t src, bool 
     }else if(!is_first_diagonal && control_range(src.c - 2, src.r + 2)) {
         return checkerboard[(src.r + 2) * COLUMNS + src.c - 2].player;
     }else{
-        return _ERROR;
+        return ERROR_;
     }
 }
 
@@ -469,7 +399,7 @@ player_t diagonal_down_right_check(tower_t *checkerboard, coordinate_t src, bool
     }else if(!is_first_diagonal && control_range(src.c + 2, src.r + 2)) {
         return checkerboard[(src.r + 2) * COLUMNS + src.c + 2].player;
     }else{
-        return _ERROR;
+        return ERROR_;
     }
 }
 
@@ -481,7 +411,7 @@ player_t diagonal_up_left_check(tower_t *checkerboard, coordinate_t src, bool is
     }else if(!is_first_diagonal && control_range(src.c - 2, src.r - 2)) {
         return checkerboard[(src.r - 2) * COLUMNS + src.c - 2].player;
     }else{
-        return _ERROR;
+        return ERROR_;
     }
 }
 
@@ -493,7 +423,7 @@ player_t diagonal_up_right_check(tower_t *checkerboard, coordinate_t src, bool i
     }else if(!is_first_diagonal && control_range(src.c + 2, src.r - 2)) {
         return checkerboard[(src.r - 2) * COLUMNS + src.c + 2].player;
     }else{
-        return _ERROR;
+        return ERROR_;
     }
 }
 
@@ -800,7 +730,7 @@ int capture_check(tower_t *checkerboard, int turn){
                             /*passo i e c come coordinate per mangiata obbligatoria*/
                             count++; /*incrementa il conteggio se rilevata una pedina obbligata*/
                             printf("TURNO GIOCATORE %d\n\n", turn);
-                            printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c - 1, r + 1);
+                            printf("vuoi mangiare con la pedina in %c%d il nemico in %c%d s/n?\n", (char) c + 'a', r, (char) ((c - 1) + 'a'), r + 1);
                             scanf(" %c", &selection); /*chiede se vuoi mangiare con quella pedina*/
                             if (selection==si) { /*se dici si chiama mangiata*/
                                 s_chance[0] = r + 2;
@@ -822,7 +752,7 @@ int capture_check(tower_t *checkerboard, int turn){
                             /*passo i e c come coordinate per mangiata obbligatoria*/
                             count++;
                             printf("TURNO GIOCATORE %d\n\n", turn);
-                            printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c + 1, r + 1);
+                            printf("vuoi mangiare con la pedina in %c%d il nemico in %c%d s/n?\n", (char) c + 'a', r, (char) ((c + 1) + 'a'), r + 1);
                             scanf(" %c", &selection);
                             if (selection==si) {
                                 s_chance[0] = r + 2;
@@ -846,7 +776,7 @@ int capture_check(tower_t *checkerboard, int turn){
                                 /*passo i e c come coordinate per mangiata obbligatoria*/
                                 count++;
                                 printf("TURNO GIOCATORE %d\n\n", turn);
-                                printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c - 1, r - 1);
+                                printf("vuoi mangiare con la pedina in %c%d il nemico in %c%d s/n?\n", (char) c + 'a', r, (char) ((c - 1) + 'a'), r - 1);
                                 scanf(" %c", &selection);
                                 if (selection==si) {
                                     s_chance[0] = r - 2;
@@ -869,7 +799,7 @@ int capture_check(tower_t *checkerboard, int turn){
                                 /*passo i e c come coordinate per mangiata obbligatoria*/
                                 count++;
                                 printf("TURNO GIOCATORE %d\n\n", turn);
-                                printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c + 1, r - 1);
+                                printf("vuoi mangiare con la pedina in %c%d il nemico in %c%d s/n?\n", (char) c + 'a', r, (char) ((c + 1) + 'a'), r - 1);
                                 scanf(" %c", &selection);
                                 if (selection==si) {
                                     s_chance[0] = r - 2;
@@ -896,6 +826,7 @@ int capture_check(tower_t *checkerboard, int turn){
                             count++;
                             printf("TURNO GIOCATORE %d\n\n", turn);
                             printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c - 1, r - 1);
+                            printf("vuoi mangiare con la pedina in %c%d il nemico in %c%d s/n?\n", (char) c + 'a', r, (char) ((c - 1) + 'a'), r - 1);
                             scanf(" %c", &selection);
                             if (selection==si) {
                                 s_chance[0] = r - 2;
@@ -919,6 +850,7 @@ int capture_check(tower_t *checkerboard, int turn){
                             count++;
                             printf("TURNO GIOCATORE %d\n\n", turn);
                             printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c + 1, r - 1);
+                            printf("vuoi mangiare con la pedina in %c%d il nemico in %c%d s/n?\n", (char) c + 'a', r, (char) ((c + 1) + 'a'), r - 1);
                             scanf(" %c", &selection);
                             if (selection==si) {
                                 s_chance[0] = r - 2;
@@ -944,6 +876,7 @@ int capture_check(tower_t *checkerboard, int turn){
                                 count++; /*incrementa il conteggio se rilevata una pedina obbligata*/
                                 printf("TURNO GIOCATORE %d\n\n", turn);
                                 printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c - 1, r + 1);
+                                printf("vuoi mangiare con la pedina in %c%d il nemico in %c%d s/n?\n", (char) c + 'a', r, (char) ((c - 1) + 'a'), r + 1);
                                 scanf(" %c", &selection); /*chiede se vuoi mangiare con quella pedina*/
                                 if (selection==si) { /*se dici si chiama mangiata*/
                                     s_chance[0] = r + 2;
@@ -966,6 +899,7 @@ int capture_check(tower_t *checkerboard, int turn){
                                 count++;
                                 printf("TURNO GIOCATORE %d\n\n", turn);
                                 printf("vuoi mangiare con x=%d y=%d il nemico in x=%d y=%d s/n?\n", c, r, c + 1, r + 1);
+                                printf("vuoi mangiare con la pedina in %c%d il nemico in %c%d s/n?\n", (char) c + 'a', r, (char) ((c + 1) + 'a'), r + 1);
                                 scanf(" %c", &selection);
                                 if (selection==si) {
                                     s_chance[0] = r + 2;

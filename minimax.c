@@ -1,3 +1,10 @@
+/**
+* @file minilaska.h
+* @author Gruppo 15
+* @brief libreria per l'algoritmo dell'intelligienza artificiale per la CPU
+* @date 16/01/2020
+*/
+
 #include "minilaska.h"
 #include "stdio.h"
 #include <stdlib.h>
@@ -10,7 +17,7 @@
 #define LIMIT_UP (0)
 #define FIRST_DIAGONAL (1)
 #define SECOND_DIAGONAL (0)
-#define _ERROR (-1)
+#define ERROR_ (-1)
 #define PLAYER_TOWER checkerboard[r * COLUMNS + c].player
 #define HEAD_TOWER checkerboard[r * COLUMNS + c].composition[0]
 #define SRC_PLAYER_TOWER checkerboard[src.r * COLUMNS + src.c].player
@@ -272,6 +279,17 @@ double minimax (tower_t *checkerboard, int depth, int turn){
     return best_score;
 }
 
+#ifdef WIN32
+    #include <windows.h>
+    void sleep(unsigned m_seconds) {
+        Sleep(m_seconds);
+    }
+#else
+void sleep(unsigned m_seconds) {
+        usleep(m_seconds * 100);
+    }
+#endif
+
 bool check_capture_concatenation_cpu(coordinate_t old_capture, coordinate_t new_capture){
 
     if(new_capture.r == old_capture.r && new_capture.c == old_capture.c){
@@ -319,6 +337,7 @@ int cpu_minimax (tower_t *checkerboard) {
 
         promotion_check(checkerboard);
         printf("\n");
+        Sleep(1000);
         checkerboard_print(checkerboard, possible_capture[i_best_move].dst);
 
         /*se ha fatto la mangiata controllo se può fare la concatenazione di mangiate*/
@@ -337,6 +356,7 @@ int cpu_minimax (tower_t *checkerboard) {
 
                     promotion_check(checkerboard);
                     printf("\n");
+                    Sleep(1000);
                     checkerboard_print(checkerboard, possible_capture[i].dst);
 
                     temp_possible_capture.r = possible_capture[i].dst.r; /*nel caso di una ennesima concatenazione salvo la nuova destinazione della mangiata nella variabile temp*/
@@ -367,6 +387,9 @@ int cpu_minimax (tower_t *checkerboard) {
 
         promotion_check(checkerboard);
         printf("\n");
+
+        Sleep(1000);
+
         checkerboard_print(checkerboard, possible_move[i_best_move].dst);
 
     }
