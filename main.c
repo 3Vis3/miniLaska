@@ -4,15 +4,14 @@
 * @mainpage main miniLaska
 * @section intro_sec Introduzione
 *
-* Questa è una piccola introduzione, tipo la consegna e le specifiche del
-* programma.
+* Progetto Minilaska, creato dal gruppo 015 per il corso di Introduzione alla Programmazione
 *
 * @section install_sec Installazione
-* Qui abbiamo creato una nuova sezione dove possiamo scrivere
-* le istruzioni per installare il programma
+* Istruzioni per la compilazione tramite Linux:
 * @subsection step1 Step 1: Installa gcc
-* @subsection step1 Step 2: compila
-* @subsection step1 Step 3: Divertiti
+* @subsection step2 Step 2: Compila con "gcc -ansi -pedantic main.c minilaska.c minimax.c"
+* @subsection step3 Step 3: Esegui il programma con "./a.out"
+* @subsection step4 Step 4: Divertiti
 */
 
 #include <stdio.h>
@@ -48,20 +47,20 @@ int main() {
         while (!win_count) {
             switch (capture_check(&checkerboard[0][0], turn)) {
                 case 0:
-                    printf("case 0\n");
                     if (win(&(checkerboard[0][0]), turn)) {
                         win_count++;
                         continue;
                     }
-                    printf("\nTURNO GIOCATORE %d \n", turn);
+                    printf("TURNO GIOCATORE %d \n", turn);
                     printf("Seleziona le coordinate della pedina: (Es. e4) \n");
                     scanf("%s", s_move ); /*inserimento pedina da controllare*/
                     string_to_coordinate(s_move, &src);
                     getchar(); /*evita che se si digitano dei caratteri vada in endless loop*/
                     if (!piece_selection(&(checkerboard[0][0]), src, turn)) {
+
                         continue;
                     } else {
-                        printf("Hai selezionato le coordinate della pedina in %d%d\n", src.c, src.r);
+                        printf("Hai selezionato le coordinate della pedina in %c%d\n", (char) src.c + 'a', src.r);
                         printf("seleziona le coordinate in cui muovere la pedina: \n");
                         scanf("%s", s_move ); /*inserimento pedina da controllare*/
                         string_to_coordinate(s_move, &dst);
@@ -76,19 +75,16 @@ int main() {
                     checkerboard_print(&(checkerboard[0][0]), move.dst, graphic);
                     break;
                 case 1:
-                    printf("case 1\n");
-                    printf("updating\n");
                     promotion_check(&(checkerboard[0][0]));
                     checkerboard_print(&(checkerboard[0][0]), move.dst, graphic);
                     /*DOPO IL case 1 andrà sempre di nuovo o a case 1 o case 3*/
                     continue;
                 case 2:
                     /*quando spammi no continuamente ti obbliga a scegliere ripetendo il ciclo*/
-                    printf("case 2\n");
                     continue;
                 case 3:
                     /*ci entra sempre dopo case 1 (quando mangi) e se quella pedina non puo fare catene di mangiate, case 3 fa un cambio turno e basta*/
-                    printf("case 3\n");
+
                     turn_update(&turn);
                     break;
             }
@@ -106,8 +102,8 @@ int main() {
                         continue;
                     }
                     /*GIOCATORE UMANO*/
-                    printf("\nTURNO GIOCATORE 1 \n");
 
+                    printf("TURNO GIOCATORE 1 \n");
                     printf("Seleziona le coordinate della pedina (Es. e4)): \n");
 
                     scanf("%s", s_move ); /*inserimento pedina da controllare*/
@@ -115,7 +111,7 @@ int main() {
                     if (!piece_selection(&(checkerboard[0][0]), src, turn)) {
                         continue;
                     } else {
-                        printf("Hai selezionato le coordinate della pedina in %d%d\n", src.c, src.r);
+                        printf("Hai selezionato le coordinate della pedina in %c%d\n", (char) src.c + 'a', src.r);
                         printf("seleziona le coordinate in cui muovere la pedina: \n");
                         scanf("%s", s_move); /*inserimento coordinate destinazione pedina*/
                         string_to_coordinate(s_move, &dst);
@@ -134,24 +130,21 @@ int main() {
                     checkerboard_print(&(checkerboard[0][0]), move.dst, graphic);
 
                     /*GIOCATORE CPU*/
-                    printf("\nTURNO GIOCATORE CPU \n");
+                    printf("TURNO GIOCATORE CPU \n");
                     cpu_minimax(&(checkerboard[0][0]), graphic);
                     break;
                 case 1: /*quando c'è la prima mangiata disponibile*/
-                    /*printf("case 1\n");*/
-                    printf("updating\n");
                     promotion_check(&(checkerboard[0][0]));
                     checkerboard_print(&(checkerboard[0][0]), move.dst, graphic);
                     /*DOPO IL case 1 andrà sempre di nuovo o a case 1 o case 3*/
                     continue;
                 case 2:
                     /*quando spammi no continuamente ti obbliga a scegliere ripetendo il ciclo*/
-                    /*printf("case 2\n");*/
+                    printf("' Cio' che non e' assolutamente possibile e' non scegliere. ' Jean-Paul Sartre (^v^)\n\n ");
                     continue;
                 case 3:
                     /*ci entra sempre dopo case 1 (quando mangi) e se quella pedina non puo fare catene di mangiate, case 3 fa un cambio turno e basta*/
-                    /*printf("case 3\n");*/
-                    printf("\nTURNO GIOCATORE CPU \n");
+                    printf("TURNO GIOCATORE CPU \n");
                     cpu_minimax(&(checkerboard[0][0]), graphic);
                     break;
             }

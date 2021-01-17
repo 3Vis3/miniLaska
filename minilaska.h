@@ -9,7 +9,6 @@
 #define MINILASKA_MINILASKA_H
 
 #include <stdio.h>
-#include <stdbool.h>
 #define COMPOSITION_SIZE (3)
 
 typedef int player_t;
@@ -22,7 +21,7 @@ typedef enum player_t {VOID_0 = 0, PLAYER_1 = 1, PLAYER_2 = 2, PLAYER_1_PRO = 3,
 
 /**
  * Struttura dati di tipo struct tower: contiene due campi: il campo player, corrispondende al giocatore, e un array statico di
- * COMPOSITION_SIZE elementi,ww corrispondente alla composizione della torre, ovvero alla sua altezza.
+ * COMPOSITION_SIZE elementi, corrispondente alla composizione della torre, ovvero alla sua altezza.
  * All'inizio del gioco la composizione della torre avrà solo una pedina (la testa), quindi il secondo e il terzo elemento
  * dell'array composition saranno vuoti (VOID_0). Essa prenderà come valori VOID_0, PLAYER_1, PLAYER_2, PLAYER_1_PRO o PLAYER_2_PRO
  */

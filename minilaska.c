@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 /*controllo sistema operativo per stampe colori*/
 #ifdef _WIN32
@@ -34,7 +35,7 @@
 #define HEAD_ENEMY checkerboard[enemy.r * COLUMNS + enemy.c].composition[0]
 #define TAIL_ENEMY checkerboard[enemy.r * COLUMNS + enemy.c].composition[COMPOSITION_SIZE-1]
 #define ERROR_ (-1)
-#define COMPOSITION_SIZE (3)  /*TODO SISTEMA TAIL ENEMY*/
+#define COMPOSITION_SIZE (3)
 
 /*array per concatenazione mangiate*/
 int s_chance[3] = {0, 0, 0};
@@ -68,13 +69,14 @@ void print_player_color (char color, char* player) {
             printf("%s", player);
         }
     #else
+        /*RGB colors*/
         if(color == 'r'){
-            printf("%s%s%s","\x1b[31m", player, "\x1b[0m");
+            printf("%s%s%s","\033[38;2;255;0;0m", player, "\033[0m");
         }
         else if (color == 'y') {
-            printf("%s%s%s","\x1b[33m", player, "\x1b[0m");
+            printf("%s%s%s","\033[38;2;255;255;0m", player, "\x1b[0m");
         }else if (color == 'b') {
-            printf("%s%s%s","\x1b[34m", player, "\x1b[0m");
+            printf("%s%s%s","\033[38;2;0;222;255m", player, "\x1b[0m");
         }else{
             printf("%s", player);
         }
@@ -162,6 +164,7 @@ int print_tower(const tower_t* checkerboard, int i, int j, int height, char colo
 void checkerboard_print (const tower_t* checkerboard, coordinate_t last_move, int graphic) {
     int r, c, i, j, square, z = 0, check_c = 0, h = 2;
     char color;
+    sleep(1);
     /*pulizia console se il sistema operativo non è windows*/
     #ifndef OS_Windows
         system("clear");
@@ -773,7 +776,7 @@ int can_piece_capture (const tower_t* checkerboard, coordinate_t src, move_t* mo
 
 int capture_check(tower_t *checkerboard, int turn){
     int r, c;
-    char selection; /*variabili char checkerboard da scanf riceve s oppure n e fa il confronto tra selezione e i caratteri n o s*/ /*TODO SISTEMARE LOOP INFINITO SE INSERISCI SN*/
+    char selection; /*variabili char checkerboard da scanf riceve s oppure n e fa il confronto tra selezione e i caratteri n o s*/
     coordinate_t src, enemy;
     move_t move;
     int count=0; /*conta le pedine obbligate a mangiare*/

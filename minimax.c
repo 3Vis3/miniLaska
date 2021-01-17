@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "minilaska.h"
-#include <unistd.h>
+
 
 #define ROWS (7)
 #define COLUMNS (7)
@@ -313,7 +313,6 @@ int cpu_minimax (tower_t *checkerboard, int graphic) {
 
         promotion_check(checkerboard);
         printf("\n");
-        sleep(1);
         checkerboard_print(checkerboard, possible_capture[i_best_move].dst, graphic);
 
         /*se ha fatto la mangiata controllo se può fare la concatenazione di mangiate*/
@@ -333,7 +332,6 @@ int cpu_minimax (tower_t *checkerboard, int graphic) {
 
                     promotion_check(checkerboard);
                     printf("\n");
-                    sleep(1);
                     checkerboard_print(checkerboard, possible_capture[i].dst, graphic);
 
                     temp_possible_capture.r = possible_capture[i].dst.r; /*nel caso di una ennesima concatenazione salvo la nuova destinazione della mangiata nella variabile temp*/
@@ -364,8 +362,6 @@ int cpu_minimax (tower_t *checkerboard, int graphic) {
 
         promotion_check(checkerboard);
         printf("\n");
-
-        sleep(1);
 
         checkerboard_print(checkerboard, possible_move[i_best_move].dst, graphic);
 
