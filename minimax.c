@@ -277,7 +277,7 @@ int check_capture_concatenation_cpu(coordinate_t old_capture, coordinate_t new_c
  * funzione che esegue la miglior mossa per la CPU, chiamando minimax per ogni sua mossa valida delle sue pedine, viene chiamata dopo il movimento del
  * player 1 (umano)
  * */
-int cpu_minimax (tower_t *checkerboard) {
+int cpu_minimax (tower_t *checkerboard, int graphic) {
 
     int i, i_best_move = 0, i_moves, i_captures, check = 1;
     double curr_score, best_score = -INF;
@@ -314,7 +314,7 @@ int cpu_minimax (tower_t *checkerboard) {
         promotion_check(checkerboard);
         printf("\n");
         sleep(1);
-        checkerboard_print(checkerboard, possible_capture[i_best_move].dst);
+        checkerboard_print(checkerboard, possible_capture[i_best_move].dst, graphic);
 
         /*se ha fatto la mangiata controllo se può fare la concatenazione di mangiate*/
 
@@ -334,7 +334,7 @@ int cpu_minimax (tower_t *checkerboard) {
                     promotion_check(checkerboard);
                     printf("\n");
                     sleep(1);
-                    checkerboard_print(checkerboard, possible_capture[i].dst);
+                    checkerboard_print(checkerboard, possible_capture[i].dst, graphic);
 
                     temp_possible_capture.r = possible_capture[i].dst.r; /*nel caso di una ennesima concatenazione salvo la nuova destinazione della mangiata nella variabile temp*/
                     temp_possible_capture.c = possible_capture[i].dst.c;
@@ -367,7 +367,7 @@ int cpu_minimax (tower_t *checkerboard) {
 
         sleep(1);
 
-        checkerboard_print(checkerboard, possible_move[i_best_move].dst);
+        checkerboard_print(checkerboard, possible_move[i_best_move].dst, graphic);
 
     }
     else { /*non ci sono nè mangiate nè mosse possibli per il player 2, quindi ha perso, non dovrebbe entrare in quanto c'è la funzione win*/

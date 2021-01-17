@@ -21,23 +21,27 @@
 #define COLUMNS (7)
 
 int main() {
-    int turn = 1, win_count = 0, mode = 2;
     char s_move[3];
     tower_t checkerboard[ROWS][COLUMNS];
     coordinate_t src, dst, last_move;
     move_t move;
+    int turn = 1, win_count = 0, mode = 2, graphic = 1;
+
 
     last_move.c = -1, last_move.r = -1;
     s_move[2] = '\0';
 
     /*setvbuf(stdout, NULL, _IONBF, 0); *//* permette di debuggare con scanf */
-
+    printf("VISUALIZZAZIONE:\n");
+    printf("0 - standard\n");
+    printf("1 - minimal\n");
+    scanf("%d", &graphic);
     printf("Inserire modalita' 1 (1 giocatore) o modalita' 2 (2 giocatori)\n");
     scanf("%d", &mode);
     /*inizializzazione checkerboard (scacchiera)*/
     checkerboard_init(&(checkerboard[0][0]));
     /*prima stampa della scacchiera*/
-    checkerboard_print(&(checkerboard[0][0]), last_move);
+    checkerboard_print(&(checkerboard[0][0]), last_move, graphic);
 
     /*modalità di gioco 2 player*/
     if(mode == 2){
@@ -69,13 +73,13 @@ int main() {
                     turn_update(&turn);
                     promotion_check(&(checkerboard[0][0]));
                     printf("\n");
-                    checkerboard_print(&(checkerboard[0][0]), move.dst);
+                    checkerboard_print(&(checkerboard[0][0]), move.dst, graphic);
                     break;
                 case 1:
                     printf("case 1\n");
                     printf("updating\n");
                     promotion_check(&(checkerboard[0][0]));
-                    checkerboard_print(&(checkerboard[0][0]), move.dst);
+                    checkerboard_print(&(checkerboard[0][0]), move.dst, graphic);
                     /*DOPO IL case 1 andrà sempre di nuovo o a case 1 o case 3*/
                     continue;
                 case 2:
@@ -127,17 +131,17 @@ int main() {
                     promotion_check(&(checkerboard[0][0]));
                     printf("\n");
 
-                    checkerboard_print(&(checkerboard[0][0]), move.dst);
+                    checkerboard_print(&(checkerboard[0][0]), move.dst, graphic);
 
                     /*GIOCATORE CPU*/
                     printf("\nTURNO GIOCATORE CPU \n");
-                    cpu_minimax(&(checkerboard[0][0]));
+                    cpu_minimax(&(checkerboard[0][0]), graphic);
                     break;
                 case 1: /*quando c'è la prima mangiata disponibile*/
                     /*printf("case 1\n");*/
                     printf("updating\n");
                     promotion_check(&(checkerboard[0][0]));
-                    checkerboard_print(&(checkerboard[0][0]), move.dst);
+                    checkerboard_print(&(checkerboard[0][0]), move.dst, graphic);
                     /*DOPO IL case 1 andrà sempre di nuovo o a case 1 o case 3*/
                     continue;
                 case 2:
@@ -148,7 +152,7 @@ int main() {
                     /*ci entra sempre dopo case 1 (quando mangi) e se quella pedina non puo fare catene di mangiate, case 3 fa un cambio turno e basta*/
                     /*printf("case 3\n");*/
                     printf("\nTURNO GIOCATORE CPU \n");
-                    cpu_minimax(&(checkerboard[0][0]));
+                    cpu_minimax(&(checkerboard[0][0]), graphic);
                     break;
             }
         }

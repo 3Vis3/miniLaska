@@ -72,8 +72,9 @@ int string_to_coordinate(const char* s, coordinate_t* src);
  * Stampa nella console la scacchiera aggiornata, evidenziando l'ultima mossa
  * @param checkerboard
  * @param last_move, coordinate dell'ultima mossa effettuata da evidenziare
+ * @param graphic, valore per la decisione della grafica
  */
-void checkerboard_print (const tower_t *checkerboard, coordinate_t last_move);
+void checkerboard_print (const tower_t *checkerboard, coordinate_t last_move, int graphic);
 
 /**
  * Cambia il turno del giocatore al termine di ogni mossa avvenuta con successo
@@ -198,8 +199,9 @@ int possible_moves (const tower_t* checkerboard, move_t* move, int turn);
  * Algoritmo di intelligenza artificiale che esegue la mossa migliore per la CPU, simulando come risposta le mosse migliori
  * per l'avversario fino ad una profondità massima data
  * @param checkerboard
+ * @param graphic scelta grafica scacchiera
  * @return 1 se ha eseguito la mossa, 0 se non ci sono più mosse disponibili
  */
-int cpu_minimax (tower_t *checkerboard);
+int cpu_minimax (tower_t *checkerboard, int graphic);
 
 #endif /*MINILASKA_MINILASKA_H */
